@@ -1,6 +1,7 @@
 export default function Video() {
+  //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
-    <video controls width="2500" height="1000">
+    <video controls width="70%" height="50%">
       <source src="/media/cc0-videos/flower.webm" type="video/webm" />
       <source
         src="https://chess-react.s3.us-west-1.amazonaws.com/WIN_20240826_10_03_57_Pro.mp4"
