@@ -9,6 +9,8 @@ import ImageIcon from "@mui/icons-material/Image";
 import WorkIcon from "@mui/icons-material/Work";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 
+import useWindowScroll from "../../customHooks/useWindowScroll";
+
 function Comment({ comment, user }) {
   return (
     <ListItem>
@@ -32,6 +34,20 @@ const addComment = (commentArray) => {
 
 export default function Comments() {
   const [comments, setComments] = React.useState([]);
+  const scrollPosition = useWindowScroll();
+
+  const addComments = React.useCallback(
+    (numNewComments) => {
+      setComments((prevComments) => {
+        let tempComments = JSON.parse(JSON.stringify(prevComments));
+        for (var i = 0; i < numNewComments; i++) {
+          addComment(tempComments);
+        }
+        return tempComments;
+      });
+    },
+    [setComments],
+  );
 
   React.useEffect(() => {
     let tempComments = [];
@@ -40,6 +56,21 @@ export default function Comments() {
     }
     setComments(tempComments);
   }, []);
+
+  React.useEffect(() => {
+    if (scrollPosition.yPercent > 90) {
+      console.log("end of scroll");
+      /*
+      setComments((prevComments) => {
+        let tempComments = JSON.parse(JSON.stringify(prevComments));
+        for (var i = 0; i < 20; i++) {
+          addComment(tempComments);
+        }
+        return tempComments;
+      });
+      */
+    }
+  }, [scrollPosition]);
   return (
     <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       {comments}
