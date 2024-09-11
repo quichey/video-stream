@@ -34,32 +34,50 @@ const addComment = (commentArray) => {
 
 export default function Comments() {
   const [comments, setComments] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const scrollPosition = useWindowScroll();
 
   const addComments = React.useCallback(
     (numNewComments) => {
       setComments((prevComments) => {
-        let tempComments = JSON.parse(JSON.stringify(prevComments));
+        //let tempComments = JSON.parse(JSON.stringify(prevComments));
         for (var i = 0; i < numNewComments; i++) {
-          addComment(tempComments);
+          //addComment(tempComments);
+          addComment(prevComments);
         }
-        return tempComments;
+        //return tempComments;
+        return prevComments;
       });
     },
     [setComments],
   );
 
+  /*
+  React.useEffect(() => {
+    addComments(20);
+  }, [addComments]);
+  */
   React.useEffect(() => {
     let tempComments = [];
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < 40; i++) {
       addComment(tempComments);
     }
     setComments(tempComments);
   }, []);
 
   React.useEffect(() => {
-    if (scrollPosition.yPercent > 90) {
-      console.log("end of scroll");
+    if (scrollPosition.yPercent > 98) {
+      if (loading) {
+        setLoading(false);
+      } else {
+        console.log("end of scroll");
+        let tempComments = [];
+        for (var i = 0; i < comments.length + 10; i++) {
+          addComment(tempComments);
+        }
+        setComments(tempComments);
+        setLoading(true);
+      }
       /*
       setComments((prevComments) => {
         let tempComments = JSON.parse(JSON.stringify(prevComments));
@@ -70,7 +88,7 @@ export default function Comments() {
       });
       */
     }
-  }, [scrollPosition]);
+  }, [scrollPosition, comments, loading]);
   return (
     <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       {comments}
