@@ -34,6 +34,7 @@ const addComment = (commentArray) => {
 
 export default function Comments() {
   const [comments, setComments] = React.useState([]);
+  const [nextPageKey, setNextPageKey] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const scrollPosition = useWindowScroll();
 
@@ -58,11 +59,34 @@ export default function Comments() {
   }, [addComments]);
   */
   React.useEffect(() => {
+    fetch(
+      "https://htfcj50yh0.execute-api.us-west-1.amazonaws.com/getComments",
+      {
+        method: "POST",
+        body: JSON.stringify({ limit: 30 }),
+        mode: "no-cors",
+      },
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        const tmpComments = json.items.map((comment) => {
+          <Comment comment={comment.comment} user={comment.user_name} />;
+        });
+        setComments(tmpComments);
+        setNextPageKey(json.last_evaluated_key);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    /*
     let tempComments = [];
     for (var i = 0; i < 40; i++) {
       addComment(tempComments);
     }
     setComments(tempComments);
+    */
   }, []);
 
   React.useEffect(() => {
