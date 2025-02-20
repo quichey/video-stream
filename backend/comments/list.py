@@ -1,40 +1,37 @@
+import os
+
 import mysql.connector
 
-# Connect with the MySQL Server
-cnx = mysql.connector.connect(user='scott', database='employees')
 
-# Get two buffered cursors
-curA = cnx.cursor(buffered=True)
-curB = cnx.cursor(buffered=True)
+db = os.environ["MYSQL_DB"]
+pw = os.environ["MYSQL_PW"]
 
-# Query to get employees who joined in a period defined by two dates
-query = (
-  "SELECT s.emp_no, salary, from_date, to_date FROM employees AS e "
-  "LEFT JOIN salaries AS s USING (emp_no) "
-  "WHERE to_date = DATE('9999-01-01')"
-  "AND e.hire_date BETWEEN DATE(%s) AND DATE(%s)")
+def handler():
+  # Connect with the MySQL Server
+  cnx = mysql.connector.connect(database=db, password=pw)
 
-# UPDATE and INSERT statements for the old and new salary
-update_old_salary = (
-  "UPDATE salaries SET to_date = %s "
-  "WHERE emp_no = %s AND from_date = %s")
-insert_new_salary = (
-  "INSERT INTO salaries (emp_no, from_date, to_date, salary) "
-  "VALUES (%s, %s, %s, %s)")
+  # Get two buffered cursors
+  curA = cnx.cursor(buffered=True)
 
-# Select the employees getting a raise
-curA.execute(query, (date(2000, 1, 1), date(2000, 12, 31)))
+  # Query to get employees who joined in a period defined by two dates
+  query = (
+    "SELECT c.comment, c.date, u.name as user_name"
+    "FROM comments c"
+    "LEFT JOIN users u"
+    "ON comments.user_id = users.id")
 
-# Iterate through the result of curA
-for (emp_no, salary, from_date, to_date) in curA:
+  # Select the employees getting a raise
+  curA.execute(query)
 
-  # Update the old and insert the new salary
-  new_salary = int(round(salary * Decimal('1.15')))
-  curB.execute(update_old_salary, (tomorrow, emp_no, from_date))
-  curB.execute(insert_new_salary,
-               (emp_no, tomorrow, date(9999, 1, 1,), new_salary))
+  records = []
+  # Iterate through the result of curA
+  for (comment, date, user_name) in curA:
 
-  # Commit the changes
-  cnx.commit()
+    # Update the old and insert the new salary
+    record = {"comment": comment, "date": date, "user_name": user_name}
 
-cnx.close()
+    records.append(record)
+
+  data = {"data": {"comments": records}}
+
+  return data
