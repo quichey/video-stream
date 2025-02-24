@@ -35,14 +35,9 @@ print(f"Received: {data.decode('utf-8')}")
 
 # save client socket to bashrc
 def set_client_key(host, port):
-    config_file = util.get_config_file()
-    backup_file = util.get_backup_file()
-    shutil.copy2(config_file, backup_file)
-
     lock = util.get_client_connection_lock(host, port)
     key = util.set_client_key(host, port)
 
-    with open(config_file, "a") as f:
-        f.write(f"\nexport {lock}=\"{key}\"\n")
+    util.set_env(lock, key)
 
     print(f"Client Connection Secured")
