@@ -47,8 +47,16 @@ def get_client_connection_key(host, port):
     lock = get_client_connection_lock(host, port)
     return os.environ.get(lock)
 
-def set_client_key(host, port):
+def set_env(name, value):
     
+    config_file = util.get_config_file()
+    backup_file = util.get_backup_file()
+    shutil.copy2(config_file, backup_file)
+
+    with open(config_file, "a") as f:
+        f.write(f"\nexport {name}=\"{value}\"\n")
+
+    print(f"ENV VAR SAVED")
     
 def get_num_clients():
     return client_count
