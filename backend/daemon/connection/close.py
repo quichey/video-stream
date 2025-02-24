@@ -1,7 +1,7 @@
 import socket
 import os
 
-import constants
+import ../util.env
 
 # Create a socket object
 # AF_INET: IPv4 address family
@@ -15,8 +15,8 @@ host = client_domain["host"]  #loopback address (localhost)
 port = client_domain["port"]  # Port number, should be above 1024 to avoid conflicts with well-known ports
 
 # Retrieve client socket from bashrc
-config_file = constants.get_config_file()
-client_socket = constants.
+config_file = util.get_config_file()
+client_socket = util.
 
 # Close the connection
 client_socket.close()
