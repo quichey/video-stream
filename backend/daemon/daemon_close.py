@@ -1,17 +1,22 @@
 import socket
 import os
 
+import constants
+
 # Create a socket object
 # AF_INET: IPv4 address family
 # SOCK_STREAM: TCP socket type
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+client_domain = get_client_domain()
+
 # Define the host and port
-host = os.environ["CLIENT_HOST"]  #loopback address (localhost)
-port = os.environ["CLIENT_PORT"]  # Port number, should be above 1024 to avoid conflicts with well-known ports
+host = client_domain["host"]  #loopback address (localhost)
+port = client_domain["port"]  # Port number, should be above 1024 to avoid conflicts with well-known ports
 
 # Retrieve client socket from bashrc
-client_socket = None
+config_file = constants.get_config_file()
+client_socket = constants.
 
 # Close the connection
 client_socket.close()

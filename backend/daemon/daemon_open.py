@@ -1,6 +1,8 @@
 import socket
 import os, shutil
 
+import constants
+
 # Create a socket object
 # AF_INET: IPv4 address family
 # SOCK_STREAM: TCP socket type
@@ -30,22 +32,17 @@ client_socket.send(message.encode('utf-8'))
 data = client_socket.recv(1024)
 print(f"Received: {data.decode('utf-8')}")
 
+
 # save client socket to bashrc
-def save_variable_to_shell(variable_name, variable_value):
-    shell = os.environ.get('SHELL')
-
-    if 'bash' in shell:
-        config_file = os.path.expanduser("~/.bashrc")
-    elif 'zsh' in shell:
-        config_file = os.path.expanduser("~/.zshrc")
-    else:
-        print("Shell not supported.")
-        return
-
-    backup_file = config_file + ".bak"
+def set_client_key(host, port):
+    config_file = constants.get_config_file()
+    backup_file = constants.get_backup_file()
     shutil.copy2(config_file, backup_file)
 
-    with open(config_file, "a") as f:
-        f.write(f"\nexport {variable_name}=\"{variable_value}\"\n")
+    lock = constants.get_client_connection_lock(host, port)
+    key = constants.set_client_key(host, port)
 
-    print(f"Variable '{variable_name}' saved. Restart your shell or source '{config_file}' to apply changes.")
+    with open(config_file, "a") as f:
+        f.write(f"\nexport {lock}=\"{key}\"\n")
+
+    print(f"Client Connection Secured")
