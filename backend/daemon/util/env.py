@@ -57,6 +57,9 @@ def set_env(name, value):
         f.write(f"\nexport {name}=\"{value}\"\n")
 
     print(f"ENV VAR SAVED")
+
+def get_env(name):
+    return os.environ[name]
     
 def get_num_clients():
     return client_count
