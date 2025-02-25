@@ -6,11 +6,7 @@ import util.env as env
 # Create a socket object
 # AF_INET: IPv4 address family
 # SOCK_STREAM: TCP socket type
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+curr_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-temp_pid = 1
+temp_pid = hash(curr_socket)
 env.set_env("SERVER_PID", temp_pid)
-
-# socket object is a dict?
-
-# save metadata of socket object to bash file
