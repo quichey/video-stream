@@ -9,7 +9,7 @@ import util.env as env
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 temp_pid = 1
-env.set_env("server_pid", temp_pid)
+env.set_env("SERVER_PID", temp_pid)
 
 # socket object is a dict?
 
