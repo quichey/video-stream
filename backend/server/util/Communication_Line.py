@@ -3,11 +3,12 @@ CHORDS_SUPPORTED = []
 ENTITIES_SUPPORTED = ["MACHINES", "CELLS", "INSTRUMENTS"]
 
 import socket.socket as Socket
-import server.util.Entity as Entity
+import server.util.Entity.Entity as Entity
+import server.util.Entity.Base as Base
 
 class Communication_Line():
 
-    def __init__(self, entity_class: Entity, source_0: Entity, source_1: Entity, protocol="HTTP"):
+    def __init__(self, entity_class: Entity, source_0: Base, source_1: Base, protocol="HTTP"):
         self.entity_to = source_0.UNIQUE_ID
         self.entity_from = source_1.UNIQUE_ID
     
@@ -27,6 +28,9 @@ class Communication_Line():
     @property
     def entity_from(self):
         return self.entity_from
+
+    def send_message(self, giver, receiver):
+        pass
 
 
 
