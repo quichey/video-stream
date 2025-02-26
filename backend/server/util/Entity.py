@@ -28,13 +28,11 @@ class Base(Entity):
         
         return this_hash
     
-    @property
     def add_entity(self, new):
         self.update_history()
         self.collection[new.UNIQUE_ID] = new
         return
     
-    @property
     def remove_entity(self, e):
         self.update_history()
         # add to archives?
@@ -43,7 +41,6 @@ class Base(Entity):
         self.collection[e.UNIQUE_ID] = None
         return
     
-    @property
     def update_history(self):
         # do timestamps with snapshots of self.collection at this point
         self.history[time.now()] = hash(self.collection)

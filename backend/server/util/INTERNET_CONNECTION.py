@@ -29,13 +29,19 @@ class DATABASE(MACHINE):
 
     def __init__(self, engine = "MYSQL"):
         pass
+    
+
 
 
 class DATA_VERSE(Base):
     def __init__(self):
         self.super(entity_class=DATABASE)
     
-    @property
+    @override
+    def add_entity(self, e)
+        # adding a database to collections of databases
+        pass
+
     def update_state():
         pass
 
@@ -63,6 +69,10 @@ class INTERNET_CONNECTION(Communication_Line):
         #TODO  bind socket to TO or FROM IP and then accept messages from TO OR FROM IP
         return chord
 
+    @property
+    def socket(self):
+        return self.chord
+
     def send_message(self, giver, receiver):
         if type(giver) == DATA_VERSE:
             break
@@ -70,3 +80,27 @@ class INTERNET_CONNECTION(Communication_Line):
             break
 
         #add http crap
+    
+    def add_database(self, db):
+        self.data_verse.add_entity(db)
+        #update the socket info? maybe not
+        # i think if the script has a run function, it continuoulsy polls
+        # for messages from both the databases as well as the clients
+        pass
+
+    def add_client(self, client):
+        self.client_base.add_entity(client)
+        pass
+
+    def run(self):
+        # listen to and send messages to and fro
+        # add http stuff
+        # make sure things are secure
+        # make sure things are fast
+        # make sure connection is steady
+
+        # if a database gets corrupted, do ACID things?
+        # let it rest for a while or something
+        # clean data
+        # and then put it back to work
+        pass

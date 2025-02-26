@@ -1,16 +1,19 @@
-from server.util.Address import Address
-
+from server.util.INTERNET_CONNECTION import DATABASE, DATA_VERSE, CLIENT_BASE, INTERNET_CONNECTION
+import socket
 OS_SUPPORTED = ['linux']
 
-class Server():
-    databases = []
-    clients = []
-    sockets = []
+class Server(INTERNET_CONNECTION):
 
     def __init__(self, os = 'linux'):
         if os not in OS_SUPPORTED:
             raise Exception("OS not supported")
-        
+
+        mysql_db = DATABASE(engine="MYSQL")
+        mysql_db.add_entity(host="localhost", port=33)
+        self.data_verse.add_entity(mysql_db)
+    
+
+
         
 
     # Create a socket object
