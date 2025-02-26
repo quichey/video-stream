@@ -5,6 +5,7 @@ OS_SUPPORTED = ['linux']
 class Server():
     databases = []
     clients = []
+    sockets = []
 
     def __init__(self, os = 'linux'):
         if os not in OS_SUPPORTED:
@@ -39,15 +40,20 @@ class Server():
                     self.db_socket.connect((client_socket))
 
     
-    def connect_to_db(self, db_config= None: Address(host="localhost", port=10)):db_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.db_socket = db_socket
+    def connect_to_db(self, db_config= None: Address(host="localhost", port=10)):
+        db_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sockets.append(db_socket)
         self.databases.append(db_config)
         try:
             db_socket.bind((db_config.host, db_config.port))
         except:
             raise Exception("unable to connect to DB")
 
-                
-    
-    def shut_down(self):
-        self.db_socket.close()
+    def disconnect_from_db(self, db_config):
+        pass
+
+    def run():
+        while True:
+            client_socket, address = server_socket.accept()
+            client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+            client_thread.start()
