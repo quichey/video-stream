@@ -1,0 +1,1 @@
+escape= "<script> Hello </script>".encode("ascii", 'xmlcharrefreplace')
