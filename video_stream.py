@@ -5,25 +5,27 @@ import mysql.connector
 
 app = Flask(__name__)
 
-# Database connection
-def get_db_connection():
+class DB():
     # Database connection configuration
     # TODO: set/get user/pw and get from bashrc
-    mydb = mysql.connector.connect(
-        host="localhost",
-        port=3306,
-        user="new_user",
-        password="password",
-        database="video_stream"
-    )
+    def __init__(self):
+        self.conn = mysql.connector.connect(
+            host="localhost",
+            port=3306,
+            user="new_user",
+            password="password",
+            database="video_stream"
+        )
+    
+    def cursor(self):
+        return self.conn.cursor()
 
-    conn = mydb.cursor()
-    return conn
 
 # Route to get all items
 @app.route('/comments', methods=['GET'])
 def get_items():
-    conn = get_db_connection()
+    db = DB()
+    conn = db.cursor()
     query = """
         SELECT
             c.comment,
@@ -35,8 +37,9 @@ def get_items():
         ON c.user_id = u.id;
     """
     items = conn.execute(query).fetchall()
+    data = jsonify([dict(item) for item in items])
     conn.close()
-    return jsonify([dict(item) for item in items])
+    return data
 
 # Route to create a new item
 @app.route('/comments', methods=['POST'])
