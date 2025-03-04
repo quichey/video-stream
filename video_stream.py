@@ -12,8 +12,8 @@ def get_db_connection():
     mydb = mysql.connector.connect(
         host="localhost",
         port=3306,
-        user="yourusername",
-        password="yourpassword",
+        user="new_user",
+        password="password",
         database="video_stream"
     )
 
@@ -27,8 +27,7 @@ def get_items():
     query = """
         SELECT
             c.comment,
-            c.date,
-            u.id
+            u.name
         FROM
         comments AS c
         LEFT JOIN
