@@ -22,6 +22,32 @@ class DB():
 
 
 # Route to get all items
+@app.route('/')
+def html_comments():
+    db = DB()
+    conn = db.cursor()
+    query = """
+        SELECT
+            c.comment,
+            u.name as user_name
+        FROM
+        comments AS c
+        LEFT JOIN
+        users AS u
+        ON c.user_id = u.id;
+    """
+    conn.execute(query)
+    items = conn.fetchall()
+    conn.close()
+    html = "<u1>"
+    for record in items:
+        comment = record[0]
+        user_name = record[1]
+        html += f"<li>@{user_name}: {comment}</li>"
+    html += "<li>"
+    return html
+
+# Route to get all items
 @app.route('/comments', methods=['GET'])
 def get_items():
     db = DB()
