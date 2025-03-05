@@ -44,7 +44,7 @@ def html_comments():
         comment = record[0]
         user_name = record[1]
         html += f"<li>@{user_name}: {comment}</li>"
-    html += "<li>"
+    html += "<ui>"
     return html
 
 # Route to get all items
