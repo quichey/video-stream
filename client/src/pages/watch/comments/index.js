@@ -11,6 +11,10 @@ export default function Comments() {
   const [loading, setLoading] = React.useState(false);
   const scrollPosition = useWindowScroll();
 
+  /*
+   *facilicate infinite scroll by getting more comments ? 
+   *or seeems to just be appending to the comments state object after getting the data
+   */
   const addComments = React.useCallback(
     (numNewComments) => {
       setComments((prevComments) => {
@@ -31,6 +35,18 @@ export default function Comments() {
     addComments(20);
   }, [addComments]);
   */
+
+  /*
+   * getting the data from server -- i think both from initial load and scrolling down
+   * params need limit (page size) as well as some variable to indicate offset/next-page
+   * 
+   * right now this one is only initial load cause of empty dependencies -- either:
+   * --- do 2 separate useEffects, 1 for first load, 2nd for scrolling data
+   * --- put all in this useEffect
+   * I think 2 separate useEffects will make state updating simpler from experience iirc
+   * In that case, should i make functions for repeated parts of the useEffect? -- not necessary, but possibly beneficial
+   * 
+   */
   React.useEffect(() => {
     /*
     TODO: add nextPageKey to list of params for post request
@@ -65,6 +81,11 @@ export default function Comments() {
     */
   }, []);
 
+  /*
+   * moving the actual scroll bar
+   * not yet implemented getting more data from server
+   * 
+   */
   React.useEffect(() => {
     if (scrollPosition.yPercent > 98) {
       if (loading) {
