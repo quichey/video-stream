@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 
-import Comments from "./Comments";
+import Comments from "./comments/index";
 import Navbar from "./Navbar";
 import Recommendations from "./Recommendations";
 import Video from "./Video";

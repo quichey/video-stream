@@ -1,36 +1,9 @@
 import * as React from "react";
-import { Typography } from "@mui/material";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
-import ImageIcon from "@mui/icons-material/Image";
-import WorkIcon from "@mui/icons-material/Work";
-import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 
-import useWindowScroll from "../../customHooks/useWindowScroll";
+import useWindowScroll from "../../../customHooks/useWindowScroll";
+import Comment from "./Comment";
 
-function Comment({ comment, user }) {
-  return (
-    <ListItem>
-      <ListItemAvatar>
-        <Avatar>
-          <ImageIcon />
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText primary={`@${user}`} secondary={comment} />
-    </ListItem>
-  );
-}
-const addComment = (commentArray) => {
-  commentArray.push(
-    <Comment
-      comment={`Comment number ${commentArray.length}`}
-      user={`User number ${commentArray.length}`}
-    ></Comment>,
-  );
-};
 
 export default function Comments() {
   const [comments, setComments] = React.useState([]);
@@ -59,8 +32,11 @@ export default function Comments() {
   }, [addComments]);
   */
   React.useEffect(() => {
+    /*
+    TODO: add nextPageKey to list of params for post request
+    */
     fetch(
-      "https://htfcj50yh0.execute-api.us-west-1.amazonaws.com/getComments",
+      "localhost:5000",
       {
         method: "POST",
         body: JSON.stringify({ limit: 30 }),
