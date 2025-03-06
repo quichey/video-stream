@@ -20,6 +20,10 @@ class DB():
     def cursor(self):
         return self.conn.cursor()
 
+# TODO: add initial route for establishing websocket line of communication
+# guessing just add route("/ws") and return status 200 for OK
+# probably should check flask or http library for proper headers etc
+
 
 # Route to get all items
 @app.route('/')
@@ -47,25 +51,33 @@ def html_comments():
     html += "<ui>"
     return html
 
+
 # Route to get all items
-@app.route('/comments', methods=['GET'])
-def get_items():
+@app.route('/comments', methods=["GET"])
+def read_comments():
     db = DB()
     conn = db.cursor()
     query = """
         SELECT
             c.comment,
-            u.name
+            u.name as user_name
         FROM
         comments AS c
         LEFT JOIN
         users AS u
         ON c.user_id = u.id;
     """
-    items = conn.execute(query).fetchall()
-    data = jsonify([dict(item) for item in items])
+    conn.execute(query)
+    items = conn.fetchall()
     conn.close()
-    return data
+    html = "<u1>"
+    for record in items:
+        comment = record[0]
+        user_name = record[1]
+        html += f"<li>@{user_name}: {comment}</li>"
+    html += "<ui>"
+    return html
+
 
 # Route to create a new item
 @app.route('/comments', methods=['POST'])

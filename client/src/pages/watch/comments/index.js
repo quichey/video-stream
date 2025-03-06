@@ -4,7 +4,14 @@ import List from "@mui/material/List";
 import useWindowScroll from "../../../customHooks/useWindowScroll";
 import Comment from "./Comment";
 
-
+const addComment = (commentArray) => {
+  commentArray.push(
+    <Comment
+      comment={`Comment number ${commentArray.length}`}
+      user={`User number ${commentArray.length}`}
+    ></Comment>,
+  );
+};
 export default function Comments() {
   const [comments, setComments] = React.useState([]);
   const [nextPageKey, setNextPageKey] = React.useState();
@@ -52,9 +59,13 @@ export default function Comments() {
     TODO: add nextPageKey to list of params for post request
     */
     fetch(
-      "localhost:5000",
+      "localhost:5000/comments",
       {
-        method: "POST",
+        method: "GET",
+        // may need to use POST later for adding params
+        // i think don't have to, could use query string
+        // POST is probably more secure cause body is probably encrypted
+        //method: "POST",
         body: JSON.stringify({ limit: 30 }),
         mode: "no-cors",
       },
