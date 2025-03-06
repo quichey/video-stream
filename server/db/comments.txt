@@ -1,2 +1,0 @@
-# headers
-COMMENT,USER_ID
