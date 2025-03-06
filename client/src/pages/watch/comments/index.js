@@ -59,14 +59,14 @@ export default function Comments() {
     TODO: add nextPageKey to list of params for post request
     */
     fetch(
-      "localhost:5000/comments",
+      "http://127.0.0.1:5000/comments",
       {
         method: "GET",
         // may need to use POST later for adding params
         // i think don't have to, could use query string
         // POST is probably more secure cause body is probably encrypted
         //method: "POST",
-        body: JSON.stringify({ limit: 30 }),
+        // body: JSON.stringify({ limit: 30 }),
         mode: "no-cors",
       },
     )

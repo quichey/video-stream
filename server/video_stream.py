@@ -4,6 +4,7 @@ import mysql.connector
 
 
 app = Flask(__name__)
+clients = []
 
 class DB():
     # Database connection configuration
@@ -20,13 +21,19 @@ class DB():
     def cursor(self):
         return self.conn.cursor()
 
+
 # TODO: add initial route for establishing websocket line of communication
 # guessing just add route("/ws") and return status 200 for OK
 # probably should check flask or http library for proper headers etc
+@app.route('/ws')
+def add_client():
+    global clients
+    clients.append("test")
+    return 'STATUS 200 OK'
 
 
-# Route to get all items
-@app.route('/')
+# Route to get all comments
+@app.route('/blah')
 def html_comments():
     db = DB()
     conn = db.cursor()
@@ -70,21 +77,21 @@ def read_comments():
     conn.execute(query)
     items = conn.fetchall()
     conn.close()
-    html = "<u1>"
+    data = []
     for record in items:
         comment = record[0]
         user_name = record[1]
-        html += f"<li>@{user_name}: {comment}</li>"
-    html += "<ui>"
-    return html
+        data.append({"user_name": user_name, "comment": comment})
+    data = jsonify(data)
+    return data
 
 
 # Route to create a new item
 @app.route('/comments', methods=['POST'])
 def create_item():
     item_data = request.get_json()
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    db = DB()
+    cursor = db.cursor()
     # TODO: update query
     query = """
         INSERT INTO comments (comment, user_id, date)
@@ -92,8 +99,8 @@ def create_item():
     """
     cursor.execute(query,
                    (item_data['name'], item_data['description']))
-    conn.commit()
-    conn.close()
+    db.commit()
+    db.close()
     return jsonify({'message': 'Comment created successfully'}), 201
 
 if __name__ == '__main__':
