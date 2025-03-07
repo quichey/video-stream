@@ -4,9 +4,19 @@ from sqlalchemy import text
 
 class DB_CONNECTOR():
 
-    def __init__(self):
-        pass
-    
+    def __init__(self,
+                dialect,
+                db_api,
+                user,
+                pw,
+                hostname,
+                dbname,
+                ):
+
+        url = f"{user}:{pw}@{hostname}/{dbname}"
+        self.engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)    
+
+
     def create_database(self):
         pass
 
@@ -17,8 +27,12 @@ class DB_CONNECTOR():
         pass
 
     def seed_db(self):
-        # create_database
-        # create_table(s)
-        # populate_tables
-        # maybe save a backup of database as archive copy of state
+        with self.engine.connect() as conn:
+            result = conn.execute(text("select 'hello world'"))
+            print(result.all())
+            # create_database
+            # create_table(s)
+            # populate_tables
+            # maybe save a backup of database as archive copy of state
+    
         pass
