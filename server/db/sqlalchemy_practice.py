@@ -35,3 +35,11 @@ def commit_changes():
             [{"x": 1, "y": 1}, {"x": 2, "y": 4}],
         )
         conn.commit()
+
+
+def fetch_rows():
+    engine = start_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT x, y FROM some_table"))
+        for row in result:
+            print(f"x: {row.x}  y: {row.y}")
