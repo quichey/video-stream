@@ -62,3 +62,24 @@ def bind_multi_parameters():
             [{"x": 11, "y": 12}, {"x": 13, "y": 14}],
         )
         conn.commit()
+
+
+from sqlalchemy.orm import Session
+
+def test_session():
+    engine = start_engine()
+    stmt = text("SELECT x, y FROM some_table WHERE y > :y ORDER BY x, y")
+    with Session(engine) as session:
+        result = session.execute(stmt, {"y": 6})
+        for row in result:
+            print(f"x: {row.x}  y: {row.y}")
+
+
+def test_session_update():
+    engine = start_engine()
+    with Session(engine) as session:
+        result = session.execute(
+            text("UPDATE some_table SET y=:y WHERE x=:x"),
+            [{"x": 9, "y": 11}, {"x": 13, "y": 15}],
+        )
+        session.commit()
