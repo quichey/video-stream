@@ -96,3 +96,10 @@ user_table = Table(
     Column("name", String(30)),
     Column("fullname", String),
 )
+
+
+def read_user_table_def():
+    print(f"name: {user_table.c.name}")
+
+    keys = user_table.c.keys()
+    print(f"keys: {keys}")
