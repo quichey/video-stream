@@ -1,3 +1,8 @@
+from sqlalchemy import MetaData
+from sqlalchemy import Table, Column, Integer, String
+
+metadata_obj = MetaData()
+
 database_specs = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
@@ -7,17 +12,18 @@ database_specs = {
     "dbname": "video_stream"
 }
 
-class Table():
-    pass
 
+users_table = Table(
+    "users",
+    metadata_obj,
+    Column("id", Integer, primary_key=True),
+    Column("name", String(30)),
+)
 
-class Comments(Table):
-    comment = str
-    user_id = int
-    pass
-
-
-class Users(Table):
-    id = int
-    name = str
-    pass
+comments_table = Table(
+    "comments",
+    metadata_obj,
+    # add logic for foreign key to users table
+    Column("user_id", Integer, primary_key=True),
+    Column("comment", String(100)),
+)
