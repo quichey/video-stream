@@ -43,3 +43,22 @@ def fetch_rows():
         result = conn.execute(text("SELECT x, y FROM some_table"))
         for row in result:
             print(f"x: {row.x}  y: {row.y}")
+
+
+def bind_parameters():
+    engine = start_engine()
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT x, y FROM some_table WHERE y > :y"), {"y": 2})
+        for row in result:
+            print(f"x: {row.x}  y: {row.y}")
+
+
+def bind_multi_parameters():
+    engine = start_engine()
+    # instead of .connect, I can do .begin and then forego the last .commit statement, iirc
+    with engine.connect() as conn:
+        conn.execute(
+            text("INSERT INTO some_table (x, y) VALUES (:x, :y)"),
+            [{"x": 11, "y": 12}, {"x": 13, "y": 14}],
+        )
+        conn.commit()
