@@ -83,3 +83,16 @@ def test_session_update():
             [{"x": 9, "y": 11}, {"x": 13, "y": 15}],
         )
         session.commit()
+
+
+from sqlalchemy import MetaData
+metadata_obj = MetaData()
+
+from sqlalchemy import Table, Column, Integer, String
+user_table = Table(
+    "user_account",
+    metadata_obj,
+    Column("id", Integer, primary_key=True),
+    Column("name", String(30)),
+    Column("fullname", String),
+)
