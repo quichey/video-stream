@@ -103,3 +103,13 @@ def read_user_table_def():
 
     keys = user_table.c.keys()
     print(f"keys: {keys}")
+
+
+from sqlalchemy import ForeignKey
+address_table = Table(
+    "address",
+    metadata_obj,
+    Column("id", Integer, primary_key=True),
+    Column("user_id", ForeignKey("user_account.id"), nullable=False),
+    Column("email_address", String, nullable=False),
+)

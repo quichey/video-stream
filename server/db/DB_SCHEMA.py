@@ -1,5 +1,6 @@
 from sqlalchemy import MetaData
 from sqlalchemy import Table, Column, Integer, String
+from sqlalchemy import ForeignKey
 
 metadata_obj = MetaData()
 
@@ -23,7 +24,6 @@ users_table = Table(
 comments_table = Table(
     "comments",
     metadata_obj,
-    # add logic for foreign key to users table
-    Column("user_id", Integer, primary_key=True),
+    Column("user_id", ForeignKey("users.id"), nullable=False),
     Column("comment", String(100)),
 )
