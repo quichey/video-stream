@@ -94,7 +94,7 @@ user_table = Table(
     metadata_obj,
     Column("id", Integer, primary_key=True),
     Column("name", String(30)),
-    Column("fullname", String),
+    Column("fullname", String(100)),
 )
 
 
@@ -111,5 +111,10 @@ address_table = Table(
     metadata_obj,
     Column("id", Integer, primary_key=True),
     Column("user_id", ForeignKey("user_account.id"), nullable=False),
-    Column("email_address", String, nullable=False),
+    Column("email_address", String(100), nullable=False),
 )
+
+
+def seed_db():
+    engine = start_engine()
+    metadata_obj.create_all(engine)
