@@ -115,6 +115,8 @@ address_table = Table(
 )
 
 
+# as of now -- this just creates the database and all tables
+# implement functions to fill in test-data
 def seed_db():
     engine = start_engine()
     metadata_obj.create_all(engine)
