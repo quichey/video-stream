@@ -38,12 +38,12 @@ class Seed():
     def create_random_value(self, data_type, table_name=None, column_name=None):
         # do case switch on data_type
         match type(data_type):
-            case Boolean
+            case Boolean:
                 flag = random.randint(0, 1)
                 return True if flag == 1 else False
-            case Integer
+            case Integer:
                 return random.randint(0, 10000)
-            case String
+            case String:
                 rand_int = random.randint(0, 10000)
                 return f"{table_name}_{column_name}_{rand_int}"
 
