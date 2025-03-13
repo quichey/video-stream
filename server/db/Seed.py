@@ -1,4 +1,8 @@
+import random
+
 from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Boolean, Integer, String
+
 
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
@@ -31,16 +35,38 @@ class Seed():
         return engine
     
 
-    def create_random_value(data_type):
+    def create_random_value(self, data_type, table_name=None, column_name=None):
         # do case switch on data_type
-        pass
+        match type(data_type):
+            case Boolean
+                flag = random.randint(0, 1)
+                return True if flag == 1 else False
+            case Integer
+                return random.randint(0, 10000)
+            case String
+                rand_int = random.randint(0, 10000)
+                return f"{table_name}_{column_name}_{rand_int}"
 
-    def create_random_record(table):
+
+    def create_random_record(self, table):
         # get table specs for table object
         # get column names and column types
         # use create_random_value
         # sqlalchemy may have function available to do this
-        pass
+        record = {}
+
+        unique_id = pass
+        table_name = pass # check docs for proper way of getting table name
+        keys = table.c.keys()
+        for key in keys:
+            column_info = getattr(table.c, key)
+            # check sqlalchemy docs for proper way to get data_type of column and name
+            data_type = pass
+            column_name = pass
+            record[key] = self.create_random_value(data_type, table_name, column_name)
+        # probably convert record dictionary into sqlalchemy Record object type
+        # maybe not if the insert function only requires a list of dicts
+        return record
 
 
     # Creates the database if not exists as well as the empty tables
