@@ -101,3 +101,5 @@ class Seed():
 # fill up users table with random data since it does not have foreign keys
 # and then view contents
 # and then write up test files for other tables using id's from this table
+# -- possibly add in a case in create_random_data where it checks if the column
+# -- is a foreign key, and then scan the parent table for a proper id
