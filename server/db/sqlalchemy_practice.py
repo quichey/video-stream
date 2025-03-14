@@ -120,3 +120,13 @@ address_table = Table(
 def seed_db():
     engine = start_engine()
     metadata_obj.create_all(engine)
+
+def inspect_address_table_fk():
+    fks = address_table.foreign_key_constraints
+    for fk in fks:
+        print(f"Foreign Key: {fk.name}")
+
+        # just need these following lines to get fk info
+        for column in fk.columns:
+            print(f"  Column: {column.name}")
+        print(f"  References: {fk.referred_table.name}")
