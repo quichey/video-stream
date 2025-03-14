@@ -20,6 +20,17 @@ class Seed():
         self.construct_engine(database_specs)
     
 
+    def parse_test_data_file(self):
+        # first row is table name
+        # second row is columns names
+        # determine the delimiter
+        # construct list of dictionary records
+        pass
+    
+    def fill_table_with_test_data(self, table_name, test_file):
+        pass
+    
+
     def construct_engine(self, database_specs):
         dialect = database_specs["dialect"]
         db_api = database_specs["db_api"]
@@ -76,4 +87,17 @@ class Seed():
 
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
+        list_of_table_files = testing_state["table_files"]
+        list_of_table_rand = testing_state["table_random_populate"]
+        for file in list_of_table_files:
+            table_data = self.parse_test_data_file(file)
+        
+        for table_info in list_of_table_rand:
+            # populate table with random data
+            num_records = table_info["num_records"]
         pass
+
+# ideas for testing state
+# fill up users table with random data since it does not have foreign keys
+# and then view contents
+# and then write up test files for other tables using id's from this table
