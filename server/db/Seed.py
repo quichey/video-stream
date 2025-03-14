@@ -20,6 +20,20 @@ class Seed():
         self.construct_engine(database_specs)
     
 
+    def get_table_metadata(self, table_name):
+        return self.metadata_obj.tables[table_name]
+
+    def get_foreign_key_references(self, table_instance):
+        fks = table_instance.foreign_key_constraints
+        fk_reference_info_list = []
+        for fk in fks:
+            one_info = {}
+            for column in fk.columns:
+                one_info["column_name"] = column.name
+            one_info["table_name"] = fk.referred_table.name
+        return fk_reference_info_list
+    
+
     def parse_test_data_file(self):
         # first row is table name
         # second row is columns names
