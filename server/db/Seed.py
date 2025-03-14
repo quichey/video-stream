@@ -46,7 +46,17 @@ class Seed():
         return engine
     
 
-    def create_random_value(self, data_type, table_name=None, column_name=None):
+    def create_random_value(self, column):
+        # check sqlalchemy docs for proper way to get data_type of column and name
+        data_type = pass
+        column_name = pass
+        table_name = pass
+        is_foreign_key = pass
+        if is_foreign_key:
+            # scan parent table
+            # use metadata obj to query other table
+            pass
+
         # do case switch on data_type
         match type(data_type):
             case Boolean:
@@ -67,14 +77,10 @@ class Seed():
         record = {}
 
         unique_id = pass
-        table_name = pass # check docs for proper way of getting table name
         keys = table.c.keys()
         for key in keys:
-            column_info = getattr(table.c, key)
-            # check sqlalchemy docs for proper way to get data_type of column and name
-            data_type = pass
-            column_name = pass
-            record[key] = self.create_random_value(data_type, table_name, column_name)
+            column = getattr(table.c, key)
+            record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
         return record
