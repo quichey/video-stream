@@ -18,12 +18,17 @@ class Seed():
         self.database_specs = database_specs
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
+        self.fk_references = {}
     
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
 
     def get_foreign_key_references(self, table_instance):
+        child_table_name = pass # likely table_instance.__tablename__
+        if child_table_name in self.fk_references.keys():
+            return self.fk_references[child_table_name]
+
         fks = table_instance.foreign_key_constraints
         fk_reference_info_list = []
         for fk in fks:
@@ -31,6 +36,13 @@ class Seed():
             for column in fk.columns:
                 one_info["column_name"] = column.name
             one_info["table_name"] = fk.referred_table.name
+
+            # i think next in this context manager, I want to fetch
+            # all unique foreign key values and cache this info
+            # into a list/set within self.fk_references
+            # first storing it into one_info["unique_keys"]
+
+        self.fk_references[child_table_name] = fk_reference_info_list
         return fk_reference_info_list
     
 
