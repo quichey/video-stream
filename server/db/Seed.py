@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 from sqlalchemy import create_engine
-from sqlalchemy import select
+from sqlalchemy import insert, select
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
 
 
@@ -308,17 +308,19 @@ class Seed():
             table_data = self.parse_test_data_file(file)
         list_of_table_rand = testing_state["table_random_populate"]
         
-        for table_info in list_of_table_rand:
-            # populate table with random data
-            num_records = table_info["num_records"]
-            table_name = table_info["name"]
-            table = self.get_table_metadata(table_name)
-            records = []
-            for i in range(num_records):
-                records.append(self.create_random_record(table))
-            # TODO: do insert statements with all the random records
+        with self.engine.connect() as conn:
+            for table_info in list_of_table_rand:
+                # populate table with random data
+                num_records = table_info["num_records"]
+                table_name = table_info["name"]
+                table = self.get_table_metadata(table_name)
+                records = []
+                for i in range(num_records):
+                    records.append(self.create_random_record(table))
 
-        pass
+                stmt = insert(table).values(records)
+                conn.execute(stmt)
+                conn.commit()
         
     
 
