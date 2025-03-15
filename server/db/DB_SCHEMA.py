@@ -1,5 +1,5 @@
 from sqlalchemy import MetaData
-from sqlalchemy import Table, Column, Boolean, Integer, String
+from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
 from sqlalchemy import ForeignKey
 
 metadata_obj = MetaData()
@@ -31,7 +31,7 @@ comments_table = Table(
     Column("thread_comment_id", ForeignKey("comments.id"), nullable=True),
 
     Column("comment", String(100)),
-    Column("date", String(30)),
+    Column("date", DateTime),
     Column("edited_flag", Boolean),
 )
 
