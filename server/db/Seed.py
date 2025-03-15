@@ -222,6 +222,7 @@ class Seed():
 
     def create_random_value(self, column):
         # check sqlalchemy docs for proper way to get data_type of column and name
+        # TODO: fill in getting these values
         data_type = pass
         column_name = pass
         table_name = pass
