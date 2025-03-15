@@ -32,26 +32,32 @@ def fks_are_same(fk_1, fk_2):
 # - prepare indices for optimal searching/fetching for appropriate cases
 
 class Seed():
+    database_specs = None
+    metadata_obj = None
+    engine = None
+
+    pk_definitions = {}
+    # initialize the pk_definitions since we already have schema
+    # init these caches, but I want to get data for these at the time of test-data creation
+    # name is table_name, value is list of fk columns (name of column and parent table)
+    fk_references = {}
+    # name is table_name, value is set of primary-key values
+    # TODO: think of at what instances i need to clear these caches
+    # in terms of the use-cases of this Seed Class
+    pk_values = {}
+    # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
+    fk_values_possible = {}
+    fk_values_existing = {}
+    # populate fk_values_existing with empty lists for each table
+
+
     def __init__(self, database_specs=database_specs, metadata_obj=metadata_obj):
         self.database_specs = database_specs
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
 
-        # name is table_name, value is name of primary key column (or or list of col names if multi-col pk)
-        self.pk_definitions = {}
         # initialize the pk_definitions since we already have schema
         self.init_pk_definitions()
-
-        # init these caches, but I want to get data for these at the time of test-data creation
-        # name is table_name, value is list of fk columns (name of column and parent table)
-        self.fk_references = {}
-        # name is table_name, value is set of primary-key values
-        # TODO: think of at what instances i need to clear these caches
-        # in terms of the use-cases of this Seed Class
-        self.pk_values = {}
-        # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
-        self.fk_values_possible = {}
-        self.fk_values_existing = {}
         # populate fk_values_existing with empty lists for each table
         self.init_fk_values_existing()
     
@@ -284,9 +290,9 @@ class Seed():
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
         list_of_table_files = testing_state["table_files"]
-        list_of_table_rand = testing_state["table_random_populate"]
         for file in list_of_table_files:
             table_data = self.parse_test_data_file(file)
+        list_of_table_rand = testing_state["table_random_populate"]
         
         for table_info in list_of_table_rand:
             # populate table with random data
@@ -299,6 +305,8 @@ class Seed():
             # TODO: do insert statements with all the random records
 
         pass
+        
+    
 
 # ideas for testing state
 # fill up users table with random data since it does not have foreign keys
