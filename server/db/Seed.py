@@ -41,7 +41,8 @@ class Seed():
         # name is table_name, value is set of primary-key values
         self.pk_values = {}
         # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
-        self.fk_values = {}
+        self.fk_values_possible = {}
+        self.fk_values_existing = {}
     
 
     def get_table_key_values(self, table_instance):
@@ -69,14 +70,24 @@ class Seed():
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
     
+    def get_foreign_key_values_existing(self, table_instance):
+        pass
+
     # just noticed
     # foreign_key values
     # are actually primary_keys for "complex" tables (multi-col pk tables)
-    def get_foreign_key_values(self, table_instance):
+    def get_foreign_key_values_possible(self, table_instance):
         table_name = table_instance.name
-        if table_name in self.fk_values.keys():
-            return self.fk_values[table_name]
-        pass
+        if table_name in self.fk_values_possible.keys():
+            return self.fk_values_possible[table_name]
+        
+        fk_references = self.get_foreign_key_references(table_instance)
+        # go through one_info["foreign_key_values"] 
+        # make a new dictionary signifying every fk combo
+        possible = []
+
+        self.fk_values_possible[table_name] = possible
+        return possible
 
     def get_foreign_key_references(self, table_instance):
         child_table_name = table_instance.name
@@ -130,14 +141,29 @@ class Seed():
         return engine
     
 
-    def create_pk(self, table, column_name):
+    def initialize_random_record_simple_pk(self, table):
         # check through list of already existing pk's
         # make a new one
-        # 
-        pass
+        existing_values = self.get_table_key_values(table)
+        i = 0
+        found_new_value = False
+        while i in existing_values:
+            i += 1
+        pk_name = self.get_table_key_definition(table)[0]
+        record = {}
+        record[pk_name] = i
+        return record
     
-    def get_random_foreign_key(self, column):
-        pass
+    def initialize_random_record_compound_pk(self, table)
+        fk_values_possible = self.get_foreign_key_values_possible(table)
+        fk_values_existing = self.get_foreign_key_values_existing[table]
+
+        for fk in fk_values_possible:
+            if fk in fk_values_existing:
+                continue
+            # add fk to fk_values_existing
+            return fk
+    
 
     def create_random_value(self, column):
         # check sqlalchemy docs for proper way to get data_type of column and name
@@ -164,6 +190,7 @@ class Seed():
 
 
     def initialize_random_record(self, table):
+        # try simplifying cases into single col pk and multi-col pk
 
         # need to alter a bit to do the case of comment_likes table
         # pk is multiple columns
@@ -171,13 +198,11 @@ class Seed():
         # but a dictionary with each column name mapped to a fk value
         # and then set record to this dictionary
         pk_def = self.get_table_key_definition(table)
-        record = {}
-        # check for valid fk values
-        # 
-        for key in pk_def:
-            record[key] = self.create_pk(table, key)
-    
-        return record
+
+        if len(pk_def) == 1:
+            return self.initialize_random_record_simple_pk(table)
+        else:
+            return self.initialize_random_record_compound_pk(table)
     
     def is_a_primary_key(self, table, column_name):
         pk_def = self.get_table_key_definition(table)
