@@ -18,14 +18,32 @@ class Seed():
         self.database_specs = database_specs
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
+        self.pk_definitions = {}
         self.fk_references = {}
     
+
+    def get_table_key_values(self, table_instance):
+        pass
+
+    def get_table_key_definition(self, table_instance):
+        table_name = table_instance.name # likely table_instance.__tablename__
+        if table_name in self.pk_definitions.keys():
+            return self.pk_definitions[table_name]
+
+        pk = table_instance.primary_key
+        pk_defs = []
+        for column in pk.columns:
+            pk_defs.append(column.name)
+
+        self.pk_definitions[table_name] = pk_defs
+        return pk_defs
+
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
 
     def get_foreign_key_references(self, table_instance):
-        child_table_name = pass # likely table_instance.__tablename__
+        child_table_name = table_instance.name # likely table_instance.__tablename__
         if child_table_name in self.fk_references.keys():
             return self.fk_references[child_table_name]
 

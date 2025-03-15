@@ -130,3 +130,14 @@ def inspect_address_table_fk():
         for column in fk.columns:
             print(f"  Column: {column.name}")
         print(f"  References: {fk.referred_table.name}")
+
+
+def inspect_address_table_pk():
+
+    pk = address_table.primary_key
+    pk_defs = []
+    for column in pk.columns:
+        print(f"column.name: {column.name}")
+        pk_defs.append(column.name)
+
+    return pk_defs
