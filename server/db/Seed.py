@@ -19,6 +19,9 @@ class PK_Values:
     pk_list: set
 """
 
+def fks_are_same(fk_1, fk_2):
+    pass
+
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
 # glorious game Pokemon Snap
@@ -43,13 +46,18 @@ class Seed():
         # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
         self.fk_values_possible = {}
         self.fk_values_existing = {}
+        # TODO: populate fk_values_existing with empty lists for each table
     
+
+    def get_random_foreign_key(self, table_instance):
+        # TODO: get random value from self.pk_values[parent_table]
+        pass
 
     def get_table_key_values(self, table_instance):
         table_name = table_instance.name
         if table_name in self.pk_values.keys():
             return self.pk_values[table_name]
-        # i think use the Session class
+        # TODO: i think use the Session class
         # and do table_instance.select("id")
         pass
 
@@ -70,8 +78,6 @@ class Seed():
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
     
-    def get_foreign_key_values_existing(self, table_instance):
-        pass
 
     # just noticed
     # foreign_key values
@@ -82,9 +88,26 @@ class Seed():
             return self.fk_values_possible[table_name]
         
         fk_references = self.get_foreign_key_references(table_instance)
-        # go through one_info["foreign_key_values"] 
-        # make a new dictionary signifying every fk combo
         possible = []
+        # doing bfs (breadth-first-search)
+        def traverse_references(idx, fk_dict_so_far):
+            if idx >= len(fk_references):
+                return
+            ref = fk_references[idx]
+            pk = ref["column_name"]
+            pk_values = ref["foreign_key_values"]
+            
+            for val in pk_values:
+                fk_dict = dict(fk_dict_so_far)
+                fk_dict[pk] = val
+
+                if idx == len(fk_references) - 1:
+                    possible.append(fk_dict)
+                else:
+                    traverse_references(idx + 1, fk_dict)
+            
+        empty_fk = {}
+        traverse_references(0, empty_fk)
 
         self.fk_values_possible[table_name] = possible
         return possible
@@ -154,14 +177,22 @@ class Seed():
         record[pk_name] = i
         return record
     
+    
     def initialize_random_record_compound_pk(self, table)
         fk_values_possible = self.get_foreign_key_values_possible(table)
-        fk_values_existing = self.get_foreign_key_values_existing[table]
+        fk_values_existing = self.foreign_key_values_existing[table]
 
         for fk in fk_values_possible:
-            if fk in fk_values_existing:
+            already_exists = False
+            for fk_2 in fk_values_existing:
+                if fks_are_same(fk, fk_2):
+                    already_exists = True
+                    break
+            if already_exists:
                 continue
+    
             # add fk to fk_values_existing
+            fk_values_existing.append(fk)
             return fk
     
 
@@ -249,6 +280,7 @@ class Seed():
             records = []
             for i in range(num_records):
                 records.append(self.create_random_record(table))
+            # TODO: do insert statements with all the random records
 
         pass
 
