@@ -38,9 +38,14 @@ comments_table = Table(
 comment_likes_table = Table(
     "comment_likes",
     metadata_obj,
-    Column("id", Integer, primary_key=True),
-    Column("comment_id", ForeignKey("comments.id"), nullable=False),
-    Column("user_id", ForeignKey("users.id"), nullable=False),
+    #Column("id", Integer, primary_key=True),
+    # not yet certain if this is the proper way to define multi-column primary key
+    # i'll check later or something
+    # need this to ensure there is no weird duplication of records with
+    # different "id"s but the same comment_id and same user_id
+    # this wouldn't make sense
+    Column("comment_id", ForeignKey("comments.id"), nullable=False, primary_key=True),
+    Column("user_id", ForeignKey("users.id"), nullable=False, primary_key=True),
 
     Column("like_dislike_flag", Boolean),
 )
