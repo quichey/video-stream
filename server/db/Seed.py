@@ -3,6 +3,7 @@ import random
 from dataclasses import dataclass
 
 from sqlalchemy import create_engine
+from sqlalchemy import select
 from sqlalchemy import Table, Column, Boolean, Integer, String
 
 """
@@ -79,9 +80,20 @@ class Seed():
         table_name = table_instance.name
         if table_name in self.pk_values.keys():
             return self.pk_values[table_name]
-        # TODO: i think use the Session class
-        # and do table_instance.select("id")
-        pass
+
+        pk_col_name = self.pk_definitions[table_name]
+        pk_col = getattr(table_instance.c, pk_col_name)
+        stmt = select(pk_col)
+        values = []
+        with self.engine.connect() as conn:
+            records = conn.execute(stmt)
+            for row in records:
+                val = {}
+                val[pk_col_name] = row[pk_col_name]
+                values.append(val)
+        self.pk_values[table_name] = values
+        return values
+
 
     def get_table_key_definition(self, table_instance):
         table_name = table_instance.name
