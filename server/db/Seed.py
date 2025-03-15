@@ -18,15 +18,23 @@ class Seed():
         self.database_specs = database_specs
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
+
         self.pk_definitions = {}
         self.fk_references = {}
+        self.pk_values = {}
+        self.fk_values = {}
     
 
     def get_table_key_values(self, table_instance):
+        table_name = table_instance.name
+        if table_name in self.pk_values.keys():
+            return self.pk_values[table_name]
+        # i think use the Session class
+        # and do table_instance.select("id")
         pass
 
     def get_table_key_definition(self, table_instance):
-        table_name = table_instance.name # likely table_instance.__tablename__
+        table_name = table_instance.name
         if table_name in self.pk_definitions.keys():
             return self.pk_definitions[table_name]
 
@@ -41,9 +49,18 @@ class Seed():
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
+    
+    # just noticed
+    # foreign_key values
+    # are actually primary_keys for "complex" tables (multi-col pk tables)
+    def get_foreign_key_values(self, table_instance):
+        table_name = table_instance.name
+        if table_name in self.fk_values.keys():
+            return self.fk_values[table_name]
+        pass
 
     def get_foreign_key_references(self, table_instance):
-        child_table_name = table_instance.name # likely table_instance.__tablename__
+        child_table_name = table_instance.name
         if child_table_name in self.fk_references.keys():
             return self.fk_references[child_table_name]
 
@@ -51,14 +68,18 @@ class Seed():
         fk_reference_info_list = []
         for fk in fks:
             one_info = {}
+
             for column in fk.columns:
                 one_info["column_name"] = column.name
+            
+            parent_table_name = fk.referred_table.name
             one_info["table_name"] = fk.referred_table.name
 
-            # i think next in this context manager, I want to fetch
-            # all unique foreign key values and cache this info
-            # into a list/set within self.fk_references
-            # first storing it into one_info["unique_keys"]
+            parent_table = self.get_table_metadata(parent_table_name)
+            one_info["foreign_key_values"] = self.get_table_key_values(parent_table)
+
+            fk_reference_info_list.append(one_info)
+        
 
         self.fk_references[child_table_name] = fk_reference_info_list
         return fk_reference_info_list
