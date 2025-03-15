@@ -1,4 +1,4 @@
-import random
+self.import random
 
 from dataclasses import dataclass
 
@@ -6,22 +6,6 @@ from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy import Table, Column, Boolean, Integer, String
 
-"""
-@dataclass
-class PK_Def:
-    #Class for storing set of all primary keys for a table
-    table: Table
-    pk_list: set
-
-@dataclass
-class PK_Values:
-    #Class for storing set of all primary keys for a table
-    table: Table
-    pk_list: set
-"""
-
-def fks_are_same(fk_1, fk_2):
-    pass
 
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
@@ -73,8 +57,14 @@ class Seed():
             self.fk_values_existing[table_name] = []
 
     def get_random_foreign_key(self, table_instance):
-        # TODO: get random value from self.pk_values[parent_table]
-        pass
+        parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
+        parent_table = self.get_table_metadata(parent_table_name)
+
+        pk_values = self.get_table_key_values(parent_table)
+        num_vals = len(pk_values)
+        random_idx = random.randint(0, num_vals - 1)
+        return pk_values[random_idx]
+        
 
     def get_table_key_values(self, table_instance):
         table_name = table_instance.name
@@ -219,7 +209,7 @@ class Seed():
         for fk in fk_values_possible:
             already_exists = False
             for fk_2 in fk_values_existing:
-                if fks_are_same(fk, fk_2):
+                if fk == fk_2:
                     already_exists = True
                     break
             if already_exists:
@@ -243,6 +233,7 @@ class Seed():
             return self.get_random_foreign_key(column)
 
         # do case switch on data_type
+        # TODO: do a case for datetime
         match type(data_type):
             case Boolean:
                 flag = random.randint(0, 1)
