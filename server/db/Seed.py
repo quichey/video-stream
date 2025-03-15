@@ -39,15 +39,31 @@ class Seed():
 
         # name is table_name, value is name of primary key column (or or list of col names if multi-col pk)
         self.pk_definitions = {}
+        # initialize the pk_definitions since we already have schema
+        self.init_pk_definitions()
+
+        # init these caches, but I want to get data for these at the time of test-data creation
         # name is table_name, value is list of fk columns (name of column and parent table)
         self.fk_references = {}
         # name is table_name, value is set of primary-key values
+        # TODO: think of at what instances i need to clear these caches
+        # in terms of the use-cases of this Seed Class
         self.pk_values = {}
         # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
         self.fk_values_possible = {}
         self.fk_values_existing = {}
-        # TODO: populate fk_values_existing with empty lists for each table
+        # populate fk_values_existing with empty lists for each table
+        self.init_fk_values_existing()
     
+    def init_pk_definitions(self):
+        all_tables = self.metadata_obj.tables.values()
+        for table_instance in all_tables:
+            self.get_table_key_definition(table_instance)
+        
+    def init_fk_values_existing(self):
+        all_tables = self.metadata_obj.tables.keys()
+        for table_name in all_tables:
+            self.fk_values_existing[table_name] = []
 
     def get_random_foreign_key(self, table_instance):
         # TODO: get random value from self.pk_values[parent_table]
