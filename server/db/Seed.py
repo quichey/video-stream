@@ -1,8 +1,23 @@
 import random
 
+from dataclasses import dataclass
+
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Boolean, Integer, String
 
+"""
+@dataclass
+class PK_Def:
+    #Class for storing set of all primary keys for a table
+    table: Table
+    pk_list: set
+
+@dataclass
+class PK_Values:
+    #Class for storing set of all primary keys for a table
+    table: Table
+    pk_list: set
+"""
 
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
@@ -19,9 +34,13 @@ class Seed():
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
 
+        # name is table_name, value is name of primary key column (or or list of col names if multi-col pk)
         self.pk_definitions = {}
+        # name is table_name, value is list of fk columns (name of column and parent table)
         self.fk_references = {}
+        # name is table_name, value is set of primary-key values
         self.pk_values = {}
+        # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
         self.fk_values = {}
     
 
@@ -111,16 +130,26 @@ class Seed():
         return engine
     
 
+    def create_pk(self, table, column_name):
+        # check through list of already existing pk's
+        # make a new one
+        # 
+        pass
+    
+    def get_random_foreign_key(self, column):
+        pass
+
     def create_random_value(self, column):
         # check sqlalchemy docs for proper way to get data_type of column and name
         data_type = pass
         column_name = pass
         table_name = pass
+
         is_foreign_key = pass
         if is_foreign_key:
             # scan parent table
             # use metadata obj to query other table
-            pass
+            return self.get_random_foreign_key(column)
 
         # do case switch on data_type
         match type(data_type):
@@ -134,16 +163,40 @@ class Seed():
                 return f"{table_name}_{column_name}_{rand_int}"
 
 
+    def initialize_random_record(self, table):
+
+        # need to alter a bit to do the case of comment_likes table
+        # pk is multiple columns
+        # so create_pk should return not just a single value
+        # but a dictionary with each column name mapped to a fk value
+        # and then set record to this dictionary
+        pk_def = self.get_table_key_definition(table)
+        record = {}
+        # check for valid fk values
+        # 
+        for key in pk_def:
+            record[key] = self.create_pk(table, key)
+    
+        return record
+    
+    def is_a_primary_key(self, table, column_name):
+        pk_def = self.get_table_key_definition(table)
+        if type(pk_def) == list:
+            return column_name in pk_def
+        else:
+            return column_name == pk_def
+
     def create_random_record(self, table):
         # get table specs for table object
         # get column names and column types
         # use create_random_value
         # sqlalchemy may have function available to do this
-        record = {}
-
-        unique_id = pass
+        record = self.initialize_random_record(table)
+        
         keys = table.c.keys()
         for key in keys:
+            if self.is_a_primary_key(table, key):
+                continue
             column = getattr(table.c, key)
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
@@ -166,6 +219,12 @@ class Seed():
         for table_info in list_of_table_rand:
             # populate table with random data
             num_records = table_info["num_records"]
+            table_name = table_info["name"]
+            table = self.get_table_metadata(table_name)
+            records = []
+            for i in range(num_records):
+                records.append(self.create_random_record(table))
+
         pass
 
 # ideas for testing state
