@@ -1,10 +1,12 @@
 import random
+import time
 
-from dataclasses import dataclass
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from sqlalchemy import create_engine
 from sqlalchemy import select
-from sqlalchemy import Table, Column, Boolean, Integer, String
+from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
 
 
 # may expand this file to be named snapshot_db
@@ -221,20 +223,25 @@ class Seed():
     
 
     def create_random_value(self, column):
-        # check sqlalchemy docs for proper way to get data_type of column and name
-        # TODO: fill in getting these values
-        data_type = pass
-        column_name = pass
-        table_name = pass
+        data_type = column.type
+        column_name = column.name
+        table_name = column.table.name
 
         is_foreign_key = pass
         if is_foreign_key:
             # scan parent table
             # use metadata obj to query other table
             return self.get_random_foreign_key(column)
+        
+        def random_date(start_date, end_date):
+            start_timestamp = time.mktime(start_date.timetuple())
+            end_timestamp = time.mktime(end_date.timetuple())
+            random_timestamp = random.uniform(start_timestamp, end_timestamp)
+            return datetime.fromtimestamp(random_timestamp)
+        hardcoded_end_date = datetime.now()
+        hardcoded_start_date = hardcoded_end_date - relativedelta(years=10)
 
         # do case switch on data_type
-        # TODO: do a case for datetime
         match type(data_type):
             case Boolean:
                 flag = random.randint(0, 1)
@@ -244,6 +251,9 @@ class Seed():
             case String:
                 rand_int = random.randint(0, 10000)
                 return f"{table_name}_{column_name}_{rand_int}"
+            case DateTime:
+                return random_date(hardcoded_start_date, hardcoded_end_date)
+
 
 
     def initialize_random_record(self, table):
