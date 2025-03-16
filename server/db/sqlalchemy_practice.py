@@ -1,8 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy import text
 
-from db.DB_CONNECTOR import DB_CONNECTOR
-from db.DB_SCHEMA import database_specs
 
 
 # create engine

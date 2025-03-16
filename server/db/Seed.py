@@ -204,7 +204,7 @@ class Seed():
         return record
     
     
-    def initialize_random_record_compound_pk(self, table)
+    def initialize_random_record_compound_pk(self, table):
         fk_values_possible = self.get_foreign_key_values_possible(table)
         fk_values_existing = self.foreign_key_values_existing[table]
 
