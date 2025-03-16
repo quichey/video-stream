@@ -306,7 +306,7 @@ class Seed():
         list_of_table_files = testing_state["table_files"]
         for file in list_of_table_files:
             table_data = self.parse_test_data_file(file)
-        list_of_table_rand = testing_state["table_random_populate"]
+        list_of_table_rand = testing_state["tables_random_populate"]
         
         with self.engine.connect() as conn:
             for table_info in list_of_table_rand:
