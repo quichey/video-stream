@@ -1,12 +1,12 @@
 import random
 import time
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from sqlalchemy import create_engine
 from sqlalchemy import insert, select
-from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
+from sqlalchemy import Boolean, Integer, String, DateTime
 
 
 # may expand this file to be named snapshot_db
@@ -148,6 +148,7 @@ class Seed():
         for fk in fks:
             one_info = {}
 
+            one_info["fk_column_name"] = fk.name
             for column in fk.columns:
                 one_info["column_name"] = column.name
             
@@ -195,7 +196,6 @@ class Seed():
         # make a new one
         existing_values = self.get_table_key_values(table)
         i = 0
-        found_new_value = False
         while i in existing_values:
             i += 1
         pk_name = self.get_table_key_definition(table)[0]
@@ -227,7 +227,13 @@ class Seed():
         column_name = column.name
         table_name = column.table.name
 
-        is_foreign_key = pass
+        all_fk_info_list = self.fk_references[table_name]
+        is_foreign_key = False
+        for fk_info in all_fk_info_list:
+            if fk_info["fk_column_name"] == column_name:
+                is_foreign_key = True
+                break
+
         if is_foreign_key:
             # scan parent table
             # use metadata obj to query other table
@@ -241,18 +247,20 @@ class Seed():
         hardcoded_end_date = datetime.now()
         hardcoded_start_date = hardcoded_end_date - relativedelta(years=10)
 
-        # do case switch on data_type
-        match type(data_type):
-            case Boolean:
-                flag = random.randint(0, 1)
-                return True if flag == 1 else False
-            case Integer:
-                return random.randint(0, 10000)
-            case String:
-                rand_int = random.randint(0, 10000)
-                return f"{table_name}_{column_name}_{rand_int}"
-            case DateTime:
-                return random_date(hardcoded_start_date, hardcoded_end_date)
+
+        if isinstance(data_type) == Boolean:
+            flag = random.randint(0, 1)
+            return True if flag == 1 else False
+        
+        elif isinstance(data_type) == Integer:
+            return random.randint(0, 10000)
+        
+        elif isinstance(data_type) == String:
+            rand_int = random.randint(0, 10000)
+            return f"{table_name}_{column_name}_{rand_int}"
+        
+        elif isinstance(data_type) == DateTime:
+            return random_date(hardcoded_start_date, hardcoded_end_date)
 
 
 
@@ -273,7 +281,7 @@ class Seed():
     
     def is_a_primary_key(self, table, column_name):
         pk_def = self.get_table_key_definition(table)
-        if type(pk_def) == list:
+        if type(pk_def) is list:
             return column_name in pk_def
         else:
             return column_name == pk_def
@@ -306,6 +314,7 @@ class Seed():
         list_of_table_files = testing_state["table_files"]
         for file in list_of_table_files:
             table_data = self.parse_test_data_file(file)
+            print(f"table_data: {table_data}")
         list_of_table_rand = testing_state["tables_random_populate"]
         
         with self.engine.connect() as conn:
