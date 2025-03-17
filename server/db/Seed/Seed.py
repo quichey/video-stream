@@ -223,7 +223,7 @@ class Seed():
         # check through list of already existing pk's
         # make a new one
         existing_values = self.get_table_key_values(table)
-        print(f"existing_values: {existing_values}")
+        #print(f"existing_values: {existing_values}")
         i = 0
         possible_pk_val = 1
         while i < len(existing_values):
@@ -353,6 +353,8 @@ class Seed():
 
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
+        self.create_database_definition()
+
         print(f"testing_state: {testing_state}")
         list_of_table_files = testing_state.get("table_files", {})
         for file in list_of_table_files:

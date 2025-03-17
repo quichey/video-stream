@@ -28,7 +28,8 @@ comments_table = Table(
     metadata_obj,
     Column("id", Integer, primary_key=True),
     Column("user_id", ForeignKey("users.id"), nullable=False),
-    Column("thread_comment_id", ForeignKey("comments.id"), nullable=True),
+    #Column("thread_comment_id", ForeignKey("comments.id"), nullable=True),
+    Column("thread_comment_id", Integer),
 
     Column("comment", String(100)),
     Column("date", DateTime),
