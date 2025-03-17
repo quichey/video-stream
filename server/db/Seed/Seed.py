@@ -210,19 +210,38 @@ class Seed():
         self.engine = engine
         return engine
     
-
+    """
+    create a record to be inserted into the DB
+    mutate self.pk_values (which is the Seed's internal cache for starting up the DB with data)
+    The structure of pk_values is a list of records (DB records in the form of a python dictionary)
+    self.pk_values["users"] = [
+        {"id": 0},
+        {"id": 1},
+    ]
+    """
     def initialize_random_record_simple_pk(self, table):
         # check through list of already existing pk's
         # make a new one
         existing_values = self.get_table_key_values(table)
+        print(f"existing_values: {existing_values}")
         i = 0
-        while i in existing_values:
+        possible_pk_val = 1
+        while i < len(existing_values):
+            pk_rec = existing_values[i]
+            random_bullshit =  pk_rec.values()
+            if possible_pk_val not in random_bullshit:
+                break
             i += 1
+            possible_pk_val += 1
+        """
+        while random_var, i in existing_values:
+            i += 1
+        """
         pk_name = self.get_table_key_definition(table)[0]
         record = {}
-        record[pk_name] = i
-        print(f"\n i: {i} \n")
-        self.pk_values[table.name].append(record)
+        record[pk_name] = possible_pk_val
+        print(f"\n possible_pk_val: {possible_pk_val} \n")
+        self.pk_values[table.name].append(dict(record))
         return record
     
     
