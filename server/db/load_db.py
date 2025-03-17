@@ -14,7 +14,7 @@ testing_state = {
     "tables_random_populate": [
         {
             "name": "users",
-            "num_records": 10
+            "num_records": 2, #10
         },
         {
             "name": "comments",
