@@ -47,6 +47,8 @@ class Seed():
         self.init_pk_definitions()
         # populate fk_values_existing with empty lists for each table
         self.init_fk_values_existing()
+        self.init_fk_references()
+
     
     def init_pk_definitions(self):
         all_tables = self.metadata_obj.tables.values()
@@ -57,6 +59,11 @@ class Seed():
         all_tables = self.metadata_obj.tables.keys()
         for table_name in all_tables:
             self.fk_values_existing[table_name] = []
+        
+    def init_fk_references(self):
+        all_tables = self.metadata_obj.tables.keys()
+        for table_name in all_tables:
+            self.fk_references[table_name] = []
 
     def get_random_foreign_key(self, table_instance):
         parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
@@ -74,15 +81,17 @@ class Seed():
             return self.pk_values[table_name]
 
         pk_col_name = self.pk_definitions[table_name]
+        pk_col_name = pk_col_name[0]
         print(f"pk_col_name: {pk_col_name}")
-        pk_col = getattr(table_instance.c, pk_col_name[0])
+        pk_col = getattr(table_instance.c, pk_col_name)
         stmt = select(pk_col)
         values = []
         with self.engine.connect() as conn:
             records = conn.execute(stmt)
             for row in records:
                 val = {}
-                val[pk_col_name] = row[pk_col_name]
+                #val[pk_col_name] = row[pk_col_name]
+                val[pk_col_name] = row[0]
                 values.append(val)
         self.pk_values[table_name] = values
         return values
@@ -100,7 +109,7 @@ class Seed():
         pk_defs = []
         for column in pk.columns:
             pk_defs.append(column.name)
-            
+
         pk = table_instance.primary_key
         columns_pk = pk.columns
         #print(f"\n  vars(pk): {vars(pk)} \n")
@@ -212,6 +221,8 @@ class Seed():
         pk_name = self.get_table_key_definition(table)[0]
         record = {}
         record[pk_name] = i
+        print(f"\n i: {i} \n")
+        self.pk_values[table.name].append(record)
         return record
     
     
@@ -260,18 +271,18 @@ class Seed():
         hardcoded_start_date = hardcoded_end_date - relativedelta(years=10)
 
 
-        if isinstance(data_type) == Boolean:
+        if isinstance(data_type, Boolean):
             flag = random.randint(0, 1)
             return True if flag == 1 else False
         
-        elif isinstance(data_type) == Integer:
+        elif isinstance(data_type, Boolean):
             return random.randint(0, 10000)
         
-        elif isinstance(data_type) == String:
+        elif isinstance(data_type, Boolean):
             rand_int = random.randint(0, 10000)
             return f"{table_name}_{column_name}_{rand_int}"
         
-        elif isinstance(data_type) == DateTime:
+        elif isinstance(data_type, Boolean):
             return random_date(hardcoded_start_date, hardcoded_end_date)
 
 
@@ -323,6 +334,7 @@ class Seed():
 
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
+        print(f"testing_state: {testing_state}")
         list_of_table_files = testing_state.get("table_files", {})
         for file in list_of_table_files:
             table_data = self.parse_test_data_file(file)
@@ -330,6 +342,7 @@ class Seed():
         list_of_table_rand = testing_state["tables_random_populate"]
         
         with self.engine.connect() as conn:
+            print(f"list_of_table_rand: {list_of_table_rand}")
             for table_info in list_of_table_rand:
                 # populate table with random data
                 num_records = table_info["num_records"]
@@ -338,7 +351,7 @@ class Seed():
                 records = []
                 for i in range(num_records):
                     records.append(self.create_random_record(table))
-
+                print(f"records: {records}")
                 stmt = insert(table).values(records)
                 conn.execute(stmt)
                 conn.commit()
