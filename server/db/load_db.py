@@ -1,0 +1,32 @@
+import db.DB_SCHEMA as Schema
+import db.Seed.Seed as Seed
+
+# This is the unifying script that will use DB_SCHEMA.py in conjunction with Seed.py
+# To initiate the state of this specific video-stream web-app
+
+# Think about how I intend to use this script
+# -- the different programs/options to run this script
+# -- and then plan out the functions/fields/etc
+
+seed = Seed.Seed(Schema.database_specs, Schema.metadata_obj)
+
+testing_state = {
+    "tables_random_populate": [
+        {
+            "name": "users",
+            "num_records": 2, #10
+        },
+        {
+            "name": "comments",
+            "num_records": 5,
+            #"num_records": 10000
+        },
+        {
+            "name": "comment_likes",
+            "num_records": 10
+        },
+    ]
+}
+
+def run():
+    seed.initiate_test_environment(testing_state)
