@@ -18,7 +18,7 @@ testing_state = {
         },
         {
             "name": "comments",
-            "num_records": 5,
+            "num_records": 10000,
             #"num_records": 10000
         },
         {

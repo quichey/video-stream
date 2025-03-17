@@ -361,6 +361,8 @@ class Seed():
             table_data = self.parse_test_data_file(file)
             print(f"table_data: {table_data}")
         list_of_table_rand = testing_state["tables_random_populate"]
+
+
         
         with self.engine.connect() as conn:
             print(f"list_of_table_rand: {list_of_table_rand}")
@@ -370,11 +372,27 @@ class Seed():
                 table_name = table_info["name"]
                 table = self.get_table_metadata(table_name)
                 records = []
+                packet_size = 100
+                def create_packet(curr_idx):
+                    nonlocal records
+                    while len(records) < packet_size:
+                        records.append(self.create_random_record(table))
+                        curr_idx += 1
+                    stmt = insert(table).values(records)
+                    conn.execute(stmt)
+                    records = []
+                    return curr_idx
+                i = 0
+                while i < num_records:
+                    i = create_packet(i)
+
+                """
                 for i in range(num_records):
                     records.append(self.create_random_record(table))
                 print(f"records: {records}")
                 stmt = insert(table).values(records)
                 conn.execute(stmt)
+                """
                 conn.commit()
         
     
