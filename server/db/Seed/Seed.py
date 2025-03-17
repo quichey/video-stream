@@ -60,9 +60,9 @@ class Seed():
 
     def get_random_foreign_key(self, table_instance):
         parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
-        parent_table = self.get_table_metadata(parent_table_name)
+        #parent_table = self.get_table_metadata(parent_table_name)
 
-        pk_values = self.get_table_key_values(parent_table)
+        pk_values = self.get_table_key_values(parent_table_name)
         num_vals = len(pk_values)
         random_idx = random.randint(0, num_vals - 1)
         return pk_values[random_idx]
@@ -74,7 +74,8 @@ class Seed():
             return self.pk_values[table_name]
 
         pk_col_name = self.pk_definitions[table_name]
-        pk_col = getattr(table_instance.c, pk_col_name)
+        print(f"pk_col_name: {pk_col_name}")
+        pk_col = getattr(table_instance.c, pk_col_name[0])
         stmt = select(pk_col)
         values = []
         with self.engine.connect() as conn:
@@ -92,10 +93,20 @@ class Seed():
         if table_name in self.pk_definitions.keys():
             return self.pk_definitions[table_name]
 
+        # remember to look at the structure of primary_key
+        # and compare between the case of simple pk and
+        # compound pk
         pk = table_instance.primary_key
         pk_defs = []
         for column in pk.columns:
             pk_defs.append(column.name)
+            
+        pk = table_instance.primary_key
+        columns_pk = pk.columns
+        #print(f"\n  vars(pk): {vars(pk)} \n")
+        print(f"\n  columns_pk: {columns_pk} \n")
+        #print(f"\n table_instance.primary_key:{table_instance.primary_key} \n")
+        print(f"\n pk_defs:{pk_defs} \n")
 
         self.pk_definitions[table_name] = pk_defs
         return pk_defs
@@ -205,8 +216,9 @@ class Seed():
     
     
     def initialize_random_record_compound_pk(self, table):
-        fk_values_possible = self.get_foreign_key_values_possible(table)
-        fk_values_existing = self.foreign_key_values_existing[table]
+        table_name = table.name
+        fk_values_possible = self.get_foreign_key_values_possible(table_name)
+        fk_values_existing = self.foreign_key_values_existing[table_name]
 
         for fk in fk_values_possible:
             already_exists = False
