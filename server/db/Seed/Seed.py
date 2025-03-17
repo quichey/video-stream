@@ -311,7 +311,7 @@ class Seed():
 
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
-        list_of_table_files = testing_state["table_files"]
+        list_of_table_files = testing_state.get("table_files", {})
         for file in list_of_table_files:
             table_data = self.parse_test_data_file(file)
             print(f"table_data: {table_data}")
