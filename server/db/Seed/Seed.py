@@ -160,7 +160,8 @@ class Seed():
 
     def get_foreign_key_references(self, table_instance):
         child_table_name = table_instance.name
-        if child_table_name in self.fk_references.keys():
+        #if child_table_name in self.fk_references.keys():
+        if len(self.fk_references[child_table_name]) > 0:
             return self.fk_references[child_table_name]
 
         fks = table_instance.foreign_key_constraints
@@ -271,6 +272,7 @@ class Seed():
 
         all_fk_info_list = self.fk_references[table_name]
         is_foreign_key = False
+        print(f"\n\n all_fk_info_list: {all_fk_info_list} \n\n")
         for fk_info in all_fk_info_list:
             if fk_info["fk_column_name"] == column_name:
                 is_foreign_key = True
@@ -279,7 +281,10 @@ class Seed():
         if is_foreign_key:
             # scan parent table
             # use metadata obj to query other table
-            return self.get_random_foreign_key(column)
+            #return self.get_random_foreign_key(column)
+            fk_curr = self.get_random_foreign_key(column)
+            print(f"\n\n fk_curr: {fk_curr} \n\n")
+            return self.get_random_foreign_key(column)[0]
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
@@ -372,7 +377,8 @@ class Seed():
                 table_name = table_info["name"]
                 table = self.get_table_metadata(table_name)
                 records = []
-                packet_size = 100
+                #packet_size = 100
+                packet_size = 2
                 def create_packet(curr_idx):
                     nonlocal records
                     while len(records) < packet_size:
