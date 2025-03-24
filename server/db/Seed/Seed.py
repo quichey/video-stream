@@ -74,6 +74,8 @@ class Seed():
         def __init__(self, seed):
 
             self.seed = seed
+            self.engine = seed.engine
+            self.metadata_obj = seed.metadata_obj
 
             # initialize the pk_definitions since we already have schema
             self.init_pk_definitions()
@@ -84,7 +86,7 @@ class Seed():
         def init_pk_definitions(self):
             all_tables = self.metadata_obj.tables.values()
             for table_instance in all_tables:
-                self.seed.get_table_key_definition(table_instance)
+                self.get_table_key_definition(table_instance)
             
         def init_fk_values_existing(self):
             all_tables = self.metadata_obj.tables.keys()
@@ -383,7 +385,51 @@ class Seed():
         
         
 
+    
+        def init_db(self, list_of_table_rand):
+            with self.engine.connect() as conn:
+                print(f"list_of_table_rand: {list_of_table_rand}")
 
+                # users table keeps on inserting new records
+                # i do not want this to happen
+                # i want it to only insert records if the table is empty
+
+                for table_info in list_of_table_rand:
+                    # populate table with random data
+                    num_records = table_info["num_records"]
+                    table_name = table_info["name"]
+                    table = self.seed.get_table_metadata(table_name)
+
+                    curr_size = self.get_size_of_table_data(table)
+                    if curr_size > 0:
+                        continue
+
+                    records = []
+                    #packet_size = 100
+                    packet_size = 2
+                    def create_packet(curr_idx):
+                        nonlocal records
+                        while len(records) < packet_size:
+                            records.append(self.create_random_record(table))
+                            curr_idx += 1
+                        stmt = insert(table).values(records)
+                        conn.execute(stmt)
+                        records = []
+                        return curr_idx
+                    i = 0
+                    while i < num_records:
+                        i = create_packet(i)
+
+                    """
+                    for i in range(num_records):
+                        records.append(self.create_random_record(table))
+                    print(f"records: {records}")
+                    stmt = insert(table).values(records)
+                    conn.execute(stmt)
+                    """
+                    conn.commit()
+            
+    
 
 
 
@@ -442,50 +488,8 @@ class Seed():
         list_of_table_rand = testing_state["tables_random_populate"]
 
 
-        
-        with self.engine.connect() as conn:
-            print(f"list_of_table_rand: {list_of_table_rand}")
-
-            # users table keeps on inserting new records
-            # i do not want this to happen
-            # i want it to only insert records if the table is empty
-
-            for table_info in list_of_table_rand:
-                # populate table with random data
-                num_records = table_info["num_records"]
-                table_name = table_info["name"]
-                table = self.get_table_metadata(table_name)
-
-                curr_size = self.get_size_of_table_data(table)
-                if curr_size > 0:
-                    continue
-
-                records = []
-                #packet_size = 100
-                packet_size = 2
-                def create_packet(curr_idx):
-                    nonlocal records
-                    while len(records) < packet_size:
-                        records.append(self.create_random_record(table))
-                        curr_idx += 1
-                    stmt = insert(table).values(records)
-                    conn.execute(stmt)
-                    records = []
-                    return curr_idx
-                i = 0
-                while i < num_records:
-                    i = create_packet(i)
-
-                """
-                for i in range(num_records):
-                    records.append(self.create_random_record(table))
-                print(f"records: {records}")
-                stmt = insert(table).values(records)
-                conn.execute(stmt)
-                """
-                conn.commit()
-        
-    
+        self.cache.init_db(list_of_table_rand)
+ 
 
 # ideas for testing state
 # fill up users table with random data since it does not have foreign keys
