@@ -23,19 +23,48 @@ class Seed():
     metadata_obj = None
     engine = None
 
-    pk_definitions = {}
-    # initialize the pk_definitions since we already have schema
-    # init these caches, but I want to get data for these at the time of test-data creation
-    # name is table_name, value is list of fk columns (name of column and parent table)
-    fk_references = {}
-    # name is table_name, value is set of primary-key values
-    # TODO: think of at what instances i need to clear these caches
-    # in terms of the use-cases of this Seed Class
-    pk_values = {}
-    # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
-    fk_values_possible = {}
-    fk_values_existing = {}
-    # populate fk_values_existing with empty lists for each table
+
+    class Cache():
+        pk_definitions = {}
+        # initialize the pk_definitions since we already have schema
+        # init these caches, but I want to get data for these at the time of test-data creation
+        # name is table_name, value is list of fk columns (name of column and parent table)
+        fk_references = {}
+        # name is table_name, value is set of primary-key values
+        # TODO: think of at what instances i need to clear these caches
+        # in terms of the use-cases of this Seed Class
+        pk_values = {}
+        # name is table_name, value is set of foreign-key values (also primary key if multi-col pk)
+        fk_values_possible = {}
+        fk_values_existing = {}
+        # populate fk_values_existing with empty lists for each table
+        def __init__(self, seed):
+
+            self.seed = seed
+
+            # initialize the pk_definitions since we already have schema
+            self.init_pk_definitions()
+            # populate fk_values_existing with empty lists for each table
+            self.init_fk_values_existing()
+            self.init_fk_references()   
+
+
+        def init_pk_definitions(self):
+            all_tables = self.metadata_obj.tables.values()
+            for table_instance in all_tables:
+                self.seed.get_table_key_definition(table_instance)
+            
+        def init_fk_values_existing(self):
+            all_tables = self.metadata_obj.tables.keys()
+            for table_name in all_tables:
+                self.fk_values_existing[table_name] = []
+            
+        def init_fk_references(self):
+            all_tables = self.metadata_obj.tables.keys()
+            for table_name in all_tables:
+                self.fk_references[table_name] = []
+
+
 
 
     def __init__(self, database_specs=database_specs, metadata_obj=metadata_obj):
@@ -43,30 +72,9 @@ class Seed():
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
 
-        # initialize the pk_definitions since we already have schema
-        self.init_pk_definitions()
-        # populate fk_values_existing with empty lists for each table
-        self.init_fk_values_existing()
-        self.init_fk_references()
-
-    
-    def init_pk_definitions(self):
-        all_tables = self.metadata_obj.tables.values()
-        for table_instance in all_tables:
-            self.get_table_key_definition(table_instance)
-        
-    def init_fk_values_existing(self):
-        all_tables = self.metadata_obj.tables.keys()
-        for table_name in all_tables:
-            self.fk_values_existing[table_name] = []
-        
-    def init_fk_references(self):
-        all_tables = self.metadata_obj.tables.keys()
-        for table_name in all_tables:
-            self.fk_references[table_name] = []
-
+ 
     def get_random_foreign_key(self, table_instance):
-        parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
+        parent_table_name = self.cache.fk_references[table_instance.name][0]["table_name"]
         #parent_table = self.get_table_metadata(parent_table_name)
 
         pk_values = self.get_table_key_values(parent_table_name)
@@ -78,10 +86,10 @@ class Seed():
     def get_table_key_values(self, table_instance):
         table_name = table_instance.name
         print(f"get_table_key_values table_instance: {table_instance}")
-        if table_name in self.pk_values.keys() and len(self.pk_values[table_name]) > 0:
-            return self.pk_values[table_name]
+        if table_name in self.cache.pk_values.keys() and len(self.pk_values[table_name]) > 0:
+            return self.cache.pk_values[table_name]
 
-        pk_col_name = self.pk_definitions[table_name]
+        pk_col_name = self.cache.pk_definitions[table_name]
         pk_col_name = pk_col_name[0]
         print(f"pk_col_name: {pk_col_name}")
         pk_col = getattr(table_instance.c, pk_col_name)
@@ -95,14 +103,14 @@ class Seed():
                 #val[pk_col_name] = row[pk_col_name]
                 val[pk_col_name] = row[0]
                 values.append(val)
-        self.pk_values[table_name] = values
+        self.cache.pk_values[table_name] = values
         return values
 
 
     def get_table_key_definition(self, table_instance):
         table_name = table_instance.name
-        if table_name in self.pk_definitions.keys():
-            return self.pk_definitions[table_name]
+        if table_name in self.cache.pk_definitions.keys():
+            return self.cache.pk_definitions[table_name]
 
         # remember to look at the structure of primary_key
         # and compare between the case of simple pk and
@@ -132,8 +140,8 @@ class Seed():
     # are actually primary_keys for "complex" tables (multi-col pk tables)
     def get_foreign_key_values_possible(self, table_instance):
         table_name = table_instance.name
-        if table_name in self.fk_values_possible.keys():
-            return self.fk_values_possible[table_name]
+        if table_name in self.cache.fk_values_possible.keys():
+            return self.cache.fk_values_possible[table_name]
         
         print(f"\n\n get_foreign_key_values_possible {table_name} \n\n")
         
@@ -159,14 +167,14 @@ class Seed():
         empty_fk = {}
         traverse_references(0, empty_fk)
 
-        self.fk_values_possible[table_name] = possible
+        self.cache.fk_values_possible[table_name] = possible
         return possible
 
     def get_foreign_key_references(self, table_instance):
         child_table_name = table_instance.name
         #if child_table_name in self.fk_references.keys():
-        if len(self.fk_references[child_table_name]) > 0:
-            return self.fk_references[child_table_name]
+        if len(self.cache.fk_references[child_table_name]) > 0:
+            return self.cache.fk_references[child_table_name]
 
         fks = table_instance.foreign_key_constraints
         fk_reference_info_list = []
@@ -190,7 +198,7 @@ class Seed():
             fk_reference_info_list.append(one_info)
         
 
-        self.fk_references[child_table_name] = fk_reference_info_list
+        self.cache.fk_references[child_table_name] = fk_reference_info_list
         return fk_reference_info_list
     
 
@@ -250,14 +258,14 @@ class Seed():
         record = {}
         record[pk_name] = possible_pk_val
         print(f"\n possible_pk_val: {possible_pk_val} \n")
-        self.pk_values[table.name].append(dict(record))
+        self.cache.pk_values[table.name].append(dict(record))
         return record
     
     
     def initialize_random_record_compound_pk(self, table):
         table_name = table.name
         fk_values_possible = self.get_foreign_key_values_possible(table_name)
-        fk_values_existing = self.foreign_key_values_existing[table_name]
+        fk_values_existing = self.cache.foreign_key_values_existing[table_name]
 
         for fk in fk_values_possible:
             already_exists = False
@@ -279,8 +287,9 @@ class Seed():
         column_name = column.name
         table_name = column.table.name
 
-        all_fk_info_list = self.fk_references[table_name]
+        all_fk_info_list = self.cache.fk_references[table_name]
         is_foreign_key = False
+
         print(f"\n\n all_fk_info_list: {all_fk_info_list} \n\n")
         for fk_info in all_fk_info_list:
             if fk_info["fk_column_name"] == column_name:
@@ -367,6 +376,10 @@ class Seed():
     datatype? let's just do an int for now
     """
     def get_size_of_table_data(self, table):
+
+        pk_values = self.get_table_key_values(table)
+        return len(pk_values)
+    """
         table_name = table.name
         stmt = text(f"select count(*) from {table_name}")
         size = None
@@ -381,6 +394,7 @@ class Seed():
         if size is None:
             raise Exception("could not get table size")
         return size
+    """
 
     # Creates the database if not exists as well as the empty tables
     def create_database_definition(self):
@@ -390,6 +404,7 @@ class Seed():
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
         self.create_database_definition()
+        self.cache = Cache(self)
 
         print(f"testing_state: {testing_state}")
         list_of_table_files = testing_state.get("table_files", {})
