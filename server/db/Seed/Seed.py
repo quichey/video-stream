@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from sqlalchemy import create_engine
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, text
 from sqlalchemy import Boolean, Integer, String, DateTime
 
 
@@ -357,8 +357,19 @@ class Seed():
     datatype? let's just do an int for now
     """
     def get_size_of_table_data(self, table):
-        #TODO: not hardcode this
-        size = 2
+        table_name = table.name
+        stmt = text(f"select count(*) from {table_name}")
+        size = None
+        with self.engine.connect() as conn:
+            print(f"\n\n get count(*) from table: {table_name}")
+            records = conn.execute(stmt)
+            print(f"\n\n records: {records} \n\n")
+            for row in records:
+                print(f"\n\n row: {row} \n\n")
+                size = row[0]
+
+        if size is None:
+            raise Exception("could not get table size")
         return size
 
     # Creates the database if not exists as well as the empty tables
