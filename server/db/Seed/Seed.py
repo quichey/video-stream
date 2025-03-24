@@ -77,7 +77,8 @@ class Seed():
 
     def get_table_key_values(self, table_instance):
         table_name = table_instance.name
-        if table_name in self.pk_values.keys():
+        print(f"get_table_key_values table_instance: {table_instance}")
+        if table_name in self.pk_values.keys() and len(self.pk_values[table_name]) > 0:
             return self.pk_values[table_name]
 
         pk_col_name = self.pk_definitions[table_name]
@@ -87,6 +88,7 @@ class Seed():
         stmt = select(pk_col)
         values = []
         with self.engine.connect() as conn:
+            print(f"\n\n get_table_key_values with self.engine.connect() as conn: {table_instance}")
             records = conn.execute(stmt)
             for row in records:
                 val = {}
@@ -350,6 +352,14 @@ class Seed():
         # maybe not if the insert function only requires a list of dicts
         return record
 
+    """
+    Return the number of records in the table
+    datatype? let's just do an int for now
+    """
+    def get_size_of_table_data(self, table):
+        #TODO: not hardcode this
+        size = 2
+        return size
 
     # Creates the database if not exists as well as the empty tables
     def create_database_definition(self):
@@ -371,11 +381,21 @@ class Seed():
         
         with self.engine.connect() as conn:
             print(f"list_of_table_rand: {list_of_table_rand}")
+
+            # users table keeps on inserting new records
+            # i do not want this to happen
+            # i want it to only insert records if the table is empty
+
             for table_info in list_of_table_rand:
                 # populate table with random data
                 num_records = table_info["num_records"]
                 table_name = table_info["name"]
                 table = self.get_table_metadata(table_name)
+
+                curr_size = self.get_size_of_table_data(table)
+                if curr_size > 0:
+                    continue
+
                 records = []
                 #packet_size = 100
                 packet_size = 2
