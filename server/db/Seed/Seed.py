@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from sqlalchemy import create_engine
-from sqlalchemy import insert, select, text
+from sqlalchemy import insert, select
 from sqlalchemy import Boolean, Integer, String, DateTime
 
 
@@ -214,7 +214,8 @@ class Seed():
             
 
             self.fk_references[child_table_name] = fk_reference_info_list
-            return fk_reference_info_list    """
+            return fk_reference_info_list    
+        """
         create a record to be inserted into the DB
         mutate self.pk_values (which is the Seed's internal cache for starting up the DB with data)
         The structure of pk_values is a list of records (DB records in the form of a python dictionary)
@@ -431,7 +432,7 @@ class Seed():
     # fill in tables with given test data
     def initiate_test_environment(self, testing_state):
         self.create_database_definition()
-        self.cache = Cache(self)
+        self.cache = self.Cache(self)
 
         print(f"testing_state: {testing_state}")
         list_of_table_files = testing_state.get("table_files", {})
