@@ -135,6 +135,8 @@ class Seed():
         if table_name in self.fk_values_possible.keys():
             return self.fk_values_possible[table_name]
         
+        print(f"\n\n get_foreign_key_values_possible {table_name} \n\n")
+        
         fk_references = self.get_foreign_key_references(table_instance)
         possible = []
         # doing bfs (breadth-first-search)
@@ -180,6 +182,10 @@ class Seed():
 
             parent_table = self.get_table_metadata(parent_table_name)
             one_info["foreign_key_values"] = self.get_table_key_values(parent_table)
+            #TODO ?:
+            # i think since i added the check on table size,
+            # the python internal cache is not filling up with the enumeration
+            # of primary keys for the parent table
 
             fk_reference_info_list.append(one_info)
         
