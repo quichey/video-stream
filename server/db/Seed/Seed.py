@@ -9,6 +9,39 @@ from sqlalchemy import insert, select, text
 from sqlalchemy import Boolean, Integer, String, DateTime
 
 
+#Sketching out blueprint/concepts of Seed class vs Cache class
+"""
+I want the Seed class to be a wrapper around the sqlalchemy library, to be able to quickly create test data-sets for a given schema.
+
+I want the Cache class to be an internal Encapsulation within the Seed class,
+to store any important information of the state of database during the process of populating test data
+
+Why am i doing this?
+Auto-populating foreign keys based off the parent table's primary keys is seeming to be difficult.
+And this is without handling the case of composite foreign/primary key defs.
+
+But i am unclear of what internal state the Seed class should have as opposed to putting them in the Cache class.
+I think the Seed class should have the sqlalchemy constructs/objects, but the cache seems to be using sqlalchemy queries
+in order to populate data. This may be fine.
+The Seed class mainly has the programs/functions to run on the command-line that actually create the data.
+The user of the Seed program should not have to know sqlalchemy queries.
+
+The Seed class can handle the different script options/configs, while the cache class can handle the sqlalchemy calls, when it needs to.
+This seems like the Cache class will have a ton of functions.
+Should i move it to a different file? I think so.
+Pros?
+- idk
+Cons?
+- idk
+probably not important
+
+I think what i need to do next is create update_cache_* functions within cache,
+or seems just moving over any function with self.cache into cache seems to make more sense.
+But I feel lazy right now
+"""
+
+
+
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
 # glorious game Pokemon Snap
