@@ -269,6 +269,7 @@ class Seed():
 
     def create_random_value(self, column):
         data_type = column.type
+        print(f"\n\n data_type: {data_type} \n\n")
         column_name = column.name
         table_name = column.table.name
 
@@ -301,14 +302,14 @@ class Seed():
             flag = random.randint(0, 1)
             return True if flag == 1 else False
         
-        elif isinstance(data_type, Boolean):
+        elif isinstance(data_type, Integer):
             return random.randint(0, 10000)
         
-        elif isinstance(data_type, Boolean):
+        elif isinstance(data_type, String):
             rand_int = random.randint(0, 10000)
             return f"{table_name}_{column_name}_{rand_int}"
         
-        elif isinstance(data_type, Boolean):
+        elif isinstance(data_type, DateTime):
             return random_date(hardcoded_start_date, hardcoded_end_date)
 
 
@@ -346,6 +347,9 @@ class Seed():
         for key in keys:
             if self.is_a_primary_key(table, key):
                 continue
+
+
+            print(f"\n\n  table {table.name} creating column: {key} \n\n")
             column = getattr(table.c, key)
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
