@@ -76,6 +76,7 @@ class Seed():
             self.seed = seed
             self.engine = seed.engine
             self.metadata_obj = seed.metadata_obj
+            self.get_table_metadata = seed.get_table_metadata
 
             # initialize the pk_definitions since we already have schema
             self.init_pk_definitions()
@@ -97,6 +98,16 @@ class Seed():
             all_tables = self.metadata_obj.tables.keys()
             for table_name in all_tables:
                 self.fk_references[table_name] = []
+
+                # get fk_refs on first pass in the case that users table already has data
+                # think of better way maybe later
+                table_instance = self.metadata_obj.tables[table_name]
+                fk_references = self.get_foreign_key_references(table_instance)
+                if fk_references is not None and len(fk_references) > 0:
+                    self.fk_references[table_name] = fk_references
+                    print(f"got fk_refs for table: {table_name}")
+
+
     
         def get_random_foreign_key(self, table_instance):
             parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
@@ -381,11 +392,7 @@ class Seed():
                 raise Exception("could not get table size")
             return size
         """
-    
-        
-        
 
-    
         def init_db(self, list_of_table_rand):
             with self.engine.connect() as conn:
                 print(f"list_of_table_rand: {list_of_table_rand}")
