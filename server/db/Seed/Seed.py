@@ -301,16 +301,19 @@ class Seed():
             table_name = column.table.name
 
             all_fk_info_list = self.fk_references[table_name]
-            is_foreign_key = False
+            #is_foreign_key = False
+            foreign_key_name = None
 
             print(f"\n\n all_fk_info_list: {all_fk_info_list} \n\n")
             for fk_info in all_fk_info_list:
                 #if fk_info["fk_column_name"] == column_name:
                 if fk_info["column_name"] == column_name:
-                    is_foreign_key = True
+                    #is_foreign_key = True
+                    foreign_key_name = fk_info["fk_column_name"]
                     break
 
-            if is_foreign_key:
+            #if is_foreign_key:
+            if foreign_key_name is not None:
                 # scan parent table
                 # use metadata obj to query other table
                 #return self.get_random_foreign_key(column)
@@ -323,7 +326,7 @@ class Seed():
                  need to save fk_info["fk_column_name"] from previous for loop
                  i think this is fine. 
                 """
-                return self.get_random_foreign_key(column.table)[0]
+                return fk_curr[foreign_key_name]
             
             def random_date(start_date, end_date):
                 start_timestamp = time.mktime(start_date.timetuple())
