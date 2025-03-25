@@ -217,10 +217,12 @@ class Seed():
                 foreign_key_obj.column.name ---- maybe?
                 this seems not good. if sqlalchemy changes it's internal logic, then this could break
                 """
+                foreign_key_obj = fk.elements[0]
+                # this above case probably will not work for composite keys -- maybe it will idk
 
                 one_info = {}
 
-                one_info["fk_column_name"] = fk.name
+                one_info["fk_column_name"] = foreign_key_obj.column.name
                 for column in fk.columns:
                     one_info["column_name"] = column.name
                 
