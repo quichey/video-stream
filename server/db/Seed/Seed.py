@@ -207,6 +207,17 @@ class Seed():
             fks = table_instance.foreign_key_constraints
             fk_reference_info_list = []
             for fk in fks:
+                print(f"\n\n fk: {fk} \n\n")
+                print(f"\n\n vars(fk): {vars(fk)} \n\n")
+                # from vars(fk) in debugger
+                # 'elements': [ForeignKey('users.id')]
+                """
+                foreign_key_obj = fk.elements[0]
+                how to get 'users.id' ? don't know
+                foreign_key_obj.column.name ---- maybe?
+                this seems not good. if sqlalchemy changes it's internal logic, then this could break
+                """
+
                 one_info = {}
 
                 one_info["fk_column_name"] = fk.name
