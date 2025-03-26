@@ -63,9 +63,23 @@ class Cache():
         engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
         self.engine = engine
         return engine
+
+
+    def get_session(self, user_info):
+        # extract user identity from request object
+        # generate a session token here or on client?
+        # i think here, then send it to the client for them to store in
+        # the javascript
+
+        #check if user has a session yet
+
+        # if not create a new session
+
+        # return the session token
+        pass
     
 
-    def get_comments(self, page_number, page_size=50):
+    def get_comments(self, session_token, page_number=0, page_size=50):
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
         data = []
         with self.engine.connect() as conn:

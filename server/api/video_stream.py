@@ -115,26 +115,14 @@ def read_comments():
     # request.form["page_number"]
     # use sqlalchemy .limit func iirc
     # also sqlalchemy .offset?
-    db = DB()
-    conn = db.cursor()
-    query = """
-        SELECT
-            c.comment,
-            u.name as user_name
-        FROM
-        comments AS c
-        LEFT JOIN
-        users AS u
-        ON c.user_id = u.id;
-    """
-    conn.execute(query)
-    items = conn.fetchall()
-    conn.close()
-    data = []
-    for record in items:
-        comment = record[0]
-        user_name = record[1]
-        data.append({"user_name": user_name, "comment": comment})
+
+    # temp instantiation of Cache object
+    cache = Cache()
+
+    user_info = "random_stuff_for_now"
+    session_token = cache.get_session(user_info)
+
+    data = cache.get_comments(session_token)
     data = jsonify(data)
     return data
 
