@@ -2,6 +2,8 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 
+from api.Cache import Cache
+
 
 app = Flask(__name__)
 clients = []
