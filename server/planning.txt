@@ -16,3 +16,14 @@ the API seems to need to be a POST request to accept the params in an easy manne
 Why did I not do query string params?
 I'm not sure. naming the routes seems kinda weird. Maybe I should analyze the youtube
 http requests.
+
+
+Where to have SQL_ALchemy data_fetching code/utils
+- db folder?
+- api folder?
+
+- could have a third utils folder
+----- but shouldn't sqlalchemy be kind of be the same thing? a downloaded library/folder with utility functions?
+----- i'm pretty sure, I think should do away with that
+
+-- I think just add in a file in api folder where it imports from db/DB_SCHEMA and do other things?
