@@ -93,6 +93,10 @@ this infinite scroll paging not weird
 something like request.form['infinite_scroll'] = True
 and then do the listing code
 and otherwise update the DB table or something
+
+
+so after thinking, first request should return a larger amount of comments
+than later requests that emulate infinte-scrolling, so that the UI is fluid
 """
 @app.route('/getcomments', methods=["POST"])
 def read_comments():

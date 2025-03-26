@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import insert, select
 from sqlalchemy import Boolean, Integer, String, DateTime
 
-from db.DB_SCHEMA import database_specs, metadata_obj
+from db.DB_SCHEMA import database_specs, metadata_obj, 
 
 """
 In my experience working at CliniComp,
@@ -42,3 +42,28 @@ class Cache():
         engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
         self.engine = engine
         return engine
+    
+
+    def get_comments(self, page_number, page_size=50):
+        offset = page_size * page_number # need to change this later to make up for initial page w/different size
+        data = []
+        with self.engine.connect() as conn:
+            comments_table = self.metadata_obj.tables["comments"]
+            users_table = self.metadata_obj.tables["users"]
+            select_cols = [comments_table.c.comment, user_table.c.name]
+            stmt = select(select_cols).select_from(
+                comments_table.join(
+                    user_table,
+                    comments_table.c.user_id == user_table.c.id
+            )).limit(page_size).offset(offset)
+
+            records = conn.execute(stmt)
+            for row in records:
+                """
+                val = {}
+                #val[pk_col_name] = row[pk_col_name]
+                val[pk_col_name] = row[0]
+                values.append(val)
+                """
+                #TODO: fill-in logic of extracting data from sqlalchemy
+        return data
