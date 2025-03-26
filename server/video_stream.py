@@ -85,6 +85,32 @@ def read_comments():
     data = jsonify(data)
     return data
 
+# Route to get all items using infinite scroll
+@app.route('/getcomments', methods=["POST"])
+def read_comments():
+    db = DB()
+    conn = db.cursor()
+    query = """
+        SELECT
+            c.comment,
+            u.name as user_name
+        FROM
+        comments AS c
+        LEFT JOIN
+        users AS u
+        ON c.user_id = u.id;
+    """
+    conn.execute(query)
+    items = conn.fetchall()
+    conn.close()
+    data = []
+    for record in items:
+        comment = record[0]
+        user_name = record[1]
+        data.append({"user_name": user_name, "comment": comment})
+    data = jsonify(data)
+    return data
+
 
 # Route to create a new item
 @app.route('/comments', methods=['POST'])

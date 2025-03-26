@@ -1,0 +1,18 @@
+Goals for this branch list-comments-api
+
+- get a "good" api up that will facilitate infinite scroll of comments
+on the client computers
+- read up on Flask docs to fully understand the powers and limitations of the 
+framework as well as learn web-app standards/protocols along the way
+
+may need to restructure some folders to better follow certain standards/guidelines
+
+the API needs to be able to page through the comments Table
+params? 
+- page_size (limit?)
+- page_number (token? next_page_token?)
+
+the API seems to need to be a POST request to accept the params in an easy manner
+Why did I not do query string params?
+I'm not sure. naming the routes seems kinda weird. Maybe I should analyze the youtube
+http requests.
