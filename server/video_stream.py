@@ -86,8 +86,22 @@ def read_comments():
     return data
 
 # Route to get all items using infinite scroll
+"""
+can use different request attributes to make the route url of 
+this infinite scroll paging not weird
+
+something like request.form['infinite_scroll'] = True
+and then do the listing code
+and otherwise update the DB table or something
+"""
 @app.route('/getcomments', methods=["POST"])
 def read_comments():
+    # request.form['username']
+    # the above is an example of getting data from the POST request
+    # request.form["page_size"]
+    # request.form["page_number"]
+    # use sqlalchemy .limit func iirc
+    # also sqlalchemy .offset?
     db = DB()
     conn = db.cursor()
     query = """
