@@ -41,6 +41,25 @@ class Cache():
     Look into Flask docs to see how user sessions are handled.
     Maybe HTTP docs. Or look into third party authorizers?
     Cognito/Okta?
+
+
+    for now, storing the session for user scrolling
+    through comments can not be encrypted i think,
+    cause why would a person using the app want to
+    ruin their own experience scrolling through their comments?
+
+    for a quick creation of the inf-scroll feature,
+    store
+    user_tokens = [
+        ["user_id_1", "offset_of_user_1"],
+        ["user_id_2", "offset_of_user_2"],
+        ...
+    ]
+
+    may be good to
+    create a separate UserSessionManagement
+    class to encapsulate this logic, and then
+    enhance it later 
     """
     user_tokens = []
 
