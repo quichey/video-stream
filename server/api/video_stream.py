@@ -4,6 +4,13 @@ import mysql.connector
 
 from api.Cache import Cache
 
+"""
+Read Flask docs on base code for starting up the Gateway
+after understanding it,
+place the instantiation of the Cache class
+in the base code
+"""
+
 
 app = Flask(__name__)
 clients = []
