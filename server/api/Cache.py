@@ -21,8 +21,29 @@ I think it makes sense to have that file handle the WGSI/Gateway/HTTP
 protocol things
 The api/video_stream.py stuff i think will help facilitate scaling up
 the server-side code for adding in new server instances/DB instances
+
+
+This class is where we can store session data not in the Databases
+some kind of token/cookie to preserve the state of a user's scrolling through 
+comments session
 """
 class Cache():
+    """
+    store mapping data structure
+    as of now,
+    we want to map a user id/name/email to 
+    a session token indicating scrolling through comments.
+    I believe, that with this data, we no longer need the 
+    page_num/page_size params,
+    but we can keep these params possibly for debugging
+    purposes.
+
+    Look into Flask docs to see how user sessions are handled.
+    Maybe HTTP docs. Or look into third party authorizers?
+    Cognito/Okta?
+    """
+    user_tokens = []
+
     def __init__(self):
         self.database_specs = database_specs
         self.metadata_obj = metadata_obj
