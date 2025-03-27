@@ -62,8 +62,14 @@ class Cache():
         return session_info
     
 
-    def get_comments(self, session_token, page_number=0, page_size=50):
+    def get_comments(self, session_info, page_number=0, page_size=50):
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
+        current_state = {}
+        if session_info:
+            current_state = self.session_manager.get_state(session_info)
+            offset = current_state["comments_offset"]
+            limit = current_state["comments_limit"]
+
         data = []
         with self.engine.connect() as conn:
             comments_table = self.metadata_obj.tables["comments"]

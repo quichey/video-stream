@@ -29,6 +29,14 @@ class SessionManagement():
         self.current_users.add(user_id)
         return token
     
+    """
+    get all data associated with the session
+    probably want to partition this function into separate domains of knowledge
+    for latency as well as security
+    """
+    def get_state(self, session_info):
+        pass
+    
     def exit_session(self, user):
         pass
 
