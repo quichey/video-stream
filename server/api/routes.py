@@ -117,6 +117,14 @@ def read_comments():
 
     session_info = "random_stuff_for_now"
     session_token = cache.get_session(user_info)
+    """
+    Handle different cases of different combinations
+    of User_id with session_id
+    null case: session_id is empty
+    then: generate new session --- do i need extra code for this? i don't think so
+    case 1: user_id does not match value of session_id
+    then: return error code as most likely spoofing attempt
+    """
 
     comment_data = cache.get_comments(session_token)
     data = {
