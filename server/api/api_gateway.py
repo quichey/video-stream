@@ -78,6 +78,7 @@ def create_app(test_config=None):
         # Routes.get_route_signatures ?
         routes = router.get_route_signatures()
 
+        counter = 0
         for python_func, name, http_methods in routes:
             # i think need to use getattr/setattr
             # to dynamically add functions to this app object
@@ -86,8 +87,22 @@ def create_app(test_config=None):
             # that wrap the func below within it
             # the inner_func is one of the params
             # and the following params are the accepted arguments?
+            """
             @app.route(name, http_methods)
             route_func = python_func
+            """
+
+            """
+            @app.route(name, http_methods)(python_func)
+            """
+            temp_func_name = f"route_func_{counter}"
+            setattr(app, temp_func_name) = app.route(name, http_methods)(python_func)
+            """
+            possibly for sys-admin stuff,
+            store a hashmap from python func name to cached app.func_name
+            in case you run into something odd and need
+            to take down just a few routes or something
+            """
         
         return app
     construct_routes()
