@@ -63,34 +63,42 @@ class Cache():
     
 
     def get_comments(self, session_info, page_number=0, page_size=50):
+        limit = page_size
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
         current_state = {}
         if session_info:
-            current_state = self.session_manager.get_state(session_info)
-            offset = current_state["comments_offset"]
-            limit = current_state["comments_limit"]
+            current_state_of_comments = self.session_manager.get_state(session_info, "comments")
+            offset = current_state_of_comments["offset"]
+            limit = current_state_of_comments["limit"]
 
         data = []
         with self.engine.connect() as conn:
             comments_table = self.metadata_obj.tables["comments"]
             users_table = self.metadata_obj.tables["users"]
             select_cols = [comments_table.c.comment, user_table.c.name]
-            stmt = select(select_cols).select_from(
+            stmt = select(
+                select_cols
+            ).select_from(
                 comments_table.join(
                     user_table,
-                    comments_table.c.user_id == user_table.c.id
-            )).limit(page_size).offset(offset)
+                    comments_table.c.user_id == users_table.c.id
+            )).limit(
+                page_size
+            ).offset(
+                offset
+            )
 
             records = conn.execute(stmt)
-            new_offset = pass
+            new_offset = offset
             for row in records:
-                """
-                val = {}
-                #val[pk_col_name] = row[pk_col_name]
-                val[pk_col_name] = row[0]
-                values.append(val)
-                """
-                #TODO: fill-in logic of extracting data from sqlalchemy
-            self.session_manager.update_state(session_info, "comments_offset", new_offset)
+                new_offset = new_offset + 1
+
+                comment_data_point = {
+                    "comment": row[0],
+                    "user_name": row[1]
+                }
+                data.append(comment_data_point)
+
+            self.session_manager.update_state(session_info, "comments", "offset", new_offset)
 
         return data

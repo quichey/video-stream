@@ -1,3 +1,12 @@
+
+
+COMMENTS_FIRST_PAGE_SIZE = 50
+COMMENTS_NEXT_PAGE_SIZE = 10
+
+
+class SecurityError(Exception):
+    pass
+
 class SessionManagement():
     """
     
@@ -16,10 +25,9 @@ class SessionManagement():
     token_hashes = None ?
     """
 
-    def __init__(self, domain="comments"):
+    def __init__(self):
         self.current_users = set()
         self.user_tokens = []
-        self.domain = domain
         self.current_state = {}
         """
         current_state = [
@@ -55,17 +63,72 @@ class SessionManagement():
     get all data associated with the session
     probably want to partition this function into separate domains of knowledge
     for latency as well as security
+
+    implement logic for infinite scroll of comments
+    within these two following funcitons.
+    How?
+    First Page:
+        current_state = [
+            {
+                "session_id_2": {
+                    "comments": {
+                        "offset": 20,
+                        "limit": 30
+                    }
+                }
+            },
+            {
+                "session_id_2": {
+                    anything
+                }
+            },
+        ]
+    Next Page:
+        current_state = [
+            {
+                "session_id_2": {
+                    "comments": {
+                        "offset": 20,
+                        "limit": 30,
+                        "next_page": True
+                    }
+                }
+            },
+            {
+                "session_id_2": {
+                    anything
+                }
+            },
+        ]
+
+
     """
-    def get_state(self, session_info):
-        return self.current_state[session_info]
+    def get_state(self, session_info, domain):
+        state_of_session = self.current_state[session_info]
+        if domain is "comments":
+            if "comments_limit" not in state_of_session.keys():
+                state_of_session["comments_limit"] = COMMENTS_FIRST_PAGE_SIZE
+                state_of_session["comments_offset"] = 0
+            else:
+                state_of_session["comments_limit"] = COMMENTS_NEXT_PAGE_SIZE
+
+        self.current_state[session_info] = state_of_session
+        return state_of_session
     
-    def update_state(self, session_info, key, value):
+    def update_state(self, session_info, domain, key, value):
+        if session_info not in self.current_state.keys():
+            raise SecurityError()
+        state_of_session = self.current_state[session_info]
+        if domain not in state_of_session.keys():
+            raise Exception()
+        
+        if domain is "comments" and key is "offset":
+            self.current_state[session_info][domain]["next_page"] = True
+
         #TODO: consider changing session_info into self.extract_id(session_info)
-        self.current_state[session_info][key] = value
+        self.current_state[session_info][domain][key] = value
         return
     
     def exit_session(self, user):
         pass
 
-class SecurityError(Exception):
-    pass
