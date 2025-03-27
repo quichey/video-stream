@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy import insert, select
-from sqlalchemy import Boolean, Integer, String, DateTime
+from sqlalchemy import select
 
 from db.DB_SCHEMA import database_specs, metadata_obj
 from api.Cache.SessionManagement import SessionManagement
@@ -65,7 +64,7 @@ class Cache():
     def get_comments(self, session_info, page_number=0, page_size=50):
         limit = page_size
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
-        current_state = {}
+
         if session_info:
             current_state_of_comments = self.session_manager.get_state(session_info, "comments")
             offset = current_state_of_comments["offset"]
@@ -75,15 +74,15 @@ class Cache():
         with self.engine.connect() as conn:
             comments_table = self.metadata_obj.tables["comments"]
             users_table = self.metadata_obj.tables["users"]
-            select_cols = [comments_table.c.comment, user_table.c.name]
+            select_cols = [comments_table.c.comment, users_table.c.name]
             stmt = select(
                 select_cols
             ).select_from(
                 comments_table.join(
-                    user_table,
+                    users_table,
                     comments_table.c.user_id == users_table.c.id
             )).limit(
-                page_size
+                limit
             ).offset(
                 offset
             )
