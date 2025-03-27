@@ -117,7 +117,7 @@ def read_comments():
 
     session_info = "random_stuff_for_now"
     try:
-        session_token = cache.get_session(user_info)
+        session_info = cache.get_session(user_info)
     except SecurityError as security_alarm:
         data = {
             "status": "error"
@@ -135,7 +135,7 @@ def read_comments():
     then: return error code as most likely spoofing attempt
     """
 
-    comment_data = cache.get_comments(session_token)
+    comment_data = cache.get_comments(session_info)
     data = {
         "session_info": session_info,
         "comment_data": comment_data,
