@@ -2,7 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy import insert, select
 from sqlalchemy import Boolean, Integer, String, DateTime
 
-from db.DB_SCHEMA import database_specs, metadata_obj, 
+from db.DB_SCHEMA import database_specs, metadata_obj
+from api.Cache.SessionManagement import SessionManagement
 
 """
 In my experience working at CliniComp,
@@ -28,45 +29,12 @@ some kind of token/cookie to preserve the state of a user's scrolling through
 comments session
 """
 class Cache():
-    """
-    store mapping data structure
-    as of now,
-    we want to map a user id/name/email to 
-    a session token indicating scrolling through comments.
-    I believe, that with this data, we no longer need the 
-    page_num/page_size params,
-    but we can keep these params possibly for debugging
-    purposes.
-
-    Look into Flask docs to see how user sessions are handled.
-    Maybe HTTP docs. Or look into third party authorizers?
-    Cognito/Okta?
-
-
-    for now, storing the session for user scrolling
-    through comments can not be encrypted i think,
-    cause why would a person using the app want to
-    ruin their own experience scrolling through their comments?
-
-    for a quick creation of the inf-scroll feature,
-    store
-    user_tokens = [
-        ["user_id_1", "offset_of_user_1"],
-        ["user_id_2", "offset_of_user_2"],
-        ...
-    ]
-
-    may be good to
-    create a separate UserSessionManagement
-    class to encapsulate this logic, and then
-    enhance it later 
-    """
-    user_tokens = []
 
     def __init__(self):
         self.database_specs = database_specs
         self.metadata_obj = metadata_obj
         self.construct_engine(database_specs)
+        self.session_manager = SessionManagement()
     
     
     def construct_engine(self, database_specs):
@@ -90,12 +58,8 @@ class Cache():
         # i think here, then send it to the client for them to store in
         # the javascript
 
-        #check if user has a session yet
-
-        # if not create a new session
-
-        # return the session token
-        pass
+        session_info = self.session_manager(user_info)
+        return session_info
     
 
     def get_comments(self, session_token, page_number=0, page_size=50):
