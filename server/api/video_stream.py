@@ -111,18 +111,18 @@ than later requests that emulate infinte-scrolling, so that the UI is fluid
 def read_comments():
     # request.form['username']
     # the above is an example of getting data from the POST request
-    # request.form["page_size"]
-    # request.form["page_number"]
-    # use sqlalchemy .limit func iirc
-    # also sqlalchemy .offset?
 
     # temp instantiation of Cache object
     cache = Cache()
 
-    user_info = "random_stuff_for_now"
+    session_info = "random_stuff_for_now"
     session_token = cache.get_session(user_info)
 
-    data = cache.get_comments(session_token)
+    comment_data = cache.get_comments(session_token)
+    data = {
+        "session_info": session_info,
+        "comment_data": comment_data,
+    }
     data = jsonify(data)
     return data
 
