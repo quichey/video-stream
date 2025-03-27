@@ -70,7 +70,7 @@ def html_comments():
 
 # Route to get all items
 @app.route('/comments', methods=["GET"])
-def read_comments():
+def read_comments_temp():
     db = DB()
     conn = db.cursor()
     query = """
@@ -109,18 +109,18 @@ than later requests that emulate infinte-scrolling, so that the UI is fluid
 """
 @app.route('/getcomments', methods=["POST"])
 def read_comments():
-    # request.form['username']
     # the above is an example of getting data from the POST request
 
     # temp instantiation of Cache object
     cache = Cache()
 
-    session_info = "random_stuff_for_now"
+    # TODO: change later to something like request.form['username']
+    user_info = "random_stuff_for_now"
     try:
         session_info = cache.get_session(user_info)
     except SecurityError as security_alarm:
         data = {
-            "status": "error"
+            "status": "error",
             "msg": security_alarm.msg()
         }
         # later, check Flask docs

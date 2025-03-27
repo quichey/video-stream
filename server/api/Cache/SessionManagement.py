@@ -105,7 +105,7 @@ class SessionManagement():
     """
     def get_state(self, session_info, domain):
         state_of_session = self.current_state[session_info]
-        if domain is "comments":
+        if domain == "comments":
             if "comments_limit" not in state_of_session.keys():
                 state_of_session["comments_limit"] = COMMENTS_FIRST_PAGE_SIZE
                 state_of_session["comments_offset"] = 0
@@ -122,7 +122,7 @@ class SessionManagement():
         if domain not in state_of_session.keys():
             raise Exception()
         
-        if domain is "comments" and key is "offset":
+        if domain == "comments" and key == "offset":
             self.current_state[session_info][domain]["next_page"] = True
 
         #TODO: consider changing session_info into self.extract_id(session_info)
