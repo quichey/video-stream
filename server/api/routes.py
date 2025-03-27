@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 
-from api.Cache import Cache
+from api.Cache import Cache, SecurityError
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -116,7 +116,16 @@ def read_comments():
     cache = Cache()
 
     session_info = "random_stuff_for_now"
-    session_token = cache.get_session(user_info)
+    try:
+        session_token = cache.get_session(user_info)
+    except SecurityError as security_alarm:
+        data = {
+            "status": "error"
+            "msg": security_alarm.msg()
+        }
+        # later, check Flask docs
+        # update with flask framework
+        return data
     """
     Handle different cases of different combinations
     of User_id with session_id

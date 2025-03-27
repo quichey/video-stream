@@ -31,3 +31,6 @@ class SessionManagement():
     
     def exit_session(self, user):
         pass
+
+class SecurityError(Exception):
+    pass
