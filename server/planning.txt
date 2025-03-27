@@ -27,3 +27,11 @@ Where to have SQL_ALchemy data_fetching code/utils
 ----- i'm pretty sure, I think should do away with that
 
 -- I think just add in a file in api folder where it imports from db/DB_SCHEMA and do other things?
+
+
+
+# TODO:
+--- update pyproject.toml
+------ remove mysql-connector-python
+------ move ruff to dev-dependencies
+------ may be able to remove jsonify, flask may have it built in
