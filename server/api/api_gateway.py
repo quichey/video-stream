@@ -71,6 +71,10 @@ def create_app(test_config=None):
 
     """
     Add Routes.etc to here
+
+    change of plans after trying out python interpreter/ruff checks
+    just list out like in docs, but can store all the logic in Routes,
+    and keep this file as managing state of whole micro-service/gateway-process
     """
     router = Router()
     app.router = router
@@ -95,8 +99,9 @@ def create_app(test_config=None):
             """
             @app.route(name, http_methods)(python_func)
             """
-            temp_func_name = f"route_func_{counter}"
-            setattr(app, temp_func_name) = app.route(name, http_methods)(python_func)
+            #temp_func_name = f"route_func_{counter}"
+            app.temp_func_name = app.route(name, http_methods)(python_func)
+            counter = counter + 1
             """
             possibly for sys-admin stuff,
             store a hashmap from python func name to cached app.func_name
@@ -105,6 +110,9 @@ def create_app(test_config=None):
             """
         
         return app
-    construct_routes()
+    #construct_routes()
+    @app.route("/getcomments", method=["POST"])
+    def read_comments():
+        return router.read_comments
 
     return app
