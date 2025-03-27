@@ -61,6 +61,13 @@ class Cache():
         return session_info
     
 
+    """
+    * From google search -- Performance optimization for later
+    Performance Considerations:
+        While the order of LIMIT and OFFSET doesn't directly impact performance in most cases,
+        using large OFFSET values can lead to slower queries, especially on large tables,
+        as the database needs to scan through a large number of rows before applying the LIMIT. 
+    """
     def get_comments(self, session_info, page_number=0, page_size=50):
         limit = page_size
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
