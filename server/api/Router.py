@@ -31,7 +31,19 @@ class DB():
         return self.conn.cursor()
 
 
-class Routes():
+class Router():
+    def get_route_signatures(self):
+        signatures = [
+            (self.html_comments, "/blah", ["GET"]),
+            (self.add_client, "/ws", ["GET"]),
+            (self.read_comments_temp, "/comments", ["GET"]),
+            (self.read_comments, "/getcomments", ["POST"]),
+        ]
+
+        return signatures
+
+
+
     # TODO: add initial route for establishing websocket line of communication
     # guessing just add route("/ws") and return status 200 for OK
     # probably should check flask or http library for proper headers etc
