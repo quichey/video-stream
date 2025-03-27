@@ -9,10 +9,32 @@ class SessionManagement():
     """
     user_tokens = None
     current_users = None
+    current_state = None
+    """
+    I think i need to store hashes of the user_tokens that the client program has
+    for cybersecurity reasons
+    token_hashes = None ?
+    """
 
-    def __init__(self):
+    def __init__(self, domain="comments"):
         self.current_users = set()
         self.user_tokens = []
+        self.domain = domain
+        self.current_state = {}
+        """
+        current_state = [
+            {
+                "session_id_2": {
+                    anything
+                }
+            },
+            {
+                "session_id_2": {
+                    anything
+                }
+            },
+        ]
+        """
     
     def generate_token(self, user_info):
         # TODO: fill in later with actual token generation
@@ -35,7 +57,12 @@ class SessionManagement():
     for latency as well as security
     """
     def get_state(self, session_info):
-        pass
+        return self.current_state[session_info]
+    
+    def update_state(self, session_info, key, value):
+        #TODO: consider changing session_info into self.extract_id(session_info)
+        self.current_state[session_info][key] = value
+        return
     
     def exit_session(self, user):
         pass

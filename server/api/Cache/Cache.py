@@ -82,6 +82,7 @@ class Cache():
             )).limit(page_size).offset(offset)
 
             records = conn.execute(stmt)
+            new_offset = pass
             for row in records:
                 """
                 val = {}
@@ -90,4 +91,6 @@ class Cache():
                 values.append(val)
                 """
                 #TODO: fill-in logic of extracting data from sqlalchemy
+            self.session_manager.update_state(session_info, "comments_offset", new_offset)
+
         return data
