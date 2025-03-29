@@ -111,7 +111,7 @@ def create_app(test_config=None):
         
         return app
     #construct_routes()
-    @app.route("/getcomments", method=["POST"])
+    @app.route("/getcomments", methods=["POST"])
     def read_comments():
         return router.read_comments()
 

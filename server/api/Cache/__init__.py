@@ -1,1 +1,1 @@
-from SessionManagement import SessionManagement, SecurityError
+from .SessionManagement import SecurityError
