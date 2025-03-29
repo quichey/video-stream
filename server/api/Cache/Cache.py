@@ -2,7 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy import select
 
 from db.DB_SCHEMA import database_specs, metadata_obj
-from api.Cache.SessionManagement import SessionManagement
+#from api.Cache.SessionManagement import SessionManagement
+from .SessionManagement import SessionManagement
 
 """
 In my experience working at CliniComp,
