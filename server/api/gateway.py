@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 
+from api.Cache import Cache
 from api.Router import Router
 
 """
@@ -30,22 +31,13 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 -- sub-programs include folders, python modules, python libs, installed packages within pyproject.toml
 
 
-Conjectures:
-- Can create an inherited class from Flask to add additional db/sqlalchemy/Seed.py support/integration
---- or read more of the flask docs instead (wiser decision)
-
 
 """
-
-class FlaskAlchemy(Flask):
-
-    def __init__(self):
-        self.cache = Cache()
     
 
 def create_app(test_config=None):
     # create and configure the app
-    app = FlaskAlchemy(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=True)
     # Base configs that should hold true no matter what
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -86,7 +78,8 @@ def create_app(test_config=None):
     just list out like in docs, but can store all the logic in Routes,
     and keep this file as managing state of whole micro-service/gateway-process
     """
-    router = Router(cache=app.cache)
+    cache = Cache()
+    router = Router(cache=cache)
     app.router = router
     def construct_routes():
         # Routes.get_route_signatures ?
