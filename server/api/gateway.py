@@ -30,6 +30,11 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 -- sub-programs include folders, python modules, python libs, installed packages within pyproject.toml
 
 
+Conjectures:
+- Can create an inherited class from Flask to add additional db/sqlalchemy/Seed.py support/integration
+--- or read more of the flask docs instead (wiser decision)
+
+
 """
 
 
