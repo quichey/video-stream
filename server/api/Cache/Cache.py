@@ -58,7 +58,7 @@ class Cache():
         # i think here, then send it to the client for them to store in
         # the javascript
 
-        session_info = self.session_manager(user_info)
+        session_info = self.session_manager.register_user(user_info)
         return session_info
     
 

@@ -57,6 +57,9 @@ class SessionManagement():
         token = self.generate_token(user_info)
         self.user_tokens.append([user_id, token])
         self.current_users.add(user_id)
+        self.current_state[token] = {
+            "comments": {}
+        }
         return token
     
     """
@@ -104,13 +107,13 @@ class SessionManagement():
 
     """
     def get_state(self, session_info, domain):
-        state_of_session = self.current_state[session_info]
+        state_of_session = self.current_state[session_info][domain]
         if domain == "comments":
-            if "comments_limit" not in state_of_session.keys():
-                state_of_session["comments_limit"] = COMMENTS_FIRST_PAGE_SIZE
-                state_of_session["comments_offset"] = 0
+            if "limit" not in state_of_session.keys():
+                state_of_session["limit"] = COMMENTS_FIRST_PAGE_SIZE
+                state_of_session["offset"] = 0
             else:
-                state_of_session["comments_limit"] = COMMENTS_NEXT_PAGE_SIZE
+                state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
 
         self.current_state[session_info] = state_of_session
         return state_of_session
