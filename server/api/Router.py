@@ -1,5 +1,5 @@
 # Example using Flask and SQLite
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, json, request
 import mysql.connector
 
 from api.Cache import Cache, SecurityError
@@ -122,16 +122,22 @@ class Router():
 
     so after thinking, first request should return a larger amount of comments
     than later requests that emulate infinte-scrolling, so that the UI is fluid
+
+    curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0"}' http://127.0.0.1:5000/getcomments
     """
     @app.route('/getcomments', methods=["POST"])
-    def read_comments():
+    def read_comments(self):
         # the above is an example of getting data from the POST request
 
         # temp instantiation of Cache object
         cache = self.cache
 
+        form_data = json.loads(request.data)
         # TODO: change later to something like request.form['username']
-        user_info = "random_stuff_for_now"
+        user_info = {
+            "id": form_data['user_id'],
+            "name": form_data['user_name']
+        }
         try:
             session_info = cache.get_session(user_info)
         except SecurityError as security_alarm:
