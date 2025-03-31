@@ -32,6 +32,9 @@ class DB():
 
 
 class Router():
+    def __init__(self, cache):
+        self.cache = cache
+
     def get_route_signatures(self):
         signatures = [
             (self.html_comments, "/blah", ["GET"]),
@@ -125,7 +128,7 @@ class Router():
         # the above is an example of getting data from the POST request
 
         # temp instantiation of Cache object
-        cache = Cache()
+        cache = self.cache
 
         # TODO: change later to something like request.form['username']
         user_info = "random_stuff_for_now"
