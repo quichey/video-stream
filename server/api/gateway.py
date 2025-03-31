@@ -37,10 +37,15 @@ Conjectures:
 
 """
 
+class FlaskAlchemy(Flask):
+
+    def __init__(self):
+        self.cache = Cache()
+    
 
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = FlaskAlchemy(__name__, instance_relative_config=True)
     # Base configs that should hold true no matter what
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -81,7 +86,7 @@ def create_app(test_config=None):
     just list out like in docs, but can store all the logic in Routes,
     and keep this file as managing state of whole micro-service/gateway-process
     """
-    router = Router()
+    router = Router(cache=app.cache)
     app.router = router
     def construct_routes():
         # Routes.get_route_signatures ?
