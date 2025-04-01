@@ -139,3 +139,13 @@ def inspect_address_table_pk():
         pk_defs.append(column.name)
 
     return pk_defs
+
+from sqlalchemy.orm import DeclarativeBase
+class Base(DeclarativeBase):
+    pass
+
+def print_base_metadata():
+    print(f"Base.metadata: {Base.metadata}")
+
+def print_base_registry():
+    print(f"Base.registry: {Base.registry}")
