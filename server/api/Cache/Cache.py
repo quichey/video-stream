@@ -84,12 +84,13 @@ class Cache():
             users_table = self.metadata_obj.tables["users"]
             select_cols = [comments_table.c.comment, users_table.c.name]
             stmt = select(
-                select_cols
+                *select_cols
             ).select_from(
-                comments_table.join(
+                comments_table
+            ).join(
                     users_table,
                     comments_table.c.user_id == users_table.c.id
-            )).limit(
+            ).limit(
                 limit
             ).offset(
                 offset

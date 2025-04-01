@@ -115,14 +115,17 @@ class SessionManagement():
             else:
                 state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
 
-        self.current_state[session_info] = state_of_session
+        self.current_state[session_info][domain] = state_of_session
         return state_of_session
     
     def update_state(self, session_info, domain, key, value):
         if session_info not in self.current_state.keys():
             raise SecurityError()
-        state_of_session = self.current_state[session_info]
-        if domain not in state_of_session.keys():
+        state_of_session = None 
+
+        try:
+            state_of_session = self.current_state[session_info][domain]
+        except:
             raise Exception()
         
         if domain == "comments" and key == "offset":
