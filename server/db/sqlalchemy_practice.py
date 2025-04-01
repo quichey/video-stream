@@ -180,3 +180,7 @@ class Address(Base):
 def create_user():
     sandy = User(name="sandy", fullname="Sandy Cheeks")
     return sandy
+
+def create_data():
+    engine = start_engine()
+    Base.metadata.create_all(engine)
