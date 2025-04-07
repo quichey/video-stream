@@ -52,13 +52,13 @@ class Cache():
         return engine
 
 
-    def get_session(self, user_info):
+    def get_session(self, user_info, existing_session_info):
         # extract user identity from request object
         # generate a session token here or on client?
         # i think here, then send it to the client for them to store in
         # the javascript
 
-        session_info = self.session_manager.register_user(user_info)
+        session_info = self.session_manager.register_user(user_info, existing_session_info)
         return session_info
     
 
