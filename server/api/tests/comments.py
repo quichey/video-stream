@@ -13,7 +13,7 @@ def initiate_test_user():
     })
 
     # get info of test_user
-    test_user = pass
+    test_user = 0
     # include info in yield
     app_info = {
         "client": app,
@@ -26,17 +26,22 @@ def initiate_test_user():
 def extract_token(response):
     pass # TODO: get token
 
-def get_first_page(client):
+def package_session_info(user):
+    data = {
+        "data": {
+            "user_id": 0,
+            "user_name": user
+        }
+    }
+    return data
+
+def get_first_page(client, user):
     response = client.post(
         "/getcomments",
-        options={
-            "data": {
-                "user_id": 0,
-                "user_name": "test_user"
-            }
-        }
+        json=package_session_info(user)
     )
-    num_comments = len(response.data)
+    data = response.json["data"]
+    num_comments = len(data)
     assert num_comments > 0
     assert num_comments < 1000
     # assert the session token is either
@@ -51,19 +56,14 @@ def get_first_page(client):
     # ensure the num_comments == size_of_first_page
 
 
-def get_next_page(client, token):
+def get_next_page(client, token, user):
     start_time = datetime.now()
     response = client.post(
         "/getcomments",
-        options={
-            "data": {
-                "user_id": 0,
-                "user_name": "test_user",
-                "token": token
-            }
-        }
+        json=package_session_info(user)
     )
-    num_comments = len(response.data)
+    data = response.json["data"]
+    num_comments = len(data)
     assert num_comments > 0
     assert num_comments < 1000
     # assert page size is less than first page
@@ -88,19 +88,15 @@ May use this context manager
 as a quick means of running through all tests
 in the order in which they should be applied (imperative programming paradigm)
 """
-with app.test_request_context('/getcomments', method='POST'):
-    # now you can do something with the request until the
-    # end of the with block, such as basic assertions:
-    assert request.path == '/getcomments'
-    assert request.method == 'POST'
+def test_infinite_scroll():
 
     app_info = initiate_test_user()
     test_user = app_info["test_user"]
-    token = get_first_page(client)
+    token = get_first_page(client, test_user)
     num_pages_to_test = 10
     for i in range(num_pages_to_test):
         # TODO: assert latencies of each request
-        results = get_next_page(client, token)
+        results = get_next_page(client, token, test_user)
         time_delta = results["time_delta"]
         assert time_delta < 1000 #TODO: determine appropriate threshold
         assert results["token"] == token
