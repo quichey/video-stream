@@ -72,7 +72,7 @@ class SessionManagement():
         self.current_state[token] = {
             "comments": {
                 "limit": COMMENTS_FIRST_PAGE_SIZE,
-                "offset",0
+                "offset": 0
             }
         }
         return token
