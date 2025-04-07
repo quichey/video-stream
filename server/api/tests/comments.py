@@ -6,7 +6,7 @@ from flask import request
 from api import create_app
 
 @pytest.fixture()
-def initiate_test_user():
+def app_info():
     app = create_app()
     app.config.update({
         "TESTING": True,
@@ -16,7 +16,7 @@ def initiate_test_user():
     test_user = 0
     # include info in yield
     app_info = {
-        "client": app,
+        "client": app.test_client(),
         "test_user": test_user
     }
     yield app_info
@@ -24,7 +24,8 @@ def initiate_test_user():
     # clean up / reset resources here
 
 def extract_token(response):
-    pass # TODO: get token
+    session_info = response.json["data"]["session_info"]
+    return session_info
 
 def package_session_info(user):
     data = {
@@ -48,7 +49,7 @@ def get_first_page(client, user):
     # returned here or the login
     # http request
     token = extract_token(response)
-    yield token
+    return token
 
     # when I add into Seed module
     # the code for instantiating 
@@ -58,9 +59,11 @@ def get_first_page(client, user):
 
 def get_next_page(client, token, user):
     start_time = datetime.now()
+    request_data = package_session_info(user)
+    request_data["token"] = token
     response = client.post(
         "/getcomments",
-        json=package_session_info(user)
+        json=request_data
     )
     data = response.json["data"]
     num_comments = len(data)
@@ -79,7 +82,7 @@ def get_next_page(client, token, user):
         "time_delta": time_delta,
         "token": token
     }
-    yield results
+    return results
 
 
 
@@ -88,9 +91,9 @@ May use this context manager
 as a quick means of running through all tests
 in the order in which they should be applied (imperative programming paradigm)
 """
-def test_infinite_scroll():
+def test_infinite_scroll(app_info):
 
-    app_info = initiate_test_user()
+    client = app_info["client"]
     test_user = app_info["test_user"]
     token = get_first_page(client, test_user)
     num_pages_to_test = 10
