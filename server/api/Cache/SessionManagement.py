@@ -54,6 +54,10 @@ class SessionManagement():
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
         if existing_session_info is not None:
+            print(f"user_id: {user_id}")
+            print(f"existing_session_info: {existing_session_info}")
+            print(f"type(user_id): {type(user_id)}")
+            print(f"type(existing_session_info): {type(existing_session_info)}")
             if user_id != existing_session_info:
                 raise SecurityError("Hijacked Session Token")
             return existing_session_info
@@ -116,12 +120,21 @@ class SessionManagement():
     """
     def get_state(self, session_info, domain):
         state_of_session = self.current_state[session_info][domain]
+        print(f"\n\n get_state state_of_session: {state_of_session} \n\n")
         if domain == "comments":
+            if "next_page" in state_of_session.keys():
+                state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
+            else:
+                state_of_session["limit"] = COMMENTS_FIRST_PAGE_SIZE
+                state_of_session["offset"] = 0
+            """
             if "limit" not in state_of_session.keys():
                 state_of_session["limit"] = COMMENTS_FIRST_PAGE_SIZE
                 state_of_session["offset"] = 0
             else:
                 state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
+            """
+        print(f"\n\n get_state state_of_session after: {state_of_session} \n\n")
 
         self.current_state[session_info][domain] = state_of_session
         return state_of_session

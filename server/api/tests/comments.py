@@ -100,6 +100,9 @@ def get_next_page(client, token, user):
 May use this context manager
 as a quick means of running through all tests
 in the order in which they should be applied (imperative programming paradigm)
+
+curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0"}' http://127.0.0.1:5000/getcomments
+curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "token": "0"}' http://127.0.0.1:5000/getcomments
 """
 def test_infinite_scroll(app_info):
 
