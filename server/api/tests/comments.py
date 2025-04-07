@@ -1,7 +1,7 @@
 import pytest
 import time
 from datetime import timedelta, date, datetime
-from flask import request
+from flask import request, json
 
 from api import create_app
 
@@ -24,24 +24,32 @@ def app_info():
     # clean up / reset resources here
 
 def extract_token(response):
-    session_info = response.json["data"]["session_info"]
+    session_info = response.json["session_info"]
     return session_info
 
 def package_session_info(user):
+    """
     data = {
         "data": {
             "user_id": 0,
             "user_name": user
         }
     }
+    """
+    data = {
+        "user_id": 0,
+        "user_name": user
+    }
     return data
 
 def get_first_page(client, user):
     response = client.post(
         "/getcomments",
-        json=package_session_info(user)
+        #json=package_session_info(user),
+        data=json.dumps(package_session_info(user))
     )
-    data = response.json["data"]
+    print(f"\n\n response.json: {response.json} \n\n")
+    data = response.json["comment_data"]
     num_comments = len(data)
     assert num_comments > 0
     assert num_comments < 1000
@@ -63,9 +71,10 @@ def get_next_page(client, token, user):
     request_data["token"] = token
     response = client.post(
         "/getcomments",
-        json=request_data
+        #json=request_data
+        data=json.dumps(request_data)
     )
-    data = response.json["data"]
+    data = response.json["comment_data"]
     num_comments = len(data)
     assert num_comments > 0
     assert num_comments < 1000

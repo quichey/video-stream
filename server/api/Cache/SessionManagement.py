@@ -49,8 +49,16 @@ class SessionManagement():
         token = user_info["id"]
         return token
     
-    def register_user(self, user_info):
+    def register_user(self, user_info, existing_session_info):
         user_id = user_info["id"]
+        # TODO: Check if user_info matches existing_session_info,
+        # otherwise throw a security error
+        if existing_session_info is not None:
+            if user_id != existing_session_info:
+                raise SecurityError("Hijacked Session Token")
+            return existing_session_info
+
+
         if user_id in self.current_users:
             raise Exception("User already registered")
         
