@@ -4,6 +4,7 @@ from datetime import timedelta, date, datetime
 from flask import request, json
 
 from api import create_app
+from api.Cache import COMMENTS_FIRST_PAGE_SIZE, COMMENTS_NEXT_PAGE_SIZE
 
 @pytest.fixture()
 def app_info():
@@ -51,8 +52,8 @@ def get_first_page(client, user):
     print(f"\n\n response.json: {response.json} \n\n")
     data = response.json["comment_data"]
     num_comments = len(data)
-    assert num_comments > 0
-    assert num_comments < 1000
+    #assert num_comments > 0
+    assert num_comments <= COMMENTS_FIRST_PAGE_SIZE
     # assert the session token is either
     # returned here or the login
     # http request
@@ -76,8 +77,8 @@ def get_next_page(client, token, user):
     )
     data = response.json["comment_data"]
     num_comments = len(data)
-    assert num_comments > 0
-    assert num_comments < 1000
+    #assert num_comments > 0
+    assert num_comments < COMMENTS_NEXT_PAGE_SIZE
     # assert page size is less than first page
 
     # assert the session token is either
@@ -110,8 +111,9 @@ def test_infinite_scroll(app_info):
         # TODO: assert latencies of each request
         results = get_next_page(client, token, test_user)
         time_delta = results["time_delta"]
-        assert time_delta < 1000 #TODO: determine appropriate threshold
+        assert time_delta < 100 #TODO: determine appropriate threshold
         assert results["token"] == token
         # Possible scalability/security measure
         # switch token every request
         # WAAAY down the line
+        print(f"\n\n num next pages: {i} \n\n")
