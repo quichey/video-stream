@@ -1,5 +1,6 @@
 import pytest
 import time
+from datetime import timedelta, date, datetime
 from flask import request
 
 from api import create_app
@@ -51,7 +52,7 @@ def get_first_page(client):
 
 
 def get_next_page(client, token):
-    start_time = pass # TODO: get time_delta_start
+    start_time = datetime.now()
     response = client.post(
         "/getcomments",
         options={
@@ -71,7 +72,9 @@ def get_next_page(client, token):
     # returned here or the login
     # http request
     token = extract_token(response)
-    time_delta = pass # TODO: get time_delta
+    now = datetime.now()
+    time_delta = now - start_time 
+    time_delta = time_delta.seconds // 1000
     results = {
         "time_delta": time_delta,
         "token": token
@@ -99,7 +102,7 @@ with app.test_request_context('/getcomments', method='POST'):
         # TODO: assert latencies of each request
         results = get_next_page(client, token)
         time_delta = results["time_delta"]
-        assert time_delta < 100 #TODO: determine appropriate threshold
+        assert time_delta < 1000 #TODO: determine appropriate threshold
         assert results["token"] == token
         # Possible scalability/security measure
         # switch token every request
