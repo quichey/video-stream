@@ -1,5 +1,6 @@
 import pytest
 import time
+import threading
 from datetime import timedelta, date, datetime
 from flask import request, json
 
@@ -107,16 +108,43 @@ curl --header "Content-Type: application/json" --request POST --data '{"user_id"
 curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "token": "0"}' http://127.0.0.1:5000/getcomments
 """
 def test_infinite_scroll(app_info):
+    next_page_time_standard = 100
+    first_thread = threading.Thread()
+    second_thread = threading.Thread()
 
     client = app_info["client"]
     test_user = app_info["test_user"]
-    token = get_first_page(client, test_user)
+    #token = get_first_page(client, test_user)
+    token = None
+    def create_first_thread():
+        nonlocal token
+        def send_http_request():
+            nonlocal token
+            token = get_first_page(client, test_user)
+            return
+        thread = threading.Thread(target=send_http_request)
+        return thread
+
+    def create_next_thread(first_thread):
+        # TODO: read more about threading, then think CAREFULLY
+        # then do the things you think are good to do
+        nonlocal token
+        def send_http_request():
+            nonlocal token
+            results = get_next_page(client, token, test_user)
+            time_delta = results["time_delta"]
+            assert time_delta < next_page_time_standard #TODO: determine appropriate threshold
+            assert results["token"] == token
+            return
+        thread = threading.Thread(target=send_http_request)
+        return thread
+
     num_pages_to_test = 10
     for i in range(num_pages_to_test):
         # TODO: assert latencies of each request
         results = get_next_page(client, token, test_user)
         time_delta = results["time_delta"]
-        assert time_delta < 100 #TODO: determine appropriate threshold
+        assert time_delta < next_page_time_standard #TODO: determine appropriate threshold
         assert results["token"] == token
         # Possible scalability/security measure
         # switch token every request
