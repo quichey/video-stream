@@ -113,14 +113,17 @@ def test_infinite_scroll(app_info):
     client = app_info["client"]
     test_user = app_info["test_user"]
     #token = get_first_page(client, test_user)
-    token = None
+    token = {
+        "value": None
+    }
     def create_first_thread():
         nonlocal token
         def send_http_request():
             nonlocal token
-            token = get_first_page(client, test_user)
+            token_value = get_first_page(client, test_user)
+            token["value"] = token_value
             return
-        first_thread = threading.Thread(
+        thread = threading.Thread(
             target=send_http_request
         )
         thread.start()
@@ -130,17 +133,19 @@ def test_infinite_scroll(app_info):
         # TODO: read more about threading, then think CAREFULLY
         # then do the things you think are good to do
 
+        nonlocal token
         def send_http_request():
-            results = get_next_page(client, token, test_user)
+            time.sleep(1000)
+            nonlocal token
+            results = get_next_page(client, token["value"], test_user)
             time_delta = results["time_delta"]
             assert time_delta < next_page_time_standard #TODO: determine appropriate threshold
             assert results["token"] == token
-            return token
+            return
 
 
         thread = threading.Thread(target=send_http_request)
         thread.start()
-
         prev_thread.run()
         prev_thread.join(thread)
         return thread
