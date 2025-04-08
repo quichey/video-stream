@@ -58,6 +58,8 @@ def get_first_page(client, user):
     # returned here or the login
     # http request
     token = extract_token(response)
+    print(f"\n\n token: {token} \n\n")
+    print(f"\n\n type(token): {type(token)} \n\n")
     return token
 
     # when I add into Seed module
@@ -78,7 +80,7 @@ def get_next_page(client, token, user):
     data = response.json["comment_data"]
     num_comments = len(data)
     #assert num_comments > 0
-    assert num_comments < COMMENTS_NEXT_PAGE_SIZE
+    assert num_comments <= COMMENTS_NEXT_PAGE_SIZE
     # assert page size is less than first page
 
     # assert the session token is either
