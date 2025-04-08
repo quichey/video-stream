@@ -109,8 +109,6 @@ curl --header "Content-Type: application/json" --request POST --data '{"user_id"
 """
 def test_infinite_scroll(app_info):
     next_page_time_standard = 100
-    first_thread = threading.Thread()
-    second_thread = threading.Thread()
 
     client = app_info["client"]
     test_user = app_info["test_user"]
@@ -122,25 +120,40 @@ def test_infinite_scroll(app_info):
             nonlocal token
             token = get_first_page(client, test_user)
             return
-        thread = threading.Thread(target=send_http_request)
+        first_thread = threading.Thread(
+            target=send_http_request
+        )
+        thread.start()
         return thread
 
-    def create_next_thread(first_thread):
+    def create_next_thread(prev_thread):
         # TODO: read more about threading, then think CAREFULLY
         # then do the things you think are good to do
-        nonlocal token
+
         def send_http_request():
-            nonlocal token
             results = get_next_page(client, token, test_user)
             time_delta = results["time_delta"]
             assert time_delta < next_page_time_standard #TODO: determine appropriate threshold
             assert results["token"] == token
-            return
+            return token
+
+
         thread = threading.Thread(target=send_http_request)
+        thread.start()
+
+        prev_thread.run()
+        prev_thread.join(thread)
         return thread
+
+    prev_thread = create_first_thread()
 
     num_pages_to_test = 10
     for i in range(num_pages_to_test):
+        next_thread = create_next_thread(prev_thread)
+        prev_thread = next_thread
+        # TODO: i think set next_thread = create_next_thread and curr_thread = next_thread
+        # first,,, read more docs
+        """
         # TODO: assert latencies of each request
         results = get_next_page(client, token, test_user)
         time_delta = results["time_delta"]
@@ -150,3 +163,4 @@ def test_infinite_scroll(app_info):
         # switch token every request
         # WAAAY down the line
         print(f"\n\n num next pages: {i} \n\n")
+        """
