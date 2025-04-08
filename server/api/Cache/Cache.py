@@ -77,6 +77,8 @@ class Cache():
             current_state_of_comments = self.session_manager.get_state(session_info, "comments")
             offset = current_state_of_comments["offset"]
             limit = current_state_of_comments["limit"]
+            print(f"\n\n offset: {offset} \n\n")
+            print(f"\n\n limit: {limit} \n\n")
 
         data = []
         with self.engine.connect() as conn:

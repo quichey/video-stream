@@ -58,7 +58,7 @@ class SessionManagement():
             print(f"existing_session_info: {existing_session_info}")
             print(f"type(user_id): {type(user_id)}")
             print(f"type(existing_session_info): {type(existing_session_info)}")
-            if user_id != existing_session_info:
+            if int(user_id) != int(existing_session_info):
                 raise SecurityError("Hijacked Session Token")
             return existing_session_info
 
