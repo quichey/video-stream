@@ -49,8 +49,20 @@ class SessionManagement():
         token = user_info["id"]
         return token
     
-    def register_user(self, user_info):
+    def register_user(self, user_info, existing_session_info):
         user_id = user_info["id"]
+        # TODO: Check if user_info matches existing_session_info,
+        # otherwise throw a security error
+        if existing_session_info is not None:
+            print(f"user_id: {user_id}")
+            print(f"existing_session_info: {existing_session_info}")
+            print(f"type(user_id): {type(user_id)}")
+            print(f"type(existing_session_info): {type(existing_session_info)}")
+            if int(user_id) != int(existing_session_info):
+                raise SecurityError("Hijacked Session Token")
+            return existing_session_info
+
+
         if user_id in self.current_users:
             raise Exception("User already registered")
         
@@ -58,7 +70,10 @@ class SessionManagement():
         self.user_tokens.append([user_id, token])
         self.current_users.add(user_id)
         self.current_state[token] = {
-            "comments": {}
+            "comments": {
+                "limit": COMMENTS_FIRST_PAGE_SIZE,
+                "offset": 0
+            }
         }
         return token
     
@@ -108,14 +123,7 @@ class SessionManagement():
     """
     def get_state(self, session_info, domain):
         state_of_session = self.current_state[session_info][domain]
-        if domain == "comments":
-            if "limit" not in state_of_session.keys():
-                state_of_session["limit"] = COMMENTS_FIRST_PAGE_SIZE
-                state_of_session["offset"] = 0
-            else:
-                state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
-
-        self.current_state[session_info][domain] = state_of_session
+        print(f"\n\n get_state state_of_session: {state_of_session} \n\n")
         return state_of_session
     
     def update_state(self, session_info, domain, key, value):
@@ -127,12 +135,18 @@ class SessionManagement():
             state_of_session = self.current_state[session_info][domain]
         except:
             raise Exception()
+        print(f"\n\n update_state state_of_session: {state_of_session} \n\n")
         
         if domain == "comments" and key == "offset":
-            self.current_state[session_info][domain]["next_page"] = True
+            if "next_page" not in state_of_session.keys():
+                state_of_session["next_page"] = True # might not need this flag anymore
+                state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
 
         #TODO: consider changing session_info into self.extract_id(session_info)
-        self.current_state[session_info][domain][key] = value
+        state_of_session[key] = value
+
+        self.current_state[session_info][domain] = state_of_session
+        print(f"\n\n update_state state_of_session ending: {state_of_session} \n\n")
         return
     
     def exit_session(self, user):
