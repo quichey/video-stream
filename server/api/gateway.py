@@ -54,6 +54,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
+    print(f"app.instance_path: {app.instance_path}")
     # ensure the instance folder exists
     # setup the machine's
     # operating system
@@ -120,9 +121,27 @@ def create_app(test_config=None):
     
     """
     admin util cmd to clear user session for testing
+
+    seems to be very difficult --- maybe lets
+    setup just http routes that authenticate that the 
+    sender is an admin
+    then do the thingys
+    """
+    @app.route("/user/session", methods=["DELETE"])
+    def clear_user_session():
+        # TODO: for now, block any access till
+        # I research good way to authenticate
+        if True:
+            return
+        user_info = "blah"
+        session_info = "blah"
+        cache.clear_user_session(user_info, session_info)
+        return "something"
+    
     """
     def clear_user_session(user_info, session_info):
         cache.clear_user_session(user_info, session_info)
     app.clear_user_session = clear_user_session
+    """
 
     return app
