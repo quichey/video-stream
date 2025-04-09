@@ -117,5 +117,12 @@ def create_app(test_config=None):
     @app.route("/getcomments", methods=["POST"])
     def read_comments():
         return router.read_comments()
+    
+    """
+    admin util cmd to clear user session for testing
+    """
+    def clear_user_session(user_info, session_info):
+        cache.clear_user_session(user_info, session_info)
+    app.clear_user_session = clear_user_session
 
     return app
