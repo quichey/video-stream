@@ -3,8 +3,8 @@ import os
 from flask import Flask, request
 
 from api.Cache import Cache
-from api.AdminRouter import AdminRouter
-from api.ClientRouter import ClientRouter
+from api.Routers import AdminRouter
+from api.Routers import ClientRouter
 
 """
 Inject Router functions into this file
