@@ -1,8 +1,8 @@
 # Example using Flask and SQLite
 from flask import Flask, jsonify, json
-import mysql.connector
 
 from api.Cache import Cache, SecurityError
+from .Router import Router
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -12,46 +12,16 @@ in the base code
 """
 
 
-class ClientRouter():
-    def __init__(self, app, cache, request):
-        self.cache = cache
+class ClientRouter(Router):
+    """
+    don't yet know what i would want in 
+    here for ClientRouter, but i'm sure something
+    will come up
+    """
+    def set_up(self):
+        return
 
-        def get_route_signatures(self):
-            signatures = [
-                (self.html_comments, "/blah", ["GET"]),
-                (self.add_client, "/ws", ["GET"]),
-                (self.read_comments_temp, "/comments", ["GET"]),
-                (self.read_comments, "/getcomments", ["POST"]),
-            ]
-
-            return signatures
-
-
-        # Route to get all comments
-        @app.route('/blah')
-        def html_comments():
-            db = DB()
-            conn = db.cursor()
-            query = """
-                SELECT
-                    c.comment,
-                    u.name as user_name
-                FROM
-                comments AS c
-                LEFT JOIN
-                users AS u
-                ON c.user_id = u.id;
-            """
-            conn.execute(query)
-            items = conn.fetchall()
-            conn.close()
-            html = "<u1>"
-            for record in items:
-                comment = record[0]
-                user_name = record[1]
-                html += f"<li>@{user_name}: {comment}</li>"
-            html += "<ui>"
-            return html
+    def construct_routes(self, app, request):
 
 
         # Route to get all items

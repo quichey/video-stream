@@ -1,8 +1,10 @@
 # Example using Flask and SQLite
 from flask import Flask, jsonify, json
-import mysql.connector
+import os
+from dotenv import load_dotenv
 
 from api.Cache import Cache, SecurityError
+from .Router import Router
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -12,19 +14,13 @@ in the base code
 """
 
 
-class AdminRouter():
-    def __init__(self, app, cache, request):
-        self.cache = cache
+class AdminRouter(Router):
+    def set_up(self):
+        load_dotenv()
+        self.admin_secret = os.getenv("FLASK_ADMIN_SECRET")
+        return
 
-        def get_route_signatures(self):
-            signatures = [
-                (self.html_comments, "/blah", ["GET"]),
-                (self.add_client, "/ws", ["GET"]),
-                (self.read_comments_temp, "/comments", ["GET"]),
-                (self.read_comments, "/getcomments", ["POST"]),
-            ]
-
-            return signatures
+    def construct_routes(self, app, request):
 
        
         """
@@ -39,8 +35,10 @@ class AdminRouter():
         def clear_user_session():
             # TODO: for now, block any access till
             # I research good way to authenticate
-            if True:
-                return
+            form_data = json.loads(request.data)
+            auth_key = form_data['auth_key']
+            if str(auth_key) != str(self.admin_secret):
+                raise SecurityError("Admin Privileges Required")
             user_info = "blah"
             session_info = "blah"
             cache.clear_user_session(user_info, session_info)
