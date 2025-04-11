@@ -169,3 +169,10 @@ class SessionManagement():
         # clear users set
         return
 
+    def exit_session_admin(self, user_info):
+        session_info = "blah" #TODO: retrieve session_info
+        self.current_state[session_info] = None
+
+        # clear token hash
+        # clear users set
+        return

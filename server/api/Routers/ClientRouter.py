@@ -74,10 +74,7 @@ class ClientRouter(Router):
 
             form_data = json.loads(request.data)
             # TODO: change later to something like request.form['username']
-            user_info = {
-                "id": form_data['user_id'],
-                "name": form_data['user_name']
-            }
+            user_info = self.extract_user_info()
             existing_session_info = form_data["token"] if "token" in form_data.keys() else None
             try:
                 session_info = cache.get_session(user_info, existing_session_info)
