@@ -126,3 +126,18 @@ class Cache():
 
         # have SessionManagement clear self.current_state of user_id/token info
         return
+
+
+    """
+    Should I have session_info here if i intend this for admin stuff?
+    I would need something like this possibly for refreshing the page
+    or something
+    """
+    def clear_user_session_admin(self, user_id):
+        self.session_manager.exit_session_admin(user_id)
+        # add some security measures so that 
+        # a random person can't randomly ruin another
+        # person's session
+
+        # have SessionManagement clear self.current_state of user_id/token info
+        return

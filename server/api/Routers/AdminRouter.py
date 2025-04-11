@@ -31,17 +31,16 @@ class AdminRouter(Router):
         sender is an admin
         then do the thingys
         """
-        @app.route("/user/session", methods=["DELETE"])
-        def clear_user_session():
+        @app.route("/admin/user/session", methods=["DELETE"])
+        def clear_user_session_admin():
             # TODO: for now, block any access till
             # I research good way to authenticate
             form_data = json.loads(request.data)
             auth_key = form_data['auth_key']
             if str(auth_key) != str(self.admin_secret):
                 raise SecurityError("Admin Privileges Required")
-            user_info = "blah"
-            session_info = "blah"
-            cache.clear_user_session(user_info, session_info)
+            user_info = self.extract_user_info()
+            cache.clear_user_session_admin(user_info)
             return "something"
 
 
