@@ -30,6 +30,13 @@ class AdminRouter(Router):
         setup just http routes that authenticate that the 
         sender is an admin
         then do the thingys
+
+
+        
+        curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0"}' http://127.0.0.1:5000/getcomments
+        curl --header "Content-Type: application/json" --request DELETE --data '{"user_id":"0","user_name":"users_name_0", "auth_key": "something"}' http://127.0.0.1:5000/admin/user/session
+        curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0"}' http://127.0.0.1:5000/getcomments
+
         """
         @app.route("/admin/user/session", methods=["DELETE"])
         def clear_user_session_admin():
@@ -40,7 +47,7 @@ class AdminRouter(Router):
             if str(auth_key) != str(self.admin_secret):
                 raise SecurityError("Admin Privileges Required")
             user_info = self.extract_user_info()
-            cache.clear_user_session_admin(user_info)
+            self.cache.clear_user_session_admin(user_info)
             return "something"
 
 
