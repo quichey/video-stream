@@ -1,3 +1,5 @@
+from flask import json
+
 """
 Thinking maybe have this class to handle any common Flask
 Logic that I see in ClientRouter and AdminRouter
@@ -13,7 +15,7 @@ class Router():
     
 
     def extract_user_info(self):
-        form_data = json.loads(request.data)
+        form_data = json.loads(self.request.data)
         # TODO: change later to something like request.form['username']
         user_info = {
             "id": form_data['user_id'],
