@@ -170,9 +170,11 @@ class SessionManagement():
         return
 
     def exit_session_admin(self, user_info):
-        session_info = "blah" #TODO: retrieve session_info
+        user_id = user_info["id"]
+        session_info = self.generate_token(user_info)
         self.current_state[session_info] = None
 
         # clear token hash
-        # clear users set
+        # clear users set (self.current_users)
+        self.current_users.remove(user_id)
         return
