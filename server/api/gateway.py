@@ -1,9 +1,10 @@
 import os
 
-from flask import Flask
+from flask import Flask, request
 
 from api.Cache import Cache
-from api.Router import Router
+from api.Routers import AdminRouter
+from api.Routers import ClientRouter
 
 """
 Inject Router functions into this file
@@ -54,6 +55,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
+    print(f"app.instance_path: {app.instance_path}")
     # ensure the instance folder exists
     # setup the machine's
     # operating system
@@ -79,43 +81,25 @@ def create_app(test_config=None):
     and keep this file as managing state of whole micro-service/gateway-process
     """
     cache = Cache()
-    router = Router(cache=cache)
-    app.router = router
-    def construct_routes():
-        # Routes.get_route_signatures ?
-        routes = router.get_route_signatures()
 
-        counter = 0
-        for python_func, name, http_methods in routes:
-            # i think need to use getattr/setattr
-            # to dynamically add functions to this app object
-            # while decorating it with @app.route
-            # iirc, python decorators are functions
-            # that wrap the func below within it
-            # the inner_func is one of the params
-            # and the following params are the accepted arguments?
-            """
-            @app.route(name, http_methods)
-            route_func = python_func
-            """
+    client_router = ClientRouter(app=app, cache=cache, request=request)
+    app.client_router = client_router
 
-            """
-            @app.route(name, http_methods)(python_func)
-            """
-            #temp_func_name = f"route_func_{counter}"
-            app.temp_func_name = app.route(name, http_methods)(python_func)
-            counter = counter + 1
-            """
-            possibly for sys-admin stuff,
-            store a hashmap from python func name to cached app.func_name
-            in case you run into something odd and need
-            to take down just a few routes or something
-            """
-        
-        return app
-    #construct_routes()
+    admin_router = AdminRouter(app=app, cache=cache, request=request)
+    app.admin_router = admin_router
+    """
     @app.route("/getcomments", methods=["POST"])
     def read_comments():
         return router.read_comments()
+    """
+
+
+    """
+    Maybe should make 2 Separate Router Classes
+    One for video-stream Client APIs
+    a separate one for Admin util cmd APIs
+    """
+    
+    
 
     return app

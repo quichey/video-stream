@@ -112,3 +112,32 @@ class Cache():
             self.session_manager.update_state(session_info, "comments", "offset", new_offset)
 
         return data
+
+    """
+    Should I have session_info here if i intend this for admin stuff?
+    I would need something like this possibly for refreshing the page
+    or something
+    """
+    def clear_user_session(self, user_id, session_info):
+        self.session_manager.exit_session(user_id, session_info)
+        # add some security measures so that 
+        # a random person can't randomly ruin another
+        # person's session
+
+        # have SessionManagement clear self.current_state of user_id/token info
+        return
+
+
+    """
+    Should I have session_info here if i intend this for admin stuff?
+    I would need something like this possibly for refreshing the page
+    or something
+    """
+    def clear_user_session_admin(self, user_id):
+        self.session_manager.exit_session_admin(user_id)
+        # add some security measures so that 
+        # a random person can't randomly ruin another
+        # person's session
+
+        # have SessionManagement clear self.current_state of user_id/token info
+        return
