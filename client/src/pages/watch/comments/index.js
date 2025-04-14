@@ -58,6 +58,11 @@ export default function Comments() {
     /*
     TODO: add nextPageKey to list of params for post request
     */
+    var temp_user = {
+      "user_id": 0,
+      "user_name": "blah"
+    };
+    var post_req_data = JSON.stringify(temp_user)
     fetch(
       "http://127.0.0.1:5000/getcomments",
       {
@@ -68,6 +73,7 @@ export default function Comments() {
         //method: "POST",
         // body: JSON.stringify({ limit: 30 }),
         mode: "no-cors",
+        body: post_req_data
       },
     )
       .then((response) => response.json())
