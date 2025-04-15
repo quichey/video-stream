@@ -74,7 +74,7 @@ class SessionManagement():
         if existing_session_info is not None:
             return self.authenticate_user(user_info, existing_session_info)
 
-
+        print(f"self.current_users: {self.current_users}")
         if user_id in self.current_users:
             raise Exception("User already registered")
         
