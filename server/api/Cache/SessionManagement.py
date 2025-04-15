@@ -55,7 +55,7 @@ class SessionManagement():
     register_user. I think I was planning
     on having register_user call this one
     """
-    def authenticate_user(self, user_info, session_info):
+    def authenticate_user(self, user_info, existing_session_info):
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
