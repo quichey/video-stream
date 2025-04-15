@@ -14,7 +14,7 @@ const addComment = (commentArray) => {
 };
 export default function Comments() {
   const [comments, setComments] = React.useState([]);
-  const [nextPageKey, setNextPageKey] = React.useState();
+  const [sessionToken, setSessionToken] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const scrollPosition = useWindowScroll();
 
@@ -58,26 +58,32 @@ export default function Comments() {
     /*
     TODO: add nextPageKey to list of params for post request
     */
+    var temp_user = {
+      "user_id": 0,
+      "user_name": "blah"
+    };
+    var post_req_data = JSON.stringify(temp_user)
     fetch(
-      "http://127.0.0.1:5000/comments",
+      "http://127.0.0.1:5000/getcomments",
       {
-        method: "GET",
+        method: "POST",
         // may need to use POST later for adding params
         // i think don't have to, could use query string
         // POST is probably more secure cause body is probably encrypted
         //method: "POST",
         // body: JSON.stringify({ limit: 30 }),
-        mode: "no-cors",
+        // mode: "no-cors",
+        body: post_req_data
       },
     )
       .then((response) => response.json())
       .then((json) => {
         console.log(json);
-        const tmpComments = json.items.map((comment) => {
-          <Comment comment={comment.comment} user={comment.user_name} />;
+        const tmpComments = json.comment_data.map((comment) => {
+          return <Comment comment={comment.comment} user={comment.user_name} />;
         });
         setComments(tmpComments);
-        setNextPageKey(json.last_evaluated_key);
+        setSessionToken(json.session_info);
       })
       .catch((error) => {
         console.log(error);
@@ -102,6 +108,13 @@ export default function Comments() {
       if (loading) {
         setLoading(false);
       } else {
+        /*
+          Do Server Call with sessionToken
+          maybe make some kinda func for re-used api info?
+          also set up build of client javascript/html to
+          load server host/domain Addr dynamically i think (process.env?)
+        */
+       /*
         console.log("end of scroll");
         let tempComments = [];
         for (var i = 0; i < comments.length + 10; i++) {
@@ -109,6 +122,44 @@ export default function Comments() {
         }
         setComments(tempComments);
         setLoading(true);
+        */
+        console.log("blah")
+
+        
+        var temp_user = {
+          "user_id": 0,
+          "user_name": "blah",
+          "token": sessionToken
+        };
+        var post_req_data = JSON.stringify(temp_user)
+        fetch(
+          "http://127.0.0.1:5000/getcomments",
+          {
+            method: "POST",
+            // may need to use POST later for adding params
+            // i think don't have to, could use query string
+            // POST is probably more secure cause body is probably encrypted
+            //method: "POST",
+            // body: JSON.stringify({ limit: 30 }),
+            // mode: "no-cors",
+            body: post_req_data
+          },
+        )
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json);
+            const tmpComments = json.comment_data.map((comment) => {
+              return <Comment comment={comment.comment} user={comment.user_name} />;
+            });
+            
+            setComments((prevComments) => {
+              const newComments = [...prevComments, ...tmpComments]
+              return newComments
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
       /*
       setComments((prevComments) => {
@@ -120,7 +171,7 @@ export default function Comments() {
       });
       */
     }
-  }, [scrollPosition, comments, loading]);
+  }, [scrollPosition, comments, loading, sessionToken]);
   return (
     <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       {comments}
