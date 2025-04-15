@@ -23,3 +23,21 @@ language of most Web-Apps.
 
 Hope to get an official Publicly Available Website up, but unsure if I will get to
 that point.
+
+
+# Planning out Next Features/things
+
+Big Features
+- Different Videos
+- User Registration
+- Recommendations
+- User Channels
+- Playlists
+- Search Videos
+- Settings
+
+Comments Feature Improvements/Missing
+- Date
+- Likes/Dislikes
+- Replies
+- User Profile Icon
