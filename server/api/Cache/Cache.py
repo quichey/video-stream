@@ -73,7 +73,7 @@ class Cache():
         limit = page_size
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
 
-        if session_info:
+        if session_info is not None:
             current_state_of_comments = self.session_manager.get_state(session_info, "comments")
             offset = current_state_of_comments["offset"]
             limit = current_state_of_comments["limit"]

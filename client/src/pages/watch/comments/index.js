@@ -124,6 +124,42 @@ export default function Comments() {
         setLoading(true);
         */
         console.log("blah")
+
+        
+        var temp_user = {
+          "user_id": 0,
+          "user_name": "blah",
+          "token": sessionToken
+        };
+        var post_req_data = JSON.stringify(temp_user)
+        fetch(
+          "http://127.0.0.1:5000/getcomments",
+          {
+            method: "POST",
+            // may need to use POST later for adding params
+            // i think don't have to, could use query string
+            // POST is probably more secure cause body is probably encrypted
+            //method: "POST",
+            // body: JSON.stringify({ limit: 30 }),
+            // mode: "no-cors",
+            body: post_req_data
+          },
+        )
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json);
+            const tmpComments = json.comment_data.map((comment) => {
+              return <Comment comment={comment.comment} user={comment.user_name} />;
+            });
+            
+            setComments((prevComments) => {
+              const newComments = [...prevComments, ...tmpComments]
+              return newComments
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
       /*
       setComments((prevComments) => {
