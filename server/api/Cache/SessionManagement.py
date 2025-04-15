@@ -1,6 +1,6 @@
 
 
-COMMENTS_FIRST_PAGE_SIZE = 50
+COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
 
 
@@ -55,7 +55,7 @@ class SessionManagement():
     register_user. I think I was planning
     on having register_user call this one
     """
-    def authenticate_user(self, user_info, session_info):
+    def authenticate_user(self, user_info, existing_session_info):
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
@@ -74,7 +74,7 @@ class SessionManagement():
         if existing_session_info is not None:
             return self.authenticate_user(user_info, existing_session_info)
 
-
+        print(f"self.current_users: {self.current_users}")
         if user_id in self.current_users:
             raise Exception("User already registered")
         

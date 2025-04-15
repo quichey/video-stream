@@ -5,6 +5,7 @@ import Watch from "./pages/watch";
 
 import logo from "./logo.svg";
 import "./App.css";
+import { useEffect } from "react";
 
 function App() {
   const { width: windowWidth } = useWindowDimensions();
