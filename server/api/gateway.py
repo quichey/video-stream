@@ -1,6 +1,7 @@
 import os
 
-from flask import Flask, request
+from flask import Flask, request, Response
+from flask_cors import CORS
 
 from api.Cache import Cache
 from api.Routers import AdminRouter
@@ -34,7 +35,6 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 
 
 """
-    
 
 def create_app(test_config=None):
     # create and configure the app
@@ -44,6 +44,8 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
+
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # different optional start-up configs
     # to alter the genetic inheritance if the
