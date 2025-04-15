@@ -79,8 +79,8 @@ export default function Comments() {
       .then((response) => response.json())
       .then((json) => {
         console.log(json);
-        const tmpComments = json.items.map((comment) => {
-          <Comment comment={comment.comment} user={comment.user_name} />;
+        const tmpComments = json.comment_data.map((comment) => {
+          return <Comment comment={comment.comment} user={comment.user_name} />;
         });
         setComments(tmpComments);
         setSessionToken(json.session_info);
@@ -114,6 +114,7 @@ export default function Comments() {
           also set up build of client javascript/html to
           load server host/domain Addr dynamically i think (process.env?)
         */
+       /*
         console.log("end of scroll");
         let tempComments = [];
         for (var i = 0; i < comments.length + 10; i++) {
@@ -121,6 +122,8 @@ export default function Comments() {
         }
         setComments(tempComments);
         setLoading(true);
+        */
+        console.log("blah")
       }
       /*
       setComments((prevComments) => {
