@@ -72,7 +72,7 @@ export default function Comments() {
         // POST is probably more secure cause body is probably encrypted
         //method: "POST",
         // body: JSON.stringify({ limit: 30 }),
-        mode: "no-cors",
+        // mode: "no-cors",
         body: post_req_data
       },
     )
