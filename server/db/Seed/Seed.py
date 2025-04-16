@@ -108,9 +108,18 @@ class Seed():
                     print(f"got fk_refs for table: {table_name}")
 
 
-    
-        def get_random_foreign_key(self, table_instance):
+        def get_parent_table_of_key(self, table_instance, column_or_fk_info=None):
+            # TODO: this line assumes only one foreign key for table_instance
+            # for comments table, need to handle multiple FK(s) from Users/Videos
+            # the idx 0 needs to change, but not sure what to
             parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
+            return parent_table_name
+
+    
+        def get_random_foreign_key(self, table_instance, column_or_fk_info=None):
+            # TODO: this line assumes only one foreign key for table_instance
+            # for comments table, need to handle multiple FK(s) from Users/Videos
+            parent_table_name = self.get_parent_table_of_key(table_instance, column_or_fk_info)
             #parent_table = self.get_table_metadata(parent_table_name)
 
             parent_table = self.get_table_metadata(parent_table_name)
