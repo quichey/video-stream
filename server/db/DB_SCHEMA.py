@@ -13,7 +13,6 @@ database_specs = {
     "dbname": "video_stream"
 }
 
-
 users_table = Table(
     "users",
     metadata_obj,
@@ -23,11 +22,22 @@ users_table = Table(
     Column("email", String(30)),
 )
 
+videos_table= Table(
+    "videos",
+    metadata_obj,
+    Column("id", Integer, primary_key=True),
+
+    Column("file", String(100)),
+    Column("user_id", ForeignKey("users.id"), nullable=False),
+
+)
+
 comments_table = Table(
     "comments",
     metadata_obj,
     Column("id", Integer, primary_key=True),
     Column("user_id", ForeignKey("users.id"), nullable=False),
+    Column("video_id", ForeignKey("videos.id"), nullable=False),
     #Column("thread_comment_id", ForeignKey("comments.id"), nullable=True),
     Column("thread_comment_id", Integer),
 
