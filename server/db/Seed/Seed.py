@@ -275,7 +275,7 @@ class Seed():
             
 
             self.fk_references[child_table_name] = fk_reference_info_map
-            return fk_reference_info_list    
+            return fk_reference_info_map    
         """
         create a record to be inserted into the DB
         mutate self.pk_values (which is the Seed's internal cache for starting up the DB with data)
