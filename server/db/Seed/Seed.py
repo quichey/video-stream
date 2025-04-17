@@ -208,6 +208,26 @@ class Seed():
             self.fk_values_possible[table_name] = possible
             return possible
 
+
+        """
+        one_info: {'fk_column_name': 'id', 'column_name': 'user_id', 'table_name': 'users'}
+        one_info: {'fk_column_name': 'id', 'column_name': 'video_id', 'table_name': 'videos'}
+
+        maybe instead of making fk_references a list, make it a map from column_name -> rest_of_info
+        fk_references = {
+            "user_id": {
+                "name_of_column_in_parent": "id",
+                "parent_table_name": "users"
+            },
+            "video_id": {
+                "name_of_column_in_parent": "id",
+                "parent_table_name": "videos"
+            }
+        }
+
+        RIGHT NOW, fk_references is a list of dictionaries, which makes finding specific fk_infos obscure
+        Nested Dictionary will make accessing specific fk_infos easier/straightforward
+        """
         def get_foreign_key_references(self, table_instance):
             child_table_name = table_instance.name
             #if child_table_name in self.fk_references.keys():
