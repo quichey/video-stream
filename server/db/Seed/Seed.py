@@ -108,18 +108,18 @@ class Seed():
                     print(f"got fk_refs for table: {table_name}")
 
 
-        def get_parent_table_of_key(self, table_instance, column_or_fk_info=None):
+        def get_parent_table_of_key(self, table_instance, column_name):
             # TODO: this line assumes only one foreign key for table_instance
             # for comments table, need to handle multiple FK(s) from Users/Videos
             # the idx 0 needs to change, but not sure what to
-            parent_table_name = self.fk_references[table_instance.name][0]["table_name"]
+            parent_table_name = self.fk_references[table_instance.name][column_name]["table_name"]
             return parent_table_name
 
     
-        def get_random_foreign_key(self, table_instance, column_or_fk_info=None):
+        def get_random_foreign_key(self, table_instance, column_name="name_of_col_in_table_instance"):
             # TODO: this line assumes only one foreign key for table_instance
             # for comments table, need to handle multiple FK(s) from Users/Videos
-            parent_table_name = self.get_parent_table_of_key(table_instance, column_or_fk_info)
+            parent_table_name = self.get_parent_table_of_key(table_instance, column_name)
             #parent_table = self.get_table_metadata(parent_table_name)
 
             parent_table = self.get_table_metadata(parent_table_name)
@@ -235,7 +235,7 @@ class Seed():
                 return self.fk_references[child_table_name]
 
             fks = table_instance.foreign_key_constraints
-            fk_reference_info_list = []
+            fk_reference_info_map = {}
             for fk in fks:
                 print(f"\n\n fk: {fk} \n\n")
                 print(f"\n\n vars(fk): {vars(fk)} \n\n")
@@ -266,10 +266,15 @@ class Seed():
                 # the python internal cache is not filling up with the enumeration
                 # of primary keys for the parent table
 
-                fk_reference_info_list.append(one_info)
+                # Possible TODO fix error: maybe swap column_name and fk_column_name
+                # checked reference data, should be correct as of now
+                fk_reference_info_map[one_info["column_name"]] = {
+                    "name_of_column_in_parent": one_info["fk_column_name"],
+                    "parent_table_name": one_info["table_name"]
+                }
             
 
-            self.fk_references[child_table_name] = fk_reference_info_list
+            self.fk_references[child_table_name] = fk_reference_info_map
             return fk_reference_info_list    
         """
         create a record to be inserted into the DB
@@ -346,7 +351,7 @@ class Seed():
                 # scan parent table
                 # use metadata obj to query other table
                 #return self.get_random_foreign_key(column)
-                fk_curr = self.get_random_foreign_key(column.table)
+                fk_curr = self.get_random_foreign_key(column.table, column_name)
                 print(f"\n\n fk_curr: {fk_curr} \n\n")
                 """
                  fk_curr: {'id': 2}
