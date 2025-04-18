@@ -186,6 +186,7 @@ class Seed():
             fk_references = self.get_foreign_key_references(table_instance)
             possible = []
             # doing bfs (breadth-first-search)
+            # TODO: review and update based off of new map structure
             def traverse_references(idx, fk_dict_so_far):
                 if idx >= len(fk_references):
                     return
@@ -270,7 +271,8 @@ class Seed():
                 # checked reference data, should be correct as of now
                 fk_reference_info_map[one_info["column_name"]] = {
                     "name_of_column_in_parent": one_info["fk_column_name"],
-                    "parent_table_name": one_info["table_name"]
+                    "parent_table_name": one_info["table_name"],
+                    "foreign_key_values": one_info["foreign_key_values"]
                 }
             
 
