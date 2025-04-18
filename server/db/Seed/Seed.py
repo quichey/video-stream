@@ -112,7 +112,7 @@ class Seed():
             # TODO: this line assumes only one foreign key for table_instance
             # for comments table, need to handle multiple FK(s) from Users/Videos
             # the idx 0 needs to change, but not sure what to
-            parent_table_name = self.fk_references[table_instance.name][column_name]["table_name"]
+            parent_table_name = self.fk_references[table_instance.name][column_name]["parent_table_name"]
             return parent_table_name
 
     
@@ -339,11 +339,11 @@ class Seed():
             foreign_key_name = None
 
             print(f"\n\n all_fk_info_list: {all_fk_info_list} \n\n")
-            for fk_info in all_fk_info_list:
+            for fk_info_column_name, fk_info in all_fk_info_list.items():
                 #if fk_info["fk_column_name"] == column_name:
-                if fk_info["column_name"] == column_name:
+                if fk_info_column_name == column_name:
                     #is_foreign_key = True
-                    foreign_key_name = fk_info["fk_column_name"]
+                    foreign_key_name = fk_info["name_of_column_in_parent"]
                     break
 
             #if is_foreign_key:
