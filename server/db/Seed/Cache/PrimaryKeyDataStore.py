@@ -1,6 +1,9 @@
 from .DataStore import DataStore
 
 class PrimaryKeyDataStore(DataStore):
+    # put table_name: PrimaryKey(...) in this dict
+    table_mapping = {}
+
     def init_pk_definitions(self):
         all_tables = self.metadata_obj.tables.values()
         for table_instance in all_tables:

@@ -1,6 +1,8 @@
 from .DataStore import DataStore
 
 class ForeignKeyDataStore(DataStore):
+    # put table_name: ForeignKey(...) in this dict
+    table_mapping = {}
         
     def init_fk_values_existing(self):
         all_tables = self.metadata_obj.tables.keys()
