@@ -75,3 +75,7 @@ VIDEO_STREAM = Table(
         ## OK to store lists in a table if list is expected to be short
     ]   
     )
+
+# BUGS in Videos-Storage branch
+1) trying to populate random foreign_keys for comments table
+after giving it 2 different foreign_keys: user_id and video_id
