@@ -93,3 +93,8 @@ such as the way it handles instance equality w/in the session.
 Also using the update function is not necessary for
 updating a single record. Seems worth using.
 No longer need the generate_random_primary_key function i think
+
+# Jotting out Ideas from brainstorming
+update records_to_insert during randomization to use Declarative Base Classes/instances w/session.add()
+--need to check if sqlalchemy sessions auto_flushing handles multi-threading
+--- research how to do foreign_key stuff with declarative base
