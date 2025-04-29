@@ -95,5 +95,12 @@ class ForeignKey:
 
 # prob don't need this, prob just use python dict now
 class DataStore():
-    def get_item():
-        pass
+    # put table_name: ForeignKey(...) in this dict
+    table_mapping = {}
+
+    def __init__(self, info_class):
+        self.inventory_class = inventory_class
+
+    def store_table_info(self, table_name, info_dict):
+        info_instance = self.inventory_class(**info_dict)
+        self.table_mapping[table_name] = info_instance
