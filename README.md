@@ -85,3 +85,11 @@ should do sqlalchemy Declarative Base I think instead of doing
 the extra Cache structures/Classes. The Declarative Base SEEMS
 to be a good way to simplify the code and HOPEFULLY help with 
 debugging
+
+# Summary of Important Findings from SqlAlchemy Research
+Session and ORM/Declarative Base
+seems handy with writing certain things neatly,
+such as the way it handles instance equality w/in the session.
+Also using the update function is not necessary for
+updating a single record. Seems worth using.
+No longer need the generate_random_primary_key function i think
