@@ -79,3 +79,9 @@ VIDEO_STREAM = Table(
 # BUGS in Videos-Storage branch
 1) trying to populate random foreign_keys for comments table
 after giving it 2 different foreign_keys: user_id and video_id
+
+# Next steps
+should do sqlalchemy Declarative Base I think instead of doing
+the extra Cache structures/Classes. The Declarative Base SEEMS
+to be a good way to simplify the code and HOPEFULLY help with 
+debugging
