@@ -1,0 +1,143 @@
+import random
+import time
+
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
+from sqlalchemy import create_engine
+from sqlalchemy import insert, select
+from sqlalchemy import Boolean, Integer, String, DateTime
+
+
+#Sketching out blueprint/concepts of Seed class vs Cache class
+"""
+I want the Seed class to be a wrapper around the sqlalchemy library, to be able to quickly create test data-sets for a given schema.
+
+I want the Cache class to be an internal Encapsulation within the Seed class,
+to store any important information of the state of database during the process of populating test data
+
+Why am i doing this?
+Auto-populating foreign keys based off the parent table's primary keys is seeming to be difficult.
+And this is without handling the case of composite foreign/primary key defs.
+
+But i am unclear of what internal state the Seed class should have as opposed to putting them in the Cache class.
+I think the Seed class should have the sqlalchemy constructs/objects, but the cache seems to be using sqlalchemy queries
+in order to populate data. This may be fine.
+The Seed class mainly has the programs/functions to run on the command-line that actually create the data.
+The user of the Seed program should not have to know sqlalchemy queries.
+
+The Seed class can handle the different script options/configs, while the cache class can handle the sqlalchemy calls, when it needs to.
+This seems like the Cache class will have a ton of functions.
+Should i move it to a different file? I think so.
+Pros?
+- idk
+Cons?
+- idk
+probably not important
+
+I think what i need to do next is create update_cache_* functions within cache,
+or seems just moving over any function with self.cache into cache seems to make more sense.
+But I feel lazy right now
+"""
+
+
+@dataclass
+class TableTestingState:
+    """Class for keeping track of an test dataset table generation info."""
+    "name": str
+    "num_records": int
+
+# may expand this file to be named snapshot_db
+# to draw inspiration from ISS/Clinicomp as well as the
+# glorious game Pokemon Snap
+# -- ideally i would make functionality to
+# - Check if database named video_stream exists
+# - - if not, create it with a test user
+# - create/load tables with demo-able data
+# - prepare indices for optimal searching/fetching for appropriate cases
+
+class Seed():
+    database_specs = None
+    base = None
+    metadata_obj = None
+    engine = None
+
+
+    def __init__(self, database_specs=database_specs, base=base):
+        self.database_specs = database_specs
+        self.base = base
+        self.metadata_obj = base.metadata
+        self.construct_engine(database_specs)
+
+    def get_table_metadata(self, table_name):
+        return self.metadata_obj.tables[table_name]
+    
+
+    def parse_test_data_file(self):
+        # first row is table name
+        # second row is columns names
+        # determine the delimiter
+        # construct list of dictionary records
+        pass
+    
+    def fill_table_with_test_data(self, table_name, test_file):
+        pass
+    
+
+    def construct_engine(self, database_specs):
+        dialect = database_specs["dialect"]
+        db_api = database_specs["db_api"]
+
+        user = database_specs["user"]
+        pw = database_specs["pw"]
+        hostname = database_specs["hostname"]
+        dbname = database_specs["dbname"]
+        url = f"{user}:{pw}@{hostname}/{dbname}"
+
+        engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+        self.engine = engine
+        return engine
+    
+
+    # Creates the database if not exists as well as the empty tables
+    def create_database_definition(self):
+        self.metadata_obj.create_all(self.engine)
+        return
+    
+    def init_db(self, list_of_table_rand):
+
+        def create_random_record(table_name):
+            pass
+        
+        with Session(self.engine) as session:
+            for table_state in list_of_table_rand:
+                for num_records in table_state.num_records:
+                    random_record = create_random_record()
+                    session.add(random_record)
+            
+            session.commit()
+        
+        return
+
+    # fill in tables with given test data
+    # TODO: update, i think create TableTestState instances here or in load_db.py
+    def initiate_test_environment(self, testing_state):
+        self.create_database_definition()
+
+        print(f"testing_state: {testing_state}")
+        list_of_table_files = testing_state.get("table_files", {})
+        for file in list_of_table_files:
+            table_data = self.parse_test_data_file(file)
+            print(f"table_data: {table_data}")
+        list_of_table_rand = testing_state["tables_random_populate"]
+
+
+        self.init_db(list_of_table_rand)
+ 
+
+# ideas for testing state
+# fill up users table with random data since it does not have foreign keys
+# and then view contents
+# and then write up test files for other tables using id's from this table
+# -- possibly add in a case in create_random_data where it checks if the column
+# -- is a foreign key, and then scan the parent table for a proper id
