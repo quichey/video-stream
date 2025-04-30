@@ -1,6 +1,14 @@
 from sqlalchemy import MetaData
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase
+
+from typing import Optional
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+
+class Base(DeclarativeBase):
+    pass
 
 metadata_obj = MetaData()
 
@@ -60,3 +68,35 @@ comment_likes_table = Table(
 
     Column("like_dislike_flag", Boolean),
 )
+
+
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(30))
+    email: Mapped[Optional[str]]
+
+    def __repr__(self) -> str:
+        return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
+
+
+class Video(Base):
+    __tablename__ = "videos"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    file: Mapped[str] = mapped_column(String(30))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+
+    def __repr__(self) -> str:
+        return f"Video(id={self.id!r}, file={self.file!r}, user_id={self.user_id!r})"
+
+
+class Comment(Base):
+    __tablename__ = "comments"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    comment: Mapped[str] = mapped_column(String(30))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    video_id: Mapped[int] = mapped_column(Integer, ForeignKey("videos.id"))
+
+    def __repr__(self) -> str:
+        return f"Comment(id={self.id!r}, comment={self.comment!r}, user_id={self.user_id!r})"
