@@ -103,11 +103,89 @@ class Seed():
     def create_database_definition(self):
         self.metadata_obj.create_all(self.engine)
         return
-    
+
+    def create_random_record(self, table):
+        # get table specs for table object
+        # get column names and column types
+        # use create_random_value
+        # sqlalchemy may have function available to do this
+        record = {}
+        
+        keys = table.c.keys()
+        for key in keys:
+            if self.is_a_primary_key(table, key):
+                continue
+
+
+            print(f"\n\n  table {table.name} creating column: {key} \n\n")
+            column = getattr(table.c, key)
+            record[key] = self.create_random_value(column)
+        # probably convert record dictionary into sqlalchemy Record object type
+        # maybe not if the insert function only requires a list of dicts
+        
+        #TODO: check out to dynamically create a class from a variable class name
+        return record      
+
+    def create_random_value(self, column):
+        data_type = column.type
+        print(f"\n\n data_type: {data_type} \n\n")
+        column_name = column.name
+        table_name = column.table.name
+
+        all_fk_info_list = self.fk_references[table_name]
+        #is_foreign_key = False
+        foreign_key_name = None
+
+        print(f"\n\n all_fk_info_list: {all_fk_info_list} \n\n")
+        for fk_info_column_name, fk_info in all_fk_info_list.items():
+            #if fk_info["fk_column_name"] == column_name:
+            if fk_info_column_name == column_name:
+                #is_foreign_key = True
+                foreign_key_name = fk_info["name_of_column_in_parent"]
+                break
+
+        #if is_foreign_key:
+        if foreign_key_name is not None:
+            # scan parent table
+            # use metadata obj to query other table
+            #return self.get_random_foreign_key(column)
+            fk_curr = self.get_random_foreign_key(column.table, column_name)
+            print(f"\n\n fk_curr: {fk_curr} \n\n")
+            """
+                fk_curr: {'id': 2}
+                return fk_curr[fk_info["fk_column_name"]]
+
+                need to save fk_info["fk_column_name"] from previous for loop
+                i think this is fine. 
+            """
+            return fk_curr[foreign_key_name]
+        
+        def random_date(start_date, end_date):
+            start_timestamp = time.mktime(start_date.timetuple())
+            end_timestamp = time.mktime(end_date.timetuple())
+            random_timestamp = random.uniform(start_timestamp, end_timestamp)
+            return datetime.fromtimestamp(random_timestamp)
+        hardcoded_end_date = datetime.now()
+        hardcoded_start_date = hardcoded_end_date - relativedelta(years=10)
+
+
+        if isinstance(data_type, Boolean):
+            flag = random.randint(0, 1)
+            return True if flag == 1 else False
+        
+        elif isinstance(data_type, Integer):
+            return random.randint(0, 10000)
+        
+        elif isinstance(data_type, String):
+            rand_int = random.randint(0, 10000)
+            return f"{table_name}_{column_name}_{rand_int}"
+        
+        elif isinstance(data_type, DateTime):
+            return random_date(hardcoded_start_date, hardcoded_end_date)
+
+
     def init_db(self, list_of_table_rand):
 
-        def create_random_record(table_name):
-            pass
         
         with Session(self.engine) as session:
             for table_state in list_of_table_rand:
