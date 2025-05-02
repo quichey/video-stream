@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import create_engine
 from sqlalchemy import insert, select
 from sqlalchemy import Boolean, Integer, String, DateTime
+from sqlalchemy.orm import Session
 
 
 #Sketching out blueprint/concepts of Seed class vs Cache class
@@ -61,6 +62,7 @@ class Seed():
     base = None
     metadata_obj = None
     engine = None
+    records = []
 
 
     def __init__(self, database_specs=database_specs, schema=schema):
@@ -110,7 +112,7 @@ class Seed():
         # get column names and column types
         # use create_random_value
         # sqlalchemy may have function available to do this
-        record = {}
+        record = {"id": None}
         
         keys = table.c.keys()
         for key in keys:
@@ -190,9 +192,17 @@ class Seed():
 
         
         with Session(self.engine) as session:
+            # if i keep this cache object, I dont have to do
+            # select queries assuming every record gets
+            # correctly inserted
+            # what should i do if this assumption fails?
+            # TODO: answer above question
+            self.cache = {}
             for table_state in list_of_table_rand:
+                self.cache[table_state["name"]] = []
                 for num_records in table_state.num_records:
                     random_record = create_random_record()
+                    self.cache[table_state["name"]].append(random_record)
                     session.add(random_record)
             
             session.commit()
