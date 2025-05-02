@@ -105,6 +105,12 @@ class Seed():
     def create_database_definition(self):
         self.metadata_obj.create_all(self.engine)
         return
+    
+    def is_a_primary_key(self, table, key):
+        # think may change comments to not have id later
+        # but actually do need it because
+        # a user can comment multiple times on a video
+        return key == "id"
 
     def create_random_record(self, table):
         # get table specs for table object
