@@ -62,7 +62,6 @@ class Seed():
     base = None
     metadata_obj = None
     engine = None
-    records = []
 
 
     def __init__(self, database_specs=database_specs, schema=schema):
