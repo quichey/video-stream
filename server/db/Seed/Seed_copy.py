@@ -63,10 +63,11 @@ class Seed():
     engine = None
 
 
-    def __init__(self, database_specs=database_specs, base=base):
+    def __init__(self, database_specs=database_specs, schema=schema):
         self.database_specs = database_specs
-        self.base = base
-        self.metadata_obj = base.metadata
+        self.schema = schema
+        self.base = schema.Base
+        self.metadata_obj = schema.Base.metadata
         self.construct_engine(database_specs)
 
     def get_table_metadata(self, table_name):
@@ -124,6 +125,7 @@ class Seed():
         # maybe not if the insert function only requires a list of dicts
         
         #TODO: check out to dynamically create a class from a variable class name
+        record = self.schema.get_record_factory(table.name)(**record)
         return record      
 
     def create_random_value(self, column):
