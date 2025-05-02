@@ -135,26 +135,26 @@ class Seed():
         record = self.schema.get_record_factory(table.name)(**record)
         return record      
 
+    def is_foreign_key(self, column):
+        return len(column.foreign_keys) > 0
+    
+    def get_random_foreign_key(self, column):
+        # TODO: check self.cache for the primary keys
+
+        # get len() of cached table
+        # do random.int of index of table to get random record
+        # get that record's id
+        pass
+
     def create_random_value(self, column):
         data_type = column.type
         print(f"\n\n data_type: {data_type} \n\n")
         column_name = column.name
         table_name = column.table.name
 
-        all_fk_info_list = self.fk_references[table_name]
-        #is_foreign_key = False
-        foreign_key_name = None
-
-        print(f"\n\n all_fk_info_list: {all_fk_info_list} \n\n")
-        for fk_info_column_name, fk_info in all_fk_info_list.items():
-            #if fk_info["fk_column_name"] == column_name:
-            if fk_info_column_name == column_name:
-                #is_foreign_key = True
-                foreign_key_name = fk_info["name_of_column_in_parent"]
-                break
 
         #if is_foreign_key:
-        if foreign_key_name is not None:
+        if self.is_foreign_key(column):
             # scan parent table
             # use metadata obj to query other table
             #return self.get_random_foreign_key(column)
