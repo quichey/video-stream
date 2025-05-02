@@ -158,7 +158,7 @@ class Seed():
             # scan parent table
             # use metadata obj to query other table
             #return self.get_random_foreign_key(column)
-            fk_curr = self.get_random_foreign_key(column.table, column_name)
+            fk_curr = self.get_random_foreign_key(column)
             print(f"\n\n fk_curr: {fk_curr} \n\n")
             """
                 fk_curr: {'id': 2}
