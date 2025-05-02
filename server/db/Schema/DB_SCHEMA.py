@@ -8,12 +8,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 class Base(DeclarativeBase):
-    
-    def get_record_factory(self, table_name):
-        mapping = {
-            "blank": 2
-        }
-        return
+    pass
 
 metadata_obj = MetaData()
 
