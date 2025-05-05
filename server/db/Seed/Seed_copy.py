@@ -144,7 +144,15 @@ class Seed():
         # get len() of cached table
         # do random.int of index of table to get random record
         # get that record's id
+
+        # add function to backup db if it already exists 
+        # like i did at ISS
         pass
+
+    def back_up_db(self):
+        # TODO: lookup sqlalchemy way to do it
+        # for inter-operability b/t db engines
+        return
 
     def create_random_value(self, column):
         data_type = column.type
@@ -226,7 +234,7 @@ class Seed():
             print(f"table_data: {table_data}")
         list_of_table_rand = testing_state["tables_random_populate"]
 
-
+        self.back_up_db()
         self.init_db(list_of_table_rand)
  
 
