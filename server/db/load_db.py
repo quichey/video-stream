@@ -1,4 +1,4 @@
-import db.DB_SCHEMA as Schema
+import db.Schema as Schema
 import db.Seed.Seed as Seed
 
 # This is the unifying script that will use DB_SCHEMA.py in conjunction with Seed.py
@@ -8,7 +8,7 @@ import db.Seed.Seed as Seed
 # -- the different programs/options to run this script
 # -- and then plan out the functions/fields/etc
 
-seed = Seed.Seed(Schema.database_specs, Schema.metadata_obj)
+seed = Seed.Seed(Schema.admin_specs, Schema.database_specs, Schema)
 
 testing_state = {
     "tables_random_populate": [
