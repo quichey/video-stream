@@ -64,12 +64,14 @@ class Seed():
     engine = None
 
 
-    def __init__(self, database_specs=database_specs, schema=schema):
+    def __init__(self, admin_specs, database_specs, schema):
+        self.admin_specs = admin_specs
         self.database_specs = database_specs
         self.schema = schema
         self.base = schema.Base
         self.metadata_obj = schema.Base.metadata
-        self.construct_engine(database_specs)
+        self.construct_engine()
+        self.construct_admin_engine()
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
@@ -86,7 +88,8 @@ class Seed():
         pass
     
 
-    def construct_engine(self, database_specs):
+    def construct_engine(self):
+        database_specs = self.database_specs
         dialect = database_specs["dialect"]
         db_api = database_specs["db_api"]
 
@@ -100,6 +103,21 @@ class Seed():
         self.engine = engine
         return engine
     
+    
+    def construct_admin_engine(self):
+        admin_specs = self.admin_specs
+        dialect = admin_specs["dialect"]
+        db_api = admin_specs["db_api"]
+
+        user = admin_specs["user"]
+        pw = admin_specs["pw"]
+        hostname = admin_specs["hostname"]
+        dbname = admin_specs["dbname"]
+        url = f"{user}:{pw}@{hostname}/{dbname}"
+
+        engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+        self.admin_engine = engine
+        return engine
 
     # Creates the database if not exists as well as the empty tables
     def create_database_definition(self):
@@ -213,8 +231,8 @@ class Seed():
             self.cache = {}
             for table_state in list_of_table_rand:
                 self.cache[table_state["name"]] = []
-                for num_records in table_state.num_records:
-                    random_record = create_random_record()
+                for _ in range(table_state.num_records):
+                    random_record = self.create_random_record()
                     self.cache[table_state["name"]].append(random_record)
                     session.add(random_record)
             
