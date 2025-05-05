@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+
 from sqlalchemy import MetaData
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
 from sqlalchemy import ForeignKey
@@ -12,11 +15,12 @@ class Base(DeclarativeBase):
 
 metadata_obj = MetaData()
 
+load_dotenv()
 admin_specs = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
     "user": "root",
-    "pw": "weeweeWeinerColosus@3*",
+    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
     "hostname": "localhost:3306",
     "dbname": "video_stream"
 }
