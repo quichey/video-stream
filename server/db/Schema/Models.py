@@ -12,6 +12,15 @@ class Base(DeclarativeBase):
 
 metadata_obj = MetaData()
 
+admin_specs = {
+    "dialect": "mysql",
+    "db_api": "mysqlconnector",
+    "user": "root",
+    "pw": "weeweeWeinerColosus@3*",
+    "hostname": "localhost:3306",
+    "dbname": "video_stream"
+}
+
 database_specs = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
