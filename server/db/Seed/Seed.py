@@ -3,9 +3,9 @@ import time
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from dataclasses import dataclass
 
 from sqlalchemy import create_engine
-from sqlalchemy import insert, select
 from sqlalchemy import Boolean, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
@@ -45,8 +45,8 @@ But I feel lazy right now
 @dataclass
 class TableTestingState:
     """Class for keeping track of an test dataset table generation info."""
-    "name": str
-    "num_records": int
+    name: str
+    num_records: int
 
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
@@ -171,6 +171,8 @@ class Seed():
     def back_up_db(self):
         # TODO: lookup sqlalchemy way to do it
         # for inter-operability b/t db engines
+        with self.admin_engine.connect() as conn:
+            conn.execute("SELECT 1")
         return
 
     def create_random_value(self, column):
@@ -194,6 +196,7 @@ class Seed():
                 need to save fk_info["fk_column_name"] from previous for loop
                 i think this is fine. 
             """
+            foreign_key_name = "blah"
             return fk_curr[foreign_key_name]
         
         def random_date(start_date, end_date):
@@ -231,10 +234,11 @@ class Seed():
             # TODO: answer above question
             self.cache = {}
             for table_state in list_of_table_rand:
-                self.cache[table_state["name"]] = []
+                self.cache[table_state.name] = []
+                table_instance = self.get_table_metadata(table_state.name)
                 for _ in range(table_state.num_records):
-                    random_record = self.create_random_record()
-                    self.cache[table_state["name"]].append(random_record)
+                    random_record = self.create_random_record(table_instance)
+                    self.cache[table_state.name].append(random_record)
                     session.add(random_record)
             
             session.commit()
@@ -252,9 +256,10 @@ class Seed():
             table_data = self.parse_test_data_file(file)
             print(f"table_data: {table_data}")
         list_of_table_rand = testing_state["tables_random_populate"]
+        test_table_states = [TableTestingState(**test_table_info) for test_table_info in list_of_table_rand]
 
         self.back_up_db()
-        self.init_db(list_of_table_rand)
+        self.init_db(test_table_states)
  
 
 # ideas for testing state
