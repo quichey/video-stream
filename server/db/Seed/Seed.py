@@ -190,19 +190,24 @@ class Seed():
         # like i did at ISS
         pass
 
-    def back_up_db(self):
-        # TODO: lookup sqlalchemy way to do it
-        # for inter-operability b/t db engines
-        """
-        with self.admin_engine.connect() as conn:
-            dialect = self.admin_specs.dialect
-            db_name = self.database_specs.dbname
-        """
+    """
+    TODO: ?
+    may need or want to get rid of database_specs to
+    avoid/deal-with concurrency problems.
+    or finally understand python multithreading library
+    """
+    def back_up_db(self, admin_session):
         back_up_engine = self.construct_back_up_engine()
         self.create_database_definition(back_up_engine)
         #TODO:
-        # - delete current database 
-        # - and then create original ddl
+        # - check for concurrency problems
+        dialect = self.admin_specs.dialect
+        db_name = self.database_specs.dbname
+        query = ""
+        match dialect:
+            case "mysql":
+                query = f"DROP DATABASE {db_name}"
+        admin_session.execute(sql.text(query))
         return
 
     def create_random_value(self, column):
@@ -253,7 +258,7 @@ class Seed():
             return random_date(hardcoded_start_date, hardcoded_end_date)
 
 
-    def init_db(self, list_of_table_rand):
+    def init_table_data(self, list_of_table_rand):
 
         
         with Session(self.engine) as session:
@@ -274,12 +279,24 @@ class Seed():
             session.commit()
         
         return
+    
+
+    
+        
+        # - and then create original ddl
+
+    def init_ddl(self):
+        with Session(self.admin_engine) as admin_session:
+            exists = True #TODO: check if exists
+            if exists:
+                self.back_up_db(admin_session)
+            self.create_database_definition()
+        return
+        
 
     # fill in tables with given test data
     # TODO: update, i think create TableTestState instances here or in load_db.py
     def initiate_test_environment(self, testing_state):
-        self.create_database_definition()
-
         print(f"testing_state: {testing_state}")
         list_of_table_files = testing_state.get("table_files", {})
         for file in list_of_table_files:
@@ -288,8 +305,8 @@ class Seed():
         list_of_table_rand = testing_state["tables_random_populate"]
         test_table_states = [TableTestingState(**test_table_info) for test_table_info in list_of_table_rand]
 
-        self.back_up_db()
-        self.init_db(test_table_states)
+        self.init_ddl()
+        self.init_table_data(test_table_states)
  
 
 # ideas for testing state
