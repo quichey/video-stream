@@ -115,6 +115,16 @@ class Seed():
         return url
 
 
+    def construct_back_up_engine(self):
+        db_specs = self.admin_specs
+        counter = 2
+        db_specs.dbname = f"{self.database_specs.dbname}_{counter}"
+        conn_str = self.construct_db_conn_str(db_specs)
+
+        engine = create_engine(conn_str, echo=True)
+        return engine
+
+
     def construct_engine(self):
         conn_str = self.construct_db_conn_str(self.database_specs)
 
@@ -131,8 +141,10 @@ class Seed():
         return engine
 
     # Creates the database if not exists as well as the empty tables
-    def create_database_definition(self):
-        self.metadata_obj.create_all(self.engine)
+    def create_database_definition(self, engine=None):
+        if engine is None:
+            engine = self.engine
+        self.metadata_obj.create_all(engine)
         return
     
     def is_a_primary_key(self, table, key):
@@ -181,16 +193,16 @@ class Seed():
     def back_up_db(self):
         # TODO: lookup sqlalchemy way to do it
         # for inter-operability b/t db engines
+        """
         with self.admin_engine.connect() as conn:
             dialect = self.admin_specs.dialect
             db_name = self.database_specs.dbname
-            query = None
-            match dialect:
-                case "mysql":
-                    # TODO: finish query str
-                    query = f"ALTER DATABASE {db_name} change ...."
-
-            conn.execute(sql.text(query))
+        """
+        back_up_engine = self.construct_back_up_engine()
+        self.create_database_definition(back_up_engine)
+        #TODO:
+        # - delete current database 
+        # - and then create original ddl
         return
 
     def create_random_value(self, column):
