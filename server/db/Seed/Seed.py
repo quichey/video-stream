@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from dataclasses import dataclass
+from typing import Optional
 
 import sqlalchemy as sql
 from sqlalchemy import create_engine
@@ -44,6 +45,17 @@ But I feel lazy right now
 
 
 @dataclass
+class DataBaseSpec:
+    """Class for keeping track of sql-alchemy engine creation info."""
+    dialect: str
+    db_api: str
+    user: str
+    pw: str
+    hostname: str
+    dbname: Optional[str] = ""
+
+
+@dataclass
 class TableTestingState:
     """Class for keeping track of an test dataset table generation info."""
     name: str
@@ -66,7 +78,7 @@ class Seed():
 
 
     def __init__(self, admin_specs, database_specs, schema):
-        self.admin_specs = admin_specs
+        self.admin_specs = DataBaseSpec(**admin_specs)
         self.database_specs = database_specs
         self.schema = schema
         self.base = schema.Base
@@ -89,33 +101,32 @@ class Seed():
         pass
     
 
+    def construct_db_conn_str(self, database_specs):
+        dialect = database_specs.dialect
+        db_api = database_specs.db_api
+
+        user = database_specs.user
+        pw = database_specs.pw
+        hostname = database_specs.hostname
+        dbname = database_specs.dbname 
+        url = f"{dialect}+{db_api}://{user}:{pw}@{hostname}"
+        if dbname is not "":
+            url += f"/{dbname}"
+        return url
+
+
     def construct_engine(self):
-        database_specs = self.database_specs
-        dialect = database_specs["dialect"]
-        db_api = database_specs["db_api"]
+        conn_str = self.construct_db_conn_str(self.database_specs)
 
-        user = database_specs["user"]
-        pw = database_specs["pw"]
-        hostname = database_specs["hostname"]
-        dbname = database_specs["dbname"]
-        url = f"{user}:{pw}@{hostname}/{dbname}"
-
-        engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+        engine = create_engine(conn_str, echo=True)
         self.engine = engine
         return engine
     
     
     def construct_admin_engine(self):
-        admin_specs = self.admin_specs
-        dialect = admin_specs["dialect"]
-        db_api = admin_specs["db_api"]
+        conn_str = self.construct_db_conn_str(self.admin_specs)
 
-        user = admin_specs["user"]
-        pw = admin_specs["pw"]
-        hostname = admin_specs["hostname"]
-        url = f"{user}:{pw}@{hostname}"
-
-        engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+        engine = create_engine(conn_str, echo=True)
         self.admin_engine = engine
         return engine
 
@@ -171,7 +182,15 @@ class Seed():
         # TODO: lookup sqlalchemy way to do it
         # for inter-operability b/t db engines
         with self.admin_engine.connect() as conn:
-            conn.execute(sql.text("SELECT 1;"))
+            dialect = self.admin_specs.dialect
+            db_name = self.database_specs.dbname
+            query = None
+            match dialect:
+                case "mysql":
+                    # TODO: finish query str
+                    query = f"ALTER DATABASE {db_name} change ...."
+
+            conn.execute(sql.text(query))
         return
 
     def create_random_value(self, column):
