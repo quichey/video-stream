@@ -21,8 +21,7 @@ admin_specs = {
     "db_api": "mysqlconnector",
     "user": "root",
     "pw": os.getenv("MYSQL_ADMIN_SECRET"),
-    "hostname": "localhost:3306",
-    "dbname": "video_stream"
+    "hostname": "localhost:3306"
 }
 
 database_specs = {

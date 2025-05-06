@@ -5,6 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from dataclasses import dataclass
 
+import sqlalchemy as sql
 from sqlalchemy import create_engine
 from sqlalchemy import Boolean, Integer, String, DateTime
 from sqlalchemy.orm import Session
@@ -112,8 +113,6 @@ class Seed():
         user = admin_specs["user"]
         pw = admin_specs["pw"]
         hostname = admin_specs["hostname"]
-        #dbname = admin_specs["dbname"]
-        #url = f"{user}:{pw}@{hostname}/{dbname}"
         url = f"{user}:{pw}@{hostname}"
 
         engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
@@ -172,7 +171,7 @@ class Seed():
         # TODO: lookup sqlalchemy way to do it
         # for inter-operability b/t db engines
         with self.admin_engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(sql.text("SELECT 1;"))
         return
 
     def create_random_value(self, column):
