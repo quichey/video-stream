@@ -68,7 +68,6 @@ class Seed():
     database_specs = None
     base = None
     metadata_obj = None
-    engine = None
 
 
     def __init__(self, admin_specs, database_specs, schema):
@@ -81,6 +80,9 @@ class Seed():
         self.data_base_structure_factory = Data_Base_Structure(self)
         self.data_records_factory = Data_Records(self)
 
+    @property
+    def engine(self):
+        return self.engine
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
@@ -98,7 +100,7 @@ class Seed():
     
 
 
-
+    
 
     # fill in tables with given test data
     # TODO: update, i think create TableTestState instances here or in load_db.py

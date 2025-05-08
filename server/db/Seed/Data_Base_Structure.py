@@ -13,6 +13,8 @@ class Data_Base_Structure():
     def __init__(self, seed):
         self.seed = seed
         self.back_up_counter = 0
+        self.admin_specs = seed.admin_specs
+        self.database_specs = seed.database_specs
         self.construct_engine()
         self.construct_admin_engine()
 
@@ -21,8 +23,8 @@ class Data_Base_Structure():
         return f"{self.database_specs.dbname}_{self.back_up_counter}"
 
     def init_ddl(self):
-        with Session(self.seed.admin_engine) as admin_session:
-            db_name = self.seed.database_specs.dbname
+        with Session(self.admin_engine) as admin_session:
+            db_name = self.database_specs.dbname
             query = "SHOW DATABASES"
             db_records = admin_session.execute(sql.text(query))
             exists = False
@@ -30,21 +32,22 @@ class Data_Base_Structure():
                 if r[0] == db_name:
                     exists = True
                 elif db_name in r[0]:
-                    self.seed.back_up_counter = self.seed.back_up_counter + 1
+                    self.back_up_counter = self.back_up_counter + 1
 
             if exists:
-                self.back_up_db(self.seed, admin_session)
-            self.create_database_definition(self.seed)
+                self.back_up_db(admin_session)
+            self.create_database_definition()
         return
 
 
     # Creates the database if not exists as well as the empty tables
     def create_database_definition(self, engine=None):
         if engine is None:
-            engine = self.seed.engine
+            engine = self.engine
         print(f"\n\n creating ddl: {engine} \n\n")
         self.seed.metadata_obj.create_all(engine)
 
+        self.seed.engine = engine
         return
 
 
@@ -55,15 +58,15 @@ class Data_Base_Structure():
     or finally understand python multithreading library
     """
     def back_up_db(self, admin_session):
-        back_up_db_name = self.seed.back_up_db_name
-        self.seed.create_database(admin_session, back_up_db_name)
-        back_up_engine = self.seed.construct_back_up_engine()
-        self.seed.create_database_definition(back_up_engine)
+        back_up_db_name = self.back_up_db_name
+        self.create_database(admin_session, back_up_db_name)
+        back_up_engine = self.construct_back_up_engine()
+        self.create_database_definition(back_up_engine)
 
         #TODO:
         # - check for concurrency problems
-        dialect = self.seed.admin_specs.dialect
-        db_name = self.seed.database_specs.dbname
+        dialect = self.admin_specs.dialect
+        db_name = self.database_specs.dbname
         query = ""
         match dialect:
             case "mysql":
@@ -73,7 +76,7 @@ class Data_Base_Structure():
 
 
     def create_database(self, admin_session, db_name):
-        dialect = self.seed.admin_specs.dialect
+        dialect = self.admin_specs.dialect
         query = ""
         match dialect:
             case "mysql":
@@ -83,27 +86,28 @@ class Data_Base_Structure():
 
 
     def construct_back_up_engine(self):
-        db_specs = self.seed.admin_specs
-        db_specs.dbname = self.seed.back_up_db_name
-        conn_str = self.seed.construct_db_conn_str(db_specs)
+        db_specs = self.admin_specs
+        db_specs.dbname = self.back_up_db_name
+        conn_str = self.construct_db_conn_str(db_specs)
 
         engine = create_engine(conn_str, echo=True)
         return engine
 
 
     def construct_engine(self):
-        conn_str = self.seed.construct_db_conn_str(self.seed.database_specs)
+        conn_str = self.construct_db_conn_str(self.database_specs)
 
         engine = create_engine(conn_str, echo=True)
+        self.engine = engine
         self.seed.engine = engine
         return engine
 
 
     def construct_admin_engine(self):
-        conn_str = self.seed.construct_db_conn_str(self.seed.admin_specs)
+        conn_str = self.construct_db_conn_str(self.admin_specs)
 
         engine = create_engine(conn_str, echo=True)
-        self.seed.admin_engine = engine
+        self.admin_engine = engine
         return engine
 
 
