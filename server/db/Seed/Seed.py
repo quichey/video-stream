@@ -82,7 +82,13 @@ class Seed():
 
     @property
     def engine(self):
-        return self.engine
+        return self._engine
+
+    @engine.setter
+    def engine(self, new_value):
+        if new_value is None:
+            raise ValueError("Value cannot be negative")
+        self._engine = new_value
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
