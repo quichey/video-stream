@@ -27,13 +27,13 @@ class Data_Records():
         
         keys = table.c.keys()
         for key in keys:
-            if self.seed.is_a_primary_key(table, key):
+            if self.is_a_primary_key(table, key):
                 continue
 
 
             print(f"\n\n  table {table.name} creating column: {key} \n\n")
             column = getattr(table.c, key)
-            record[key] = self.seed.create_random_value(column)
+            record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
         
@@ -45,7 +45,7 @@ class Data_Records():
         return len(column.foreign_keys) > 0
     
     def get_random_foreign_key(self, column):
-        # TODO: check self.seed.cache for the primary keys
+        # TODO: check self.cache for the primary keys
 
         # get len() of cached table
         # do random.int of index of table to get random record
@@ -64,11 +64,11 @@ class Data_Records():
 
 
         #if is_foreign_key:
-        if self.seed.is_foreign_key(column):
+        if self.is_foreign_key(column):
             # scan parent table
             # use metadata obj to query other table
-            #return self.seed.get_random_foreign_key(column)
-            fk_curr = self.seed.get_random_foreign_key(column)
+            #return self.get_random_foreign_key(column)
+            fk_curr = self.get_random_foreign_key(column)
             print(f"\n\n fk_curr: {fk_curr} \n\n")
             """
                 fk_curr: {'id': 2}
@@ -113,13 +113,13 @@ class Data_Records():
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
-            self.seed.cache = {}
+            self.cache = {}
             for table_state in list_of_table_rand:
-                self.seed.cache[table_state.name] = []
+                self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
                 for _ in range(table_state.num_records):
-                    random_record = self.seed.create_random_record(table_instance)
-                    self.seed.cache[table_state.name].append(random_record)
+                    random_record = self.create_random_record(table_instance)
+                    self.cache[table_state.name].append(random_record)
                     session.add(random_record)
             
             session.commit()
