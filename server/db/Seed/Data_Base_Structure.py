@@ -19,6 +19,10 @@ class Data_Base_Structure():
         self.construct_admin_engine()
 
     @property
+    def db_name(self):
+        return self.database_specs.dbname
+
+    @property
     def back_up_db_name(self):
         return f"{self.database_specs.dbname}_{self.back_up_counter}"
 
@@ -36,6 +40,8 @@ class Data_Base_Structure():
 
             if exists:
                 self.back_up_db(admin_session)
+
+            self.create_database(admin_session, self.db_name)
             self.create_database_definition()
         return
 
