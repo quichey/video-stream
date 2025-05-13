@@ -46,14 +46,18 @@ class Data_Records():
     
     def get_random_foreign_key(self, column):
         # TODO: check self.cache for the primary keys
+        cache = self.seed.cache
+        referred_table_name = None
+        for fk in column.foreign_keys:
+            constraint = fk.constraint
+            referred_table_name = constraint.referred_table.name
 
         # get len() of cached table
         # do random.int of index of table to get random record
         # get that record's id
-
-        # add function to backup db if it already exists 
-        # like i did at ISS
-        pass
+        records = cache[referred_table_name]
+        random_idx = random.randint(len(records))
+        return records[random_idx]["id"]
 
 
     def create_random_value(self, column):
