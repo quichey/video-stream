@@ -7,7 +7,14 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import Boolean, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
+
+
+
+
 class Data_Records():
+    # dict of "table_name": SqlAlchemy Base class
+    cache = {}
+
     def __init__(self, seed):
         self.seed = seed
 
@@ -46,7 +53,7 @@ class Data_Records():
     
     def get_random_foreign_key(self, column):
         # TODO: check self.cache for the primary keys
-        cache = self.seed.cache
+        cache = self.cache
         referred_table_name = None
         for fk in column.foreign_keys:
             constraint = fk.constraint
@@ -56,8 +63,8 @@ class Data_Records():
         # do random.int of index of table to get random record
         # get that record's id
         records = cache[referred_table_name]
-        random_idx = random.randint(len(records))
-        return records[random_idx]["id"]
+        random_idx = random.randint(0, len(records) - 1)
+        return records[random_idx].id
 
 
     def create_random_value(self, column):
@@ -81,8 +88,7 @@ class Data_Records():
                 need to save fk_info["fk_column_name"] from previous for loop
                 i think this is fine. 
             """
-            foreign_key_name = "blah"
-            return fk_curr[foreign_key_name]
+            return fk_curr
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
@@ -117,7 +123,6 @@ class Data_Records():
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
-            self.cache = {}
             for table_state in list_of_table_rand:
                 self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
