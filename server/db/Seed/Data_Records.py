@@ -37,18 +37,17 @@ class Data_Records():
             if self.is_a_primary_key(table, key):
                 continue
 
-
-            print(f"\n\n  table {table.name} creating column: {key} \n\n")
             column = getattr(table.c, key)
             if self.is_foreign_key(column):
                 continue
+
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
         
         #TODO: check out to dynamically create a class from a variable class name
-        record = self.seed.schema.get_record_factory(table.name)(**record)
         record = self.insert_foreign_keys(table, record)
+        record = self.seed.schema.get_record_factory(table.name)(**record)
         return record      
 
     def insert_foreign_keys(self, table, record):
@@ -58,6 +57,7 @@ class Data_Records():
             if not self.is_foreign_key(column):
                 continue
             fk_curr = self.get_random_foreign_key(column)
+            print(f"\n\n  table {table.name} creating fk: {key} -- {fk_curr} \n\n")
             record[key] = fk_curr
 
         return record
@@ -128,7 +128,7 @@ class Data_Records():
                     random_record = self.create_random_record(table_instance)
                     self.cache[table_state.name].append(random_record)
                     session.add(random_record)
-            
+                session.flush()
             session.commit()
         
         return
