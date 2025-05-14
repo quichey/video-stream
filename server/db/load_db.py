@@ -32,6 +32,28 @@ testing_state = {
         #},
     ]
 }
+testing_state_small = {
+    "tables_random_populate": [
+        {
+            "name": "users",
+            "num_records": 2, #10
+        },
+        {
+            "name": "videos",
+            "num_records": 2
+        },
+        {
+            "name": "comments",
+            "num_records": 1,
+            #"num_records": 10000
+        },
+        
+        #{
+        #    "name": "comment_likes",
+        #    "num_records": 10
+        #},
+    ]
+}
 testing_state_comments_only = {
     "tables_random_populate": [
         {
@@ -49,3 +71,6 @@ testing_state_comments_only = {
 
 def run():
     seed.initiate_test_environment(testing_state)
+
+def run_small():
+    seed.initiate_test_environment(testing_state_small)
