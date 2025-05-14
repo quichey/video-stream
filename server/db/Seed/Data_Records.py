@@ -40,13 +40,27 @@ class Data_Records():
 
             print(f"\n\n  table {table.name} creating column: {key} \n\n")
             column = getattr(table.c, key)
+            if self.is_foreign_key(column):
+                continue
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
         
         #TODO: check out to dynamically create a class from a variable class name
         record = self.seed.schema.get_record_factory(table.name)(**record)
+        record = self.insert_foreign_keys(table, record)
         return record      
+
+    def insert_foreign_keys(self, table, record):
+        keys = table.c.keys()
+        for key in keys:
+            column = getattr(table.c, key)
+            if not self.is_foreign_key(column):
+                continue
+            fk_curr = self.get_random_foreign_key(column)
+            record[key] = fk_curr
+
+        return record
 
     def is_foreign_key(self, column):
         return len(column.foreign_keys) > 0
@@ -72,23 +86,6 @@ class Data_Records():
         print(f"\n\n data_type: {data_type} \n\n")
         column_name = column.name
         table_name = column.table.name
-
-
-        #if is_foreign_key:
-        if self.is_foreign_key(column):
-            # scan parent table
-            # use metadata obj to query other table
-            #return self.get_random_foreign_key(column)
-            fk_curr = self.get_random_foreign_key(column)
-            print(f"\n\n fk_curr: {fk_curr} \n\n")
-            """
-                fk_curr: {'id': 2}
-                return fk_curr[fk_info["fk_column_name"]]
-
-                need to save fk_info["fk_column_name"] from previous for loop
-                i think this is fine. 
-            """
-            return fk_curr
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
@@ -126,6 +123,7 @@ class Data_Records():
             for table_state in list_of_table_rand:
                 self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
+
                 for _ in range(table_state.num_records):
                     random_record = self.create_random_record(table_instance)
                     self.cache[table_state.name].append(random_record)
