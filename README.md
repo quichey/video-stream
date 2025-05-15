@@ -41,3 +41,60 @@ Comments Feature Improvements/Missing
 - Likes/Dislikes
 - Replies
 - User Profile Icon
+
+
+# Planning out Videos-Storage branch
+
+Purpose: create db/schemas for storing a scalable amount of videos,
+            while also hopefully having links to other datapoints like users, comments,
+            recommendations(?)
+
+Questions: Should it have a unique PK? or Composite/FK/PK?
+            --- probably unique PK as it is the primary product/service of this app
+
+            Should it have FK(s) to the other tables?
+            Or should the FK(s) belong in the other tables?
+            Or should we have linking tables?
+            --- New question, should I forego all FK(s) in data-tables and use Link-Tables instead?
+            ----- ignore this for now
+    
+VIDEO_STREAM = Table(
+    __name__ = "videos",
+    Columns = [
+        "id": int, # do we need ID if we have file? could hash a file_name or just use file_name? probably not good idea? can't tell right now
+        "file": mp4File,
+        "date_added": data,
+        "user_id": int (FK), # when fetching all data for 1 video, would be easiest to 
+        # not have to scan whole users table for the owner
+    
+        ## probably have video_id in comments table instead of list of comments in here
+        ## for brevity of data storage
+        ## IIRC tables get strange when records are needlessly long, IE longer than
+        ## a partition on hardware
+        ## considering the limitless number of comments on YouTube, best not store in here
+        ## OK to store lists in a table if list is expected to be short
+    ]   
+    )
+
+# BUGS in Videos-Storage branch
+1) trying to populate random foreign_keys for comments table
+after giving it 2 different foreign_keys: user_id and video_id
+
+# Next steps
+should do sqlalchemy Declarative Base I think instead of doing
+the extra Cache structures/Classes. The Declarative Base SEEMS
+to be a good way to simplify the code and HOPEFULLY help with 
+debugging
+
+# Summary of Important Findings from SqlAlchemy Research
+Session and ORM/Declarative Base
+seems handy with writing certain things neatly,
+such as the way it handles instance equality w/in the session.
+Also using the update function is not necessary for
+updating a single record. Seems worth using.
+No longer need the generate_random_primary_key function i think
+
+# Jotting out Ideas from brainstorming
+update records_to_insert during randomization to use Declarative Base Classes/instances w/session.add()
+--need to check if sqlalchemy sessions auto_flushing handles multi-threading
+--- research how to do foreign_key stuff with declarative base

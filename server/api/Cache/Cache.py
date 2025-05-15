@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy import select
 
-from db.DB_SCHEMA import database_specs, metadata_obj
+from db.Schema import database_specs, Base
 #from api.Cache.SessionManagement import SessionManagement
 from .SessionManagement import SessionManagement
 
@@ -32,7 +32,7 @@ class Cache():
 
     def __init__(self):
         self.database_specs = database_specs
-        self.metadata_obj = metadata_obj
+        self.metadata_obj = Base.metadata
         self.construct_engine(database_specs)
         self.session_manager = SessionManagement()
     
