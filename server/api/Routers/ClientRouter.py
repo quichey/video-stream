@@ -9,6 +9,15 @@ Read Flask docs on base code for starting up the Gateway
 after understanding it,
 place the instantiation of the Cache class
 in the base code
+
+TODO: update API's to get comments based on input Video_id
+prob just update current comments route since why on 
+Earth would someone want just a scan of all comments
+soo.. either get video_id from payload or query_str
+--- would rather just do payload
+- Also update cache/session_manager maybe?
+- yes, cause if user swaps videos, need to set page_num to 0
+---- think about state_management for this
 """
 
 
