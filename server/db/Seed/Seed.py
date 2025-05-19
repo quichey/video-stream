@@ -87,7 +87,7 @@ class Seed():
     @engine.setter
     def engine(self, new_value):
         if new_value is None:
-            raise ValueError("Value cannot be negative")
+            raise ValueError("Value cannot be None")
         self._engine = new_value
 
     def get_table_metadata(self, table_name):

@@ -94,30 +94,33 @@ class User(Base):
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
 
+Base.__video_file_manager__ = VideoFileManager()
 
 class Video(Base):
     __tablename__ = "videos"
-    __video_file_manager__ = VideoFileManager()
     id: Mapped[int] = mapped_column(primary_key=True)
     file: Mapped[str] = mapped_column(String(30))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
 
     def create_video(self, file_name, file_location):
-        video_file_manager = self.__video_file_manager__
+        video_file_manager = Base.__video_file_manager__
+        video_file_manager.create_video(file_name, file_location)
         pass
 
     def read_video(self, video_id):
-        video_file_manager = self.__video_file_manager__
+        video_file_manager = Base.__video_file_manager__
+        video_file_manager.read_video(video_id)
         pass
 
     def update_video(self, video_id, file_location, file_name=None):
-        video_file_manager = self.__video_file_manager__
+        video_file_manager = Base.__video_file_manager__
+        video_file_manager.update_video(video_id, file_location, file_name=None)
         pass
 
     def delete_video(self, video_id):
-        video_file_manager = self.__video_file_manager__
+        video_file_manager = Base.__video_file_manager__
+        video_file_manager.delete_video(video_id)
         pass
-
 
 
     def __repr__(self) -> str:
