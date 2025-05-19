@@ -95,6 +95,22 @@ class User(Base):
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
 
 Base.__video_file_manager__ = VideoFileManager()
+"""
+when Video() is instantiated, with a file_name and file_location,
+want the Base's __video_file_manager__ to allocate folders/files
+w/in the operating system and keep an internal python object to
+keep track of these things
+
+not sure if...
+- Session or Video instance does the read/update/delete
+--- if Session does it, do I need to sub-class my own Session class?
+--- or the sqlalchemy.orm.registry
+"""
+
+class MyClass(Base):
+    def __init__(self, id=None, name=None):
+        self.name = name
+        super().__init__(id=id)
 
 class Video(Base):
     __tablename__ = "videos"
