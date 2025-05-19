@@ -1,1 +1,1 @@
-from .VideoFile import VideoFile
+from .VideoFile import VideoFileManager

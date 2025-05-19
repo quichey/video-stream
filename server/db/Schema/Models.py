@@ -10,6 +10,8 @@ from typing import Optional
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
+from .Video import VideoFileManager
+
 class Base(DeclarativeBase):
     pass
 
@@ -95,9 +97,28 @@ class User(Base):
 
 class Video(Base):
     __tablename__ = "videos"
+    __video_file_manager__ = VideoFileManager()
     id: Mapped[int] = mapped_column(primary_key=True)
     file: Mapped[str] = mapped_column(String(30))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+
+    def create_video(self, file_name, file_location):
+        video_file_manager = self.__video_file_manager__
+        pass
+
+    def read_video(self, video_id):
+        video_file_manager = self.__video_file_manager__
+        pass
+
+    def update_video(self, video_id, file_location, file_name=None):
+        video_file_manager = self.__video_file_manager__
+        pass
+
+    def delete_video(self, video_id):
+        video_file_manager = self.__video_file_manager__
+        pass
+
+
 
     def __repr__(self) -> str:
         return f"Video(id={self.id!r}, file={self.file!r}, user_id={self.user_id!r})"
