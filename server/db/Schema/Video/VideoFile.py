@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import List
 import os
 import shutil
@@ -27,8 +26,6 @@ class VideoFileManager():
 	Plan to use these 4 funcs for API and user uploading a video
 	"""
 	def store_video_old(self, video_record):
-		self.videos[video_record.id]
-		file_location = self.determine_file_location()
 		pass
 
 	def read_video(self, video_id):
