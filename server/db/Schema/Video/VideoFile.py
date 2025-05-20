@@ -4,7 +4,12 @@ from dataclasses import dataclass
 should prob save the file location in the
 videos table or bashrc since the Seed installation
 is a separate process from the api gateway daemon
+
+TODO: store file locations in file_dir col of videos table
+TODO: plan out good data structures for this file/module/class
 """
+
+ROOT_FOLDER = "db/assets"
 
 @dataclass
 class VideoFile():
@@ -32,4 +37,10 @@ class VideoFileManager():
 		pass
 
 	def update_ids(self, video_records):
+		pass
+
+	def determine_file_location(self, video_meta_data):
+		pass
+
+	def save_file_location(self, video_id, file_location):
 		pass

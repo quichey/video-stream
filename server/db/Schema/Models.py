@@ -121,7 +121,8 @@ each of the column fields and do "name".setter decorator?
 class Video(Base):
     __tablename__ = "videos"
     id: Mapped[int] = mapped_column(primary_key=True)
-    file: Mapped[str] = mapped_column(String(30))
+    file_name: Mapped[str] = mapped_column(String(30))
+    file_dir: Mapped[str] = mapped_column(String(100))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
 
     def create_video(self, file_name, file_location):
