@@ -56,6 +56,8 @@ class Data_Records():
         #TODO: check out to dynamically create a class from a variable class name
         record = self.insert_foreign_keys(table, record)
         record = self.seed.schema.get_record_factory(table.name)(**record)
+        if table.name == "videos":
+            self.video_file_manager.store_video(record)
         return record      
 
     def insert_foreign_keys(self, table, record):
@@ -150,9 +152,11 @@ class Data_Records():
                 #TODO: video id gets set after flush i believe
                 # update video_file_manager
                 # TODO?: may need to account for asynchronicity of flush
+                """
                 if table_state.name == "videos":
                     video_records = self.cache[table_state.name]
                     self.video_file_manager.load_videos(video_records)
+                """
             session.commit()
         
         return
