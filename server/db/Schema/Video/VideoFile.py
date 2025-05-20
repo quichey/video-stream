@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import List
+import os
+import shutil
 
 from db.Schema import Video
 
@@ -24,7 +26,7 @@ class VideoFileManager():
 	"""
 	Plan to use these 4 funcs for API and user uploading a video
 	"""
-	def store_video(self, video_record):
+	def store_video_old(self, video_record):
 		self.videos[video_record.id]
 		file_location = self.determine_file_location()
 		pass
@@ -38,31 +40,41 @@ class VideoFileManager():
 	def delete_video(self, video_id):
 		pass
 
+	"""
+	TODO?: maybe at some point clean up these functions
+	looks messy and note quite sure how to formulate
+	tidier writing right now
+	"""
 
-	def determine_file_location(self, video_id, user_id):
+	def determine_file_location(self, video_record):
+		user_id = video_record.user_id
 		user_folder = f"{user_id}"
-		video = self._fetch_video(video_id)
-		video.file_location = user_folder
 		return user_folder
 
-	def save_file_location(self, video_id, file_location, video_record):
+	def store_video(self, video_record, seeding_db=True):
+		file_location = self.determine_file_location(video_record)
+
 		video_record.file_dir = file_location
 		full_file_location = f"{ROOT_FOLDER}/{file_location}"
-		user_folder_exists = pass
+		user_folder_exists = os.path.exists(full_file_location)
 		if not user_folder_exists:
-			#TODO: create user_folder
-		#TODO: upload video file to folder?/ bash cp file to folder?
-		file_exists = pass
-		if file_exists:
-			return
+			os.mkdir(full_file_location)
+
+		full_file_name = f"{full_file_location}/{video_record.file_name}"
+		file_exists = os.path.exists(full_file_name)
+		if not file_exists:
+			if seeding_db:
+				source_path = f"{ROOT_FOLDER}/{video_record.file_name}"
+				shutil.copy(source_path, full_file_location)
+			#TODO: handle saving file from user upload
+
 		#NOTE: do not need to do sqlalchemy stuff cause session in Seed will handle once 
 		# it flushes
-		pass
+		return
 
 	def load_videos(self, video_records: List[Video]):
 		self.video_records = video_records
 		for one_video_record in video_records:
-			file_location = self.determine_file_location(one_video_record.id, one_video_record.user_id)
-			self.save_file_location(one_video_record.id, file_location, one_video_record)
+			self.store_video(one_video_record)
 		
 		return
