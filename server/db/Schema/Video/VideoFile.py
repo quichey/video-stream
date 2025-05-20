@@ -51,7 +51,12 @@ class VideoFileManager():
 		user_folder_exists = pass
 		if not user_folder_exists:
 			#TODO: create user_folder
-		#TODO: upload video file to folder?
+		#TODO: upload video file to folder?/ bash cp file to folder?
+		file_exists = pass
+		if file_exists:
+			return
+		#NOTE: do not need to do sqlalchemy stuff cause session in Seed will handle once 
+		# it flushes
 		pass
 
 	def load_videos(self, video_records: List[Video]):

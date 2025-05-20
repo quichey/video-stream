@@ -44,6 +44,10 @@ class Data_Records():
             if self.is_foreign_key(column):
                 continue
 
+            # for video storage
+            if key in ["file_dir"]:
+                continue
+
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
@@ -89,6 +93,14 @@ class Data_Records():
         print(f"\n\n data_type: {data_type} \n\n")
         column_name = column.name
         table_name = column.table.name
+
+        
+        # for video storage
+        if column_name in ["file_name"]:
+            #TODO: get random_test_video_name
+            # by reading list of files in db/assets
+            random_test_video_file_name = pass
+            return random_test_video_file_name
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
