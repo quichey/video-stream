@@ -7,7 +7,8 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import Boolean, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
-from db.Schema import Video
+
+from db.Schema.Video import VideoFileManager
 
 
 
@@ -18,6 +19,7 @@ class Data_Records():
 
     def __init__(self, seed):
         self.seed = seed
+        self.video_file_manager = VideoFileManager()
 
     
     def is_a_primary_key(self, table, key):
@@ -131,17 +133,14 @@ class Data_Records():
                 for _ in range(table_state.num_records):
                     random_record = self.create_random_record(table_instance)
                     self.cache[table_state.name].append(random_record)
-                    if type(random_record) == Video:
-                        file_location = "db/assets/"
-                        random_record.create_video(random_record.file, file_location)
-                        pass #TODO: do video_file_manager stuff
                     session.add(random_record)
                 session.flush()
                 #TODO: video id gets set after flush i believe
                 # update video_file_manager
+                # TODO?: may need to account for asynchronicity of flush
                 if table_state.name == "videos":
                     video_records = self.cache[table_state.name]
-                    self.Base.__video_file_manager__.update_ids(video_records)
+                    self.video_file_manager.load_videos(video_records)
             session.commit()
         
         return
