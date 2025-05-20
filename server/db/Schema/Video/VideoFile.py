@@ -1,5 +1,11 @@
 from dataclasses import dataclass
 
+"""
+should prob save the file location in the
+videos table or bashrc since the Seed installation
+is a separate process from the api gateway daemon
+"""
+
 @dataclass
 class VideoFile():
 	file_name = str
@@ -23,4 +29,7 @@ class VideoFileManager():
 		pass
 
 	def delete_video(self, video_id):
+		pass
+
+	def update_ids(self, video_records):
 		pass
