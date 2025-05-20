@@ -107,11 +107,17 @@ not sure if...
 --- or the sqlalchemy.orm.registry
 """
 
+"""
 class MyClass(Base):
     def __init__(self, id=None, name=None):
         self.name = name
         super().__init__(id=id)
+"""
 
+"""
+maybe need to add property decorator to
+each of the column fields and do "name".setter decorator?
+"""
 class Video(Base):
     __tablename__ = "videos"
     id: Mapped[int] = mapped_column(primary_key=True)
