@@ -137,6 +137,11 @@ class Data_Records():
                         pass #TODO: do video_file_manager stuff
                     session.add(random_record)
                 session.flush()
+                #TODO: video id gets set after flush i believe
+                # update video_file_manager
+                if table_state.name == "videos":
+                    video_records = self.cache[table_state.name]
+                    self.Base.__video_file_manager__.update_ids(video_records)
             session.commit()
         
         return
