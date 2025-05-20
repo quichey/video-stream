@@ -1,5 +1,6 @@
 import random
 import time
+import os
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -97,9 +98,8 @@ class Data_Records():
         
         # for video storage
         if column_name in ["file_name"]:
-            #TODO: get random_test_video_name
-            # by reading list of files in db/assets
-            random_test_video_file_name = pass
+            file_names = os.listdir("./db/assets")
+            random_test_video_file_name = file_names[random.randint(0, len(file_names) - 1)]
             return random_test_video_file_name
         
         def random_date(start_date, end_date):
