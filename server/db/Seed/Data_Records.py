@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import Boolean, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
+from db.Schema import Video
 
 
 
@@ -120,6 +121,9 @@ class Data_Records():
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
+
+            # TODO: add try/except block to clean video_file_manager
+            # if seeding errors out
             for table_state in list_of_table_rand:
                 self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
@@ -127,6 +131,10 @@ class Data_Records():
                 for _ in range(table_state.num_records):
                     random_record = self.create_random_record(table_instance)
                     self.cache[table_state.name].append(random_record)
+                    if type(random_record) == Video:
+                        file_location = "db/assets/"
+                        random_record.create_video(random_record.file, file_location)
+                        pass #TODO: do video_file_manager stuff
                     session.add(random_record)
                 session.flush()
             session.commit()
