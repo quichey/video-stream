@@ -84,14 +84,25 @@ class Cache():
         with self.engine.connect() as conn:
             comments_table = self.metadata_obj.tables["comments"]
             users_table = self.metadata_obj.tables["users"]
-            select_cols = [comments_table.c.comment, users_table.c.name]
+
+            current_video_state = self.session_manager.get_state(session_info, "video")
+            subquery_select_cols = [comments_table.c.comment, comments_table.c.user_id]
+            subquery = select(
+                *subquery_select_cols
+            ).select_from(
+                comments_table
+            ).where(
+                comments_table.c.video_id == current_video_state.id
+            ).cte("comments_one_video")
+
+            select_cols = [subquery.c.comment, users_table.c.name]
             stmt = select(
                 *select_cols
             ).select_from(
-                comments_table
+                subquery
             ).join(
                     users_table,
-                    comments_table.c.user_id == users_table.c.id
+                    subquery.c.user_id == users_table.c.id
             ).limit(
                 limit
             ).offset(

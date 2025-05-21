@@ -60,7 +60,8 @@ export default function Comments() {
     */
     var temp_user = {
       "user_id": 0,
-      "user_name": "blah"
+      "user_name": "blah",
+      "video_id": 1
     };
     var post_req_data = JSON.stringify(temp_user)
     fetch(
