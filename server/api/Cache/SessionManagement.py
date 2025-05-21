@@ -7,6 +7,12 @@ COMMENTS_NEXT_PAGE_SIZE = 10
 class SecurityError(Exception):
     pass
 
+"""
+TODO: Need to keep track of user's current video_id that is viewed
+so know when to clear the comments_state
+-- decide whether to require that video_id param in get_session or not
+"""
+
 class SessionManagement():
     """
     
