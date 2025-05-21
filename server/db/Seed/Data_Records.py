@@ -1,5 +1,6 @@
 import random
 import time
+import os
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -7,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import Boolean, Integer, String, DateTime
 from sqlalchemy.orm import Session
 
+
+from db.Schema.Video import VideoFileManager
 
 
 
@@ -17,6 +20,7 @@ class Data_Records():
 
     def __init__(self, seed):
         self.seed = seed
+        self.video_file_manager = VideoFileManager()
 
     
     def is_a_primary_key(self, table, key):
@@ -41,6 +45,10 @@ class Data_Records():
             if self.is_foreign_key(column):
                 continue
 
+            # for video storage
+            if key in ["file_dir"]:
+                continue
+
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
@@ -48,6 +56,8 @@ class Data_Records():
         #TODO: check out to dynamically create a class from a variable class name
         record = self.insert_foreign_keys(table, record)
         record = self.seed.schema.get_record_factory(table.name)(**record)
+        if table.name == "videos":
+            self.video_file_manager.store_video(record)
         return record      
 
     def insert_foreign_keys(self, table, record):
@@ -86,6 +96,13 @@ class Data_Records():
         print(f"\n\n data_type: {data_type} \n\n")
         column_name = column.name
         table_name = column.table.name
+
+        
+        # for video storage
+        if column_name in ["file_name"]:
+            file_names = os.listdir("./db/assets")
+            random_test_video_file_name = file_names[random.randint(0, len(file_names) - 1)]
+            return random_test_video_file_name
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
@@ -120,6 +137,9 @@ class Data_Records():
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
+
+            # TODO: add try/except block to clean video_file_manager
+            # if seeding errors out
             for table_state in list_of_table_rand:
                 self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
@@ -129,6 +149,14 @@ class Data_Records():
                     self.cache[table_state.name].append(random_record)
                     session.add(random_record)
                 session.flush()
+                #TODO: video id gets set after flush i believe
+                # update video_file_manager
+                # TODO?: may need to account for asynchronicity of flush
+                """
+                if table_state.name == "videos":
+                    video_records = self.cache[table_state.name]
+                    self.video_file_manager.load_videos(video_records)
+                """
             session.commit()
         
         return

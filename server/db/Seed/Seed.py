@@ -55,6 +55,8 @@ class TableTestingState:
     name: str
     num_records: int
 
+
+
 # may expand this file to be named snapshot_db
 # to draw inspiration from ISS/Clinicomp as well as the
 # glorious game Pokemon Snap
@@ -87,7 +89,7 @@ class Seed():
     @engine.setter
     def engine(self, new_value):
         if new_value is None:
-            raise ValueError("Value cannot be negative")
+            raise ValueError("Value cannot be None")
         self._engine = new_value
 
     def get_table_metadata(self, table_name):
