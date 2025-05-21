@@ -123,6 +123,39 @@ class Cache():
             self.session_manager.update_state(session_info, "video", "offset", new_offset, "comments")
 
         return data
+    
+    def get_video(self, session_info):
+        data = {}
+        with self.engine.connect() as conn:
+            videos_table = self.metadata_obj.tables["videos"]
+            users_table = self.metadata_obj.tables["users"]
+
+            current_video_state = self.session_manager.get_state(session_info, "video")
+            subquery_select_cols = [videos_table.c.file_name, videos_table.c.user_id]
+            subquery = select(
+                *subquery_select_cols
+            ).select_from(
+                videos_table
+            ).where(
+                videos_table.c.id == current_video_state.id
+            ).cte("one_video")
+
+            select_cols = [subquery.c.file_name, users_table.c.name]
+            stmt = select(
+                *select_cols
+            ).select_from(
+                subquery
+            ).join(
+                    users_table,
+                    subquery.c.user_id == users_table.c.id
+            )
+
+            records = conn.execute(stmt)
+            for row in records:
+                data["file_name"] = row[0]
+                data["user_name"] = row[1]
+
+        return data
 
     """
     Should I have session_info here if i intend this for admin stuff?
