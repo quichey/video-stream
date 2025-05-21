@@ -82,6 +82,7 @@ class ClientRouter(Router):
             cache = self.cache
 
             form_data = json.loads(request.data)
+            video_info = self.extract_video_info()
             # TODO: change later to something like request.form['username']
             user_info = self.extract_user_info()
             existing_session_info = form_data["token"] if "token" in form_data.keys() else None
