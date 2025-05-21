@@ -52,13 +52,13 @@ class Cache():
         return engine
 
 
-    def get_session(self, user_info, existing_session_info):
+    def get_session(self, user_info, existing_session_info, video_info):
         # extract user identity from request object
         # generate a session token here or on client?
         # i think here, then send it to the client for them to store in
         # the javascript
 
-        session_info = self.session_manager.register_user(user_info, existing_session_info)
+        session_info = self.session_manager.register_user(user_info, existing_session_info, video_info)
         return session_info
     
 
@@ -75,8 +75,8 @@ class Cache():
 
         if session_info is not None:
             current_state_of_comments = self.session_manager.get_state(session_info, "comments")
-            offset = current_state_of_comments["offset"]
-            limit = current_state_of_comments["limit"]
+            offset = current_state_of_comments.offset
+            limit = current_state_of_comments.limit
             print(f"\n\n offset: {offset} \n\n")
             print(f"\n\n limit: {limit} \n\n")
 

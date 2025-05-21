@@ -27,10 +27,11 @@ class User:
 """
 NOTE: possible datastructure involving the dataclasses above
 TODO: consider what the actual code is going to be like to update state
+NOTE: session_info is primitive/literal token value
 self.state = {
-    "user_id_1": User(
+    "token_1": User(
         id: user_id_1
-        token: 1
+        token: token_1
         video: Video(
             id: 1
             timestamp: 0
@@ -40,9 +41,9 @@ self.state = {
             )
         )
     ),
-    "user_id_2": User(
+    "token_2": User(
         id: user_id_2
-        token: 2
+        token: token_2
         video: Video(
             id: 1
             timestamp: 0
@@ -121,7 +122,7 @@ class SessionManagement():
             raise SecurityError("Hijacked Session Token")
         return existing_session_info
     
-    def register_user(self, user_info, existing_session_info):
+    def register_user(self, user_info, existing_session_info, video_info):
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
@@ -135,12 +136,19 @@ class SessionManagement():
         token = self.generate_token(user_info)
         self.user_tokens.append([user_id, token])
         self.current_users.add(user_id)
-        self.current_state[token] = {
-            "comments": {
-                "limit": COMMENTS_FIRST_PAGE_SIZE,
-                "offset": 0
-            }
-        }
+        user_state = User(
+            id=user_id,
+            token=token,
+            video=Video(
+                id=video_info["id"],
+                timestamp=0,
+                comments=Comments(
+                    limit=COMMENTS_FIRST_PAGE_SIZE,
+                    offset=0
+                )
+            )
+        )
+        self.current_state[token] = user_state
         return token
     
     """

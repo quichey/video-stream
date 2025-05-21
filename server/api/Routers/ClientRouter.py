@@ -87,7 +87,7 @@ class ClientRouter(Router):
             user_info = self.extract_user_info()
             existing_session_info = form_data["token"] if "token" in form_data.keys() else None
             try:
-                session_info = cache.get_session(user_info, existing_session_info)
+                session_info = cache.get_session(user_info, existing_session_info, video_info)
             except SecurityError as security_alarm:
                 data = {
                     "status": "error",
