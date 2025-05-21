@@ -52,13 +52,13 @@ class Cache():
         return engine
 
 
-    def get_session(self, user_info, existing_session_info):
+    def get_session(self, user_info, existing_session_info, video_info):
         # extract user identity from request object
         # generate a session token here or on client?
         # i think here, then send it to the client for them to store in
         # the javascript
 
-        session_info = self.session_manager.register_user(user_info, existing_session_info)
+        session_info = self.session_manager.register_user(user_info, existing_session_info, video_info)
         return session_info
     
 
@@ -74,9 +74,9 @@ class Cache():
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
 
         if session_info is not None:
-            current_state_of_comments = self.session_manager.get_state(session_info, "comments")
-            offset = current_state_of_comments["offset"]
-            limit = current_state_of_comments["limit"]
+            current_state_of_comments = self.session_manager.get_state(session_info, "video", "comments")
+            offset = current_state_of_comments.offset
+            limit = current_state_of_comments.limit
             print(f"\n\n offset: {offset} \n\n")
             print(f"\n\n limit: {limit} \n\n")
 
@@ -84,14 +84,25 @@ class Cache():
         with self.engine.connect() as conn:
             comments_table = self.metadata_obj.tables["comments"]
             users_table = self.metadata_obj.tables["users"]
-            select_cols = [comments_table.c.comment, users_table.c.name]
+
+            current_video_state = self.session_manager.get_state(session_info, "video")
+            subquery_select_cols = [comments_table.c.comment, comments_table.c.user_id]
+            subquery = select(
+                *subquery_select_cols
+            ).select_from(
+                comments_table
+            ).where(
+                comments_table.c.video_id == current_video_state.id
+            ).cte("comments_one_video")
+
+            select_cols = [subquery.c.comment, users_table.c.name]
             stmt = select(
                 *select_cols
             ).select_from(
-                comments_table
+                subquery
             ).join(
                     users_table,
-                    comments_table.c.user_id == users_table.c.id
+                    subquery.c.user_id == users_table.c.id
             ).limit(
                 limit
             ).offset(
@@ -109,7 +120,7 @@ class Cache():
                 }
                 data.append(comment_data_point)
 
-            self.session_manager.update_state(session_info, "comments", "offset", new_offset)
+            self.session_manager.update_state(session_info, "video", "offset", new_offset, "comments")
 
         return data
 

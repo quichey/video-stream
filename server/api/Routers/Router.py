@@ -24,6 +24,12 @@ class Router():
         return user_info
 
     
+    def extract_video_info(self):
+        form_data = json.loads(self.request.data)
+        video_info = {}
+        if "video_id" in form_data:
+            video_info["id"] = form_data['video_id']
+        return video_info
 
     def set_up(self):
         pass

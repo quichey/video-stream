@@ -1,4 +1,4 @@
-
+from dataclasses import dataclass
 
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
@@ -6,6 +6,62 @@ COMMENTS_NEXT_PAGE_SIZE = 10
 
 class SecurityError(Exception):
     pass
+
+@dataclass
+class Comments:
+    offset: int
+    limit: int
+    next_page: bool
+
+@dataclass
+class Video:
+    id: int
+    timestamp: str
+    comments: Comments
+
+@dataclass
+class User:
+    id: int
+    token: int
+    video: Video
+
+"""
+NOTE: possible datastructure involving the dataclasses above
+TODO: consider what the actual code is going to be like to update state
+NOTE: session_info is primitive/literal token value
+self.state = {
+    "token_1": User(
+        id: user_id_1
+        token: token_1
+        video: Video(
+            id: 1
+            timestamp: 0
+            comments: Comments(
+                offset: 0
+                limit: 10
+            )
+        )
+    ),
+    "token_2": User(
+        id: user_id_2
+        token: token_2
+        video: Video(
+            id: 1
+            timestamp: 0
+            comments: Comments(
+                offset: 0
+                limit: 10
+            )
+        )
+    )
+}
+"""
+
+"""
+TODO: Need to keep track of user's current video_id that is viewed
+so know when to clear the comments_state
+-- decide whether to require that video_id param in get_session or not
+"""
 
 class SessionManagement():
     """
@@ -67,7 +123,7 @@ class SessionManagement():
             raise SecurityError("Hijacked Session Token")
         return existing_session_info
     
-    def register_user(self, user_info, existing_session_info):
+    def register_user(self, user_info, existing_session_info, video_info):
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
@@ -81,12 +137,20 @@ class SessionManagement():
         token = self.generate_token(user_info)
         self.user_tokens.append([user_id, token])
         self.current_users.add(user_id)
-        self.current_state[token] = {
-            "comments": {
-                "limit": COMMENTS_FIRST_PAGE_SIZE,
-                "offset": 0
-            }
-        }
+        user_state = User(
+            id=user_id,
+            token=token,
+            video=Video(
+                id=video_info["id"],
+                timestamp=0,
+                comments=Comments(
+                    limit=COMMENTS_FIRST_PAGE_SIZE,
+                    offset=0,
+                    next_page=False
+                )
+            )
+        )
+        self.current_state[token] = user_state
         return token
     
     """
@@ -133,32 +197,28 @@ class SessionManagement():
 
 
     """
-    def get_state(self, session_info, domain):
-        state_of_session = self.current_state[session_info][domain]
-        print(f"\n\n get_state state_of_session: {state_of_session} \n\n")
-        return state_of_session
-    
-    def update_state(self, session_info, domain, key, value):
+    def get_state(self, session_info, domain, subdomain = None):
         if session_info not in self.current_state.keys():
             raise SecurityError()
-        state_of_session = None 
-
         try:
-            state_of_session = self.current_state[session_info][domain]
-        except:
-            raise Exception()
-        print(f"\n\n update_state state_of_session: {state_of_session} \n\n")
+            state_of_session = getattr(self.current_state[session_info], domain)
+            if subdomain is not None:
+                state_of_session = getattr(state_of_session, subdomain)
+        except Exception as e:
+            raise e
+        #print(f"\n\n get_state state_of_session: {state_of_session} \n\n")
+        return state_of_session
+    
+    def update_state(self, session_info, domain, key, value, subdomain=None):
+        state_of_session = self.get_state(session_info, domain, subdomain)
         
-        if domain == "comments" and key == "offset":
-            if "next_page" not in state_of_session.keys():
-                state_of_session["next_page"] = True # might not need this flag anymore
-                state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
+        if subdomain == "comments" and key == "offset":
+            if state_of_session.next_page is False:
+                state_of_session.next_page = True # might not need this flag anymore
+                state_of_session.limit = COMMENTS_NEXT_PAGE_SIZE
 
         #TODO: consider changing session_info into self.extract_id(session_info)
-        state_of_session[key] = value
-
-        self.current_state[session_info][domain] = state_of_session
-        print(f"\n\n update_state state_of_session ending: {state_of_session} \n\n")
+        setattr(state_of_session, key, value)
         return
     
     def exit_session(self, user_info, session_info):
