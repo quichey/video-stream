@@ -1,4 +1,4 @@
-
+from dataclasses import dataclass
 
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
@@ -6,6 +6,54 @@ COMMENTS_NEXT_PAGE_SIZE = 10
 
 class SecurityError(Exception):
     pass
+
+@dataclass
+class Comments:
+    offset: int
+    limit: int
+
+@dataclass
+class Video:
+    id: int
+    timestamp: str
+    comments: Comments
+
+@dataclass
+class User:
+    id: int
+    token: int
+    video: Video
+
+"""
+NOTE: possible datastructure involving the dataclasses above
+TODO: consider what the actual code is going to be like to update state
+self.state = {
+    "user_id_1": User(
+        id: user_id_1
+        token: 1
+        video: Video(
+            id: 1
+            timestamp: 0
+            comments: Comments(
+                offset: 0
+                limit: 10
+            )
+        )
+    ),
+    "user_id_2": User(
+        id: user_id_2
+        token: 2
+        video: Video(
+            id: 1
+            timestamp: 0
+            comments: Comments(
+                offset: 0
+                limit: 10
+            )
+        )
+    )
+}
+"""
 
 """
 TODO: Need to keep track of user's current video_id that is viewed
