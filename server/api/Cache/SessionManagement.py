@@ -11,6 +11,7 @@ class SecurityError(Exception):
 class Comments:
     offset: int
     limit: int
+    next_page: bool
 
 @dataclass
 class Video:
@@ -144,7 +145,8 @@ class SessionManagement():
                 timestamp=0,
                 comments=Comments(
                     limit=COMMENTS_FIRST_PAGE_SIZE,
-                    offset=0
+                    offset=0,
+                    next_page=False
                 )
             )
         )
@@ -195,32 +197,28 @@ class SessionManagement():
 
 
     """
-    def get_state(self, session_info, domain):
-        state_of_session = self.current_state[session_info][domain]
-        print(f"\n\n get_state state_of_session: {state_of_session} \n\n")
-        return state_of_session
-    
-    def update_state(self, session_info, domain, key, value):
+    def get_state(self, session_info, domain, subdomain = None):
         if session_info not in self.current_state.keys():
             raise SecurityError()
-        state_of_session = None 
-
         try:
-            state_of_session = self.current_state[session_info][domain]
-        except:
-            raise Exception()
-        print(f"\n\n update_state state_of_session: {state_of_session} \n\n")
+            state_of_session = getattr(self.current_state[session_info], domain)
+            if subdomain is not None:
+                state_of_session = getattr(state_of_session, subdomain)
+        except Exception as e:
+            raise e
+        #print(f"\n\n get_state state_of_session: {state_of_session} \n\n")
+        return state_of_session
+    
+    def update_state(self, session_info, domain, key, value, subdomain=None):
+        state_of_session = self.get_state(session_info, domain, subdomain)
         
-        if domain == "comments" and key == "offset":
-            if "next_page" not in state_of_session.keys():
-                state_of_session["next_page"] = True # might not need this flag anymore
-                state_of_session["limit"] = COMMENTS_NEXT_PAGE_SIZE
+        if subdomain == "comments" and key == "offset":
+            if state_of_session.next_page is False:
+                state_of_session.next_page = True # might not need this flag anymore
+                state_of_session.limit = COMMENTS_NEXT_PAGE_SIZE
 
         #TODO: consider changing session_info into self.extract_id(session_info)
-        state_of_session[key] = value
-
-        self.current_state[session_info][domain] = state_of_session
-        print(f"\n\n update_state state_of_session ending: {state_of_session} \n\n")
+        setattr(state_of_session, key, value)
         return
     
     def exit_session(self, user_info, session_info):

@@ -74,7 +74,7 @@ class Cache():
         offset = page_size * page_number # need to change this later to make up for initial page w/different size
 
         if session_info is not None:
-            current_state_of_comments = self.session_manager.get_state(session_info, "comments")
+            current_state_of_comments = self.session_manager.get_state(session_info, "video", "comments")
             offset = current_state_of_comments.offset
             limit = current_state_of_comments.limit
             print(f"\n\n offset: {offset} \n\n")
@@ -109,7 +109,7 @@ class Cache():
                 }
                 data.append(comment_data_point)
 
-            self.session_manager.update_state(session_info, "comments", "offset", new_offset)
+            self.session_manager.update_state(session_info, "video", "offset", new_offset, "comments")
 
         return data
 
