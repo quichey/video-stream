@@ -57,6 +57,9 @@ class ClientRouter(Router):
 
     def construct_routes(self, app, request):
 
+        """
+        curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
+        """
         #TODO: change methods to "GET" after
         # adding upload_video route
         # and moving session auth to HTTP HEADERS

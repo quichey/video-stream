@@ -131,7 +131,7 @@ class Cache():
             users_table = self.metadata_obj.tables["users"]
 
             current_video_state = self.session_manager.get_state(session_info, "video")
-            subquery_select_cols = [videos_table.c.file_name, videos_table.c.user_id]
+            subquery_select_cols = [videos_table.c.file_name, videos_table.c.file_dir, videos_table.c.user_id]
             subquery = select(
                 *subquery_select_cols
             ).select_from(
@@ -140,7 +140,7 @@ class Cache():
                 videos_table.c.id == current_video_state.id
             ).cte("one_video")
 
-            select_cols = [subquery.c.file_name, users_table.c.name]
+            select_cols = [subquery.c.file_name, subquery.c.file_dir, users_table.c.name]
             stmt = select(
                 *select_cols
             ).select_from(
@@ -151,9 +151,15 @@ class Cache():
             )
 
             records = conn.execute(stmt)
+            #TODO: consider how to actually have
+            # client show the correct video
+            # maybe could just point to
+            # api's address and move assets from
+            # db/ to api/ 
             for row in records:
                 data["file_name"] = row[0]
-                data["user_name"] = row[1]
+                data["file_dir"] = row[1]
+                data["user_name"] = row[2]
 
         return data
 
