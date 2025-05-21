@@ -58,6 +58,8 @@ class VideoFileManager():
 			os.mkdir(full_file_location)
 
 		full_file_name = f"{full_file_location}/{video_record.file_name}"
+		#print(f"\n\n full_file_location: {full_file_location} \n\n")
+		#print(f"\n\n full_file_name: {full_file_name} \n\n")
 		file_exists = os.path.exists(full_file_name)
 		if not file_exists:
 			if seeding_db:
