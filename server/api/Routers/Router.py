@@ -28,7 +28,7 @@ class Router():
         form_data = json.loads(self.request.data)
         video_info = {}
         if "video_id" in form_data:
-            video_info["id"] = form_data['user_id']
+            video_info["id"] = form_data['video_id']
         return video_info
 
     def set_up(self):
