@@ -12,8 +12,8 @@ is a separate process from the api gateway daemon
 TODO: store file locations in file_dir col of videos table
 TODO: plan out good data structures for this file/module/class
 """
-
-ROOT_FOLDER = "db/assets"
+SERVER_ASSETS_FOLDER = "db/assets"
+CLIENT_PUBLIC_FOLDER = "../client/public/videos"
 
 
 
@@ -50,21 +50,27 @@ class VideoFileManager():
 
 	def store_video(self, video_record, seeding_db=True):
 		file_location = self.determine_file_location(video_record)
+		server_full_file_location = f"{SERVER_ASSETS_FOLDER}"
+		client_full_file_location = f"{CLIENT_PUBLIC_FOLDER}/{file_location}"
+		server_full_file_name = f"{server_full_file_location}/{video_record.file_name}"
+		client_full_file_name = f"{client_full_file_location}/{video_record.file_name}"
+		print(f"\n\n server_full_file_location: {server_full_file_location}\n\n")
+		print(f"\n\n client_full_file_location: {client_full_file_location}\n\n")
+		print(f"\n\n server_full_file_name: {server_full_file_name}\n\n")
+		print(f"\n\n client_full_file_name: {client_full_file_name}\n\n")
 
 		video_record.file_dir = file_location
-		full_file_location = f"{ROOT_FOLDER}/{file_location}"
-		user_folder_exists = os.path.exists(full_file_location)
+		user_folder_exists = os.path.exists(client_full_file_location)
 		if not user_folder_exists:
-			os.mkdir(full_file_location)
+			os.mkdir(client_full_file_location)
 
-		full_file_name = f"{full_file_location}/{video_record.file_name}"
 		#print(f"\n\n full_file_location: {full_file_location} \n\n")
 		#print(f"\n\n full_file_name: {full_file_name} \n\n")
-		file_exists = os.path.exists(full_file_name)
+		file_exists = os.path.exists(client_full_file_name)
 		if not file_exists:
 			if seeding_db:
-				source_path = f"{ROOT_FOLDER}/{video_record.file_name}"
-				shutil.copy(source_path, full_file_location)
+				source_path = server_full_file_name
+				shutil.copy(source_path, client_full_file_location)
 			#TODO: handle saving file from user upload
 
 		#NOTE: do not need to do sqlalchemy stuff cause session in Seed will handle once 

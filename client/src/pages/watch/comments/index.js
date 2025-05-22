@@ -12,9 +12,8 @@ const addComment = (commentArray) => {
     ></Comment>,
   );
 };
-export default function Comments() {
+export default function Comments({ userID, sessionToken, setSessionToken }) {
   const [comments, setComments] = React.useState([]);
-  const [sessionToken, setSessionToken] = React.useState();
   const [loading, setLoading] = React.useState(false);
   const scrollPosition = useWindowScroll();
 
@@ -55,12 +54,10 @@ export default function Comments() {
    * 
    */
   React.useEffect(() => {
-    /*
-    TODO: add nextPageKey to list of params for post request
-    */
     var temp_user = {
-      "user_id": 0,
+      "user_id": userID,
       "user_name": "blah",
+      "token": sessionToken,
       "video_id": 1
     };
     var post_req_data = JSON.stringify(temp_user)
@@ -89,14 +86,6 @@ export default function Comments() {
       .catch((error) => {
         console.log(error);
       });
-
-    /*
-    let tempComments = [];
-    for (var i = 0; i < 40; i++) {
-      addComment(tempComments);
-    }
-    setComments(tempComments);
-    */
   }, []);
 
   /*
