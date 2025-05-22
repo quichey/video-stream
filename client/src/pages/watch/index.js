@@ -1,12 +1,15 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
+import { UserContext } from "..";
+
 import Comments from "./comments/index";
 import Navbar from "./Navbar";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
-export default function Watch({ userID, sessionToken, setSessionToken, videoID }) {
+export default function Watch() {
+  const userContext = React.useContext(UserContext);
   return (
     <Box
       component="form"
@@ -48,10 +51,10 @@ export default function Watch({ userID, sessionToken, setSessionToken, videoID }
             width: "70%",
           }}
         >
-          <Video userID={userID} sessionToken={sessionToken} setSessionToken={setSessionToken} />
+          <Video />
           {
-            sessionToken == undefined ? undefined :
-            <Comments userID={userID} sessionToken={sessionToken} setSessionToken={setSessionToken} />
+            userContext.sessionToken == undefined ? undefined :
+            <Comments />
             }
         </Box>
         <Recommendations />
