@@ -3,9 +3,7 @@ import { Box } from "@mui/material";
 
 import RecommendedVideos from "./RecommendedVideos";
 
-export default function Home() {
-  const [userID, setUserID] = React.useState(0)
-  const [sessionToken, setSessionToken] = React.useState()
+export default function Home({ userID, sessionToken, setSessionToken}) {
   const [videoList, setVideoList] = React.useState([])
 
   var temp_user = {
