@@ -6,9 +6,7 @@ import Navbar from "./Navbar";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
-export default function Watch() {
-  const [userID, setUserID] = React.useState(0)
-  const [sessionToken, setSessionToken] = React.useState()
+export default function Watch({ userID, sessionToken, setSessionToken, videoID }) {
   return (
     <Box
       component="form"
