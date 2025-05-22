@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export default function Video() {
+export default function Video({ userID, sessionToken, setSessionToken }) {
   const id = 1;
   const [fileName, setFileName] = React.useState("");
   const [fileDir, setFileDir] = React.useState("");
@@ -8,13 +8,14 @@ export default function Video() {
 
 
   var temp_user = {
-    "user_id": 0,
+    "user_id": userID,
     "user_name": "blah",
+    //"token": sessionToken,
     "video_id": 1
   };
   var post_req_data = JSON.stringify(temp_user)
   fetch(
-    "http://127.0.0.1:5000/getcomments",
+    "http://127.0.0.1:5000/video",
     {
       method: "POST",
       // may need to use POST later for adding params
@@ -32,6 +33,7 @@ export default function Video() {
     setFileDir(json.video_data.file_dir);
     setFileName(json.video_data.file_name);
     setUserName(json.video_data.user_name);
+    setSessionToken(json.session_info);
   })
   .catch((error) => {
     console.log(error);
