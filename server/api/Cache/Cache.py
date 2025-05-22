@@ -123,6 +123,45 @@ class Cache():
             self.session_manager.update_state(session_info, "video", "offset", new_offset, "comments")
 
         return data
+    
+    def get_video(self, session_info):
+        data = {}
+        with self.engine.connect() as conn:
+            videos_table = self.metadata_obj.tables["videos"]
+            users_table = self.metadata_obj.tables["users"]
+
+            current_video_state = self.session_manager.get_state(session_info, "video")
+            subquery_select_cols = [videos_table.c.file_name, videos_table.c.file_dir, videos_table.c.user_id]
+            subquery = select(
+                *subquery_select_cols
+            ).select_from(
+                videos_table
+            ).where(
+                videos_table.c.id == current_video_state.id
+            ).cte("one_video")
+
+            select_cols = [subquery.c.file_name, subquery.c.file_dir, users_table.c.name]
+            stmt = select(
+                *select_cols
+            ).select_from(
+                subquery
+            ).join(
+                    users_table,
+                    subquery.c.user_id == users_table.c.id
+            )
+
+            records = conn.execute(stmt)
+            #TODO: consider how to actually have
+            # client show the correct video
+            # maybe could just point to
+            # api's address and move assets from
+            # db/ to api/ 
+            for row in records:
+                data["file_name"] = row[0]
+                data["file_dir"] = row[1]
+                data["user_name"] = row[2]
+
+        return data
 
     """
     Should I have session_info here if i intend this for admin stuff?
