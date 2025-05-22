@@ -1,19 +1,17 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
+import { UserContext } from "..";
+import { HTTPContext } from "..";
 import RecommendedVideos from "./RecommendedVideos";
 
-export default function Home({ userID, sessionToken, setSessionToken}) {
+export default function Home() {
+  const userContext = React.useContext(UserContext);
+  const httpContext = React.useContext(HTTPContext);
   const [videoList, setVideoList] = React.useState([])
 
-  var temp_user = {
-    "user_id": userID,
-    "user_name": "blah",
-    //"token": sessionToken,
-  };
-  var post_req_data = JSON.stringify(temp_user)
   fetch(
-    "http://127.0.0.1:5000/video-list",
+    `${httpContext.serverURL}/video-list`,
     {
       method: "POST",
       // may need to use POST later for adding params
@@ -22,14 +20,14 @@ export default function Home({ userID, sessionToken, setSessionToken}) {
       //method: "POST",
       // body: JSON.stringify({ limit: 30 }),
       // mode: "no-cors",
-      body: post_req_data
+      body: httpContext.postRequestPayload
     },
   )
   .then((response) => response.json())
   .then((json) => {
     console.log(json);
     setVideoList(json.video_data);
-    setSessionToken(json.session_info);
+    httpContext.refreshSessionToken(json);
   })
   .catch((error) => {
     console.log(error);

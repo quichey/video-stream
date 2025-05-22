@@ -1,6 +1,8 @@
 import * as React from "react";
 import List from "@mui/material/List";
 
+import { HTTPContext } from "..";
+
 import useWindowScroll from "../../../customHooks/useWindowScroll";
 import Comment from "./Comment";
 
@@ -12,7 +14,9 @@ const addComment = (commentArray) => {
     ></Comment>,
   );
 };
-export default function Comments({ userID, sessionToken, setSessionToken }) {
+export default function Comments() {
+  const httpContext = React.useContext(HTTPContext);
+
   const [comments, setComments] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const scrollPosition = useWindowScroll();
@@ -54,15 +58,8 @@ export default function Comments({ userID, sessionToken, setSessionToken }) {
    * 
    */
   React.useEffect(() => {
-    var temp_user = {
-      "user_id": userID,
-      "user_name": "blah",
-      "token": sessionToken,
-      "video_id": 1
-    };
-    var post_req_data = JSON.stringify(temp_user)
     fetch(
-      "http://127.0.0.1:5000/getcomments",
+      `${httpContext.serverURL}/getcomments`,
       {
         method: "POST",
         // may need to use POST later for adding params
@@ -71,7 +68,7 @@ export default function Comments({ userID, sessionToken, setSessionToken }) {
         //method: "POST",
         // body: JSON.stringify({ limit: 30 }),
         // mode: "no-cors",
-        body: post_req_data
+      body: httpContext.postRequestPayload
       },
     )
       .then((response) => response.json())
@@ -81,12 +78,12 @@ export default function Comments({ userID, sessionToken, setSessionToken }) {
           return <Comment comment={comment.comment} user={comment.user_name} />;
         });
         setComments(tmpComments);
-        setSessionToken(json.session_info);
+        httpContext.refreshSessionToken(json);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [httpContext]);
 
   /*
    * moving the actual scroll bar
@@ -116,14 +113,8 @@ export default function Comments({ userID, sessionToken, setSessionToken }) {
         console.log("blah")
 
         
-        var temp_user = {
-          "user_id": 0,
-          "user_name": "blah",
-          "token": sessionToken
-        };
-        var post_req_data = JSON.stringify(temp_user)
         fetch(
-          "http://127.0.0.1:5000/getcomments",
+          `${httpContext.serverURL}/getcomments`,
           {
             method: "POST",
             // may need to use POST later for adding params
@@ -132,7 +123,7 @@ export default function Comments({ userID, sessionToken, setSessionToken }) {
             //method: "POST",
             // body: JSON.stringify({ limit: 30 }),
             // mode: "no-cors",
-            body: post_req_data
+            body: httpContext.postRequestPayload
           },
         )
           .then((response) => response.json())
@@ -161,7 +152,7 @@ export default function Comments({ userID, sessionToken, setSessionToken }) {
       });
       */
     }
-  }, [scrollPosition, comments, loading, sessionToken]);
+  }, [scrollPosition, comments, loading, httpContext]);
   return (
     <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       {comments}
