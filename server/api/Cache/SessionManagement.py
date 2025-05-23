@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
@@ -23,7 +24,7 @@ class Video:
 class User:
     id: int
     token: int
-    video: Video
+    video: Optional[Video]
 
 """
 NOTE: possible datastructure involving the dataclasses above
@@ -123,7 +124,8 @@ class SessionManagement():
             raise SecurityError("Hijacked Session Token")
         return existing_session_info
     
-    def register_user(self, user_info, existing_session_info, video_info):
+    #TODO: Update names of authenticate_user and register_user funcs to match functionality better
+    def register_user(self, user_info, existing_session_info):
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
@@ -139,19 +141,25 @@ class SessionManagement():
         self.current_users.add(user_id)
         user_state = User(
             id=user_id,
-            token=token,
-            video=Video(
-                id=video_info["id"],
-                timestamp=0,
-                comments=Comments(
-                    limit=COMMENTS_FIRST_PAGE_SIZE,
-                    offset=0,
-                    next_page=False
-                )
-            )
+            token=token
         )
         self.current_state[token] = user_state
         return token
+    
+    def start_video_session(self, existing_session_info, video_info):
+        token = existing_session_info
+        user_state = self.current_state[token]
+        user_state.video = Video(
+            id=video_info["id"],
+            timestamp=0,
+            comments=Comments(
+                limit=COMMENTS_FIRST_PAGE_SIZE,
+                offset=0,
+                next_page=False
+            )
+        )
+        self.current_state[token] = user_state
+        return existing_session_info
     
     """
     get all data associated with the session

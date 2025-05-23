@@ -52,13 +52,23 @@ class Cache():
         return engine
 
 
-    def get_session(self, user_info, existing_session_info, video_info):
+    def get_user_session(self, user_info, existing_session_info):
         # extract user identity from request object
         # generate a session token here or on client?
         # i think here, then send it to the client for them to store in
         # the javascript
 
-        session_info = self.session_manager.register_user(user_info, existing_session_info, video_info)
+        session_info = self.session_manager.register_user(user_info, existing_session_info)
+        return session_info
+    
+
+    def start_video_session(self, existing_session_info, video_info):
+        # extract user identity from request object
+        # generate a session token here or on client?
+        # i think here, then send it to the client for them to store in
+        # the javascript
+
+        session_info = self.session_manager.start_video_session(existing_session_info, video_info)
         return session_info
     
 
@@ -160,6 +170,58 @@ class Cache():
                 data["file_name"] = row[0]
                 data["file_dir"] = row[1]
                 data["user_name"] = row[2]
+
+        return data
+    
+    def get_video_list(self, session_info):
+        data = []
+        with self.engine.connect() as conn:
+            videos_table = self.metadata_obj.tables["videos"]
+            users_table = self.metadata_obj.tables["users"]
+
+            subquery_select_cols = [
+                videos_table.c.id,
+                videos_table.c.file_name,
+                videos_table.c.file_dir,
+                videos_table.c.user_id
+            ]
+            subquery = select(
+                *subquery_select_cols
+            ).select_from(
+                videos_table
+            ).limit(
+                10
+            ).cte("one_page_videos")
+
+            select_cols = [
+                subquery.c.id,
+                subquery.c.file_name,
+                subquery.c.file_dir,
+                users_table.c.name
+            ]
+            stmt = select(
+                *select_cols
+            ).select_from(
+                subquery
+            ).join(
+                users_table,
+                subquery.c.user_id == users_table.c.id
+            )
+
+            records = conn.execute(stmt)
+            #TODO: consider how to actually have
+            # client show the correct video
+            # maybe could just point to
+            # api's address and move assets from
+            # db/ to api/ 
+            for row in records:
+                video_data_point = {
+                    "id": row[0],
+                    "file_name": row[1],
+                    "file_dir": row[2],
+                    "user_name": row[3]
+                }
+                data.append(video_data_point)
 
         return data
 
