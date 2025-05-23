@@ -1,7 +1,7 @@
 import * as React from "react";
 import List from "@mui/material/List";
 
-import { HTTPContext } from "..";
+import { HTTPContext } from "../..";
 
 import useWindowScroll from "../../../customHooks/useWindowScroll";
 import Comment from "./Comment";
