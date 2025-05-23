@@ -1,12 +1,11 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-import { UserContext } from "..";
 import { HTTPContext } from "..";
+
 import RecommendedVideos from "./RecommendedVideos";
 
 export default function Home() {
-  const userContext = React.useContext(UserContext);
   const httpContext = React.useContext(HTTPContext);
   const [videoList, setVideoList] = React.useState([])
 
@@ -47,37 +46,7 @@ export default function Home() {
         width: "100%",
       }}
     >
-      <Navbar />
-      <Box
-        component="form"
-        sx={{
-          "& > :not(style)": { m: 1, width: "100%" },
-        }}
-        noValidate
-        display="flex"
-        flexDirection="row"
-        autoComplete="off"
-        style={{
-          width: "100%",
-        }}
-      >
-        <Box
-          component="form"
-          sx={{
-            "& > :not(style)": { m: 1, width: "100%" },
-          }}
-          noValidate
-          display="flex"
-          flexDirection="column"
-          autoComplete="off"
-          style={{
-            width: "70%",
-          }}
-        >
-          <RecommendedVideos videoList={videoList} />
-        </Box>
-        <Recommendations />
-      </Box>
+      <RecommendedVideos videoList={videoList} />
     </Box>
   );
 }
