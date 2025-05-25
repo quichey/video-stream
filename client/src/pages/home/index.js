@@ -42,8 +42,6 @@ export default function Home() {
         "& > :not(style)": { m: 1, width: "100%" },
       }}
       noValidate
-      display="flex"
-      flexDirection="column"
       autoComplete="off"
       style={{
         width: "100%",
