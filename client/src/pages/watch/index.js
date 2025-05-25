@@ -4,7 +4,6 @@ import { Box } from "@mui/material";
 import { UserContext } from "..";
 
 import Comments from "./comments/index";
-import Navbar from "./Navbar";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
@@ -24,7 +23,6 @@ export default function Watch() {
         width: "100%",
       }}
     >
-      <Navbar />
       <Box
         component="form"
         sx={{

@@ -24,7 +24,7 @@ class Video:
 class User:
     id: int
     token: int
-    video: Optional[Video]
+    video: Optional[Video] = None
 
 """
 NOTE: possible datastructure involving the dataclasses above
