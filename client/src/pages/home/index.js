@@ -9,28 +9,31 @@ export default function Home() {
   const httpContext = React.useContext(HTTPContext);
   const [videoList, setVideoList] = React.useState([])
 
-  fetch(
-    `${httpContext.serverURL}/video-list`,
-    {
-      method: "POST",
-      // may need to use POST later for adding params
-      // i think don't have to, could use query string
-      // POST is probably more secure cause body is probably encrypted
-      //method: "POST",
-      // body: JSON.stringify({ limit: 30 }),
-      // mode: "no-cors",
-      body: httpContext.postRequestPayload
-    },
-  )
-  .then((response) => response.json())
-  .then((json) => {
-    console.log(json);
-    setVideoList(json.video_data);
-    httpContext.refreshSessionToken(json);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+  React.useEffect(() => {
+    fetch(
+      `${httpContext.serverURL}/video-list`,
+      {
+        method: "POST",
+        // may need to use POST later for adding params
+        // i think don't have to, could use query string
+        // POST is probably more secure cause body is probably encrypted
+        //method: "POST",
+        // body: JSON.stringify({ limit: 30 }),
+        // mode: "no-cors",
+        body: httpContext.postRequestPayload
+      },
+    )
+    .then((response) => response.json())
+    .then((json) => {
+      console.log(json);
+      setVideoList(json.video_data);
+      httpContext.refreshSessionToken(json);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  }, [httpContext])
 
   return (
     <Box
