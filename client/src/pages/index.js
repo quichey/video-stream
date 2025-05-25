@@ -6,28 +6,12 @@ import Watch from "./watch";
 import Navbar from "./Navbar";
 
 
-export const UserContext = React.createContext({
-  id,
-  setID,
-  uName,
-  setName,
-});
+export const UserContext = React.createContext(null);
 
-export const VideoContext = React.createContext({
-  id,
-  setID,
-  fileName,
-  setFileName,
-  fileDir,
-  setFileDir
-});
+export const VideoContext = React.createContext(null);
 
 const serverURL = "http://127.0.0.1:5000"
-export const HTTPContext = React.createContext({
-  refreshSessionToken,
-  serverURL: serverURL,
-  postRequestPayload: null,
-});
+export const HTTPContext = React.createContext(null);
 
 export default function Pages() {
   const [userID, setUserID] = React.useState(0)
