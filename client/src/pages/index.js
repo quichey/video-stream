@@ -1,4 +1,5 @@
 import * as React from "react";
+import { BrowserRouter, Routes, Route } from "react-router";
 import { Box } from "@mui/material";
 
 import Home from "./home";
@@ -85,26 +86,30 @@ export default function Pages() {
             refreshSessionToken: refreshSessionToken,
             serverURL: serverURL,
             postRequestPayload: postRequestPayload,
+            setPage: setPage,
+            setPageComponent: setPageComponent
           }}
         >
-          <Box
-            component="form"
-            sx={{
-              "& > :not(style)": { m: 1, width: "100%" },
-            }}
-            noValidate
-            display="flex"
-            flexDirection="column"
-            autoComplete="off"
-            style={{
-              width: "100%",
-            }}
-          >
-            <Navbar />
-            {
-              pageComponent
-            }
-          </Box>
+          <BrowserRouter>
+            <Box
+              component="form"
+              sx={{
+                "& > :not(style)": { m: 1, width: "100%" },
+              }}
+              noValidate
+              display="flex"
+              flexDirection="column"
+              autoComplete="off"
+              style={{
+                width: "100%",
+              }}
+            >
+              <Navbar />
+              <Routes>
+                <Route path={page} element={pageComponent} />
+              </Routes>
+            </Box>
+          </BrowserRouter>
         </HTTPContext.Provider>
       </VideoContext.Provider>
     </UserContext.Provider>
