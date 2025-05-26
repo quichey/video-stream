@@ -5,6 +5,11 @@ import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
+import { VideoContext } from "..";
+import { HTTPContext } from "..";
+
+import Watch from "../watch";
+
 function VideoInfo({title, userName, userIcon, totalViews, uploadDate}) {
   return (
     <Stack direction="row" spacing={1}>
@@ -29,6 +34,9 @@ function VideoInfo({title, userName, userIcon, totalViews, uploadDate}) {
 }
 
 export default function VideoTile({ id, fileName, fileDir, userName }) {
+  const videoContext = React.useContext(VideoContext);
+  const httpContext = React.useContext(HTTPContext);
+
   const [title, setTitle] = React.useState("");
   const [userIcon, setUserIcon] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
@@ -41,8 +49,20 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
     setUploadDate("test upload date")
   }, [])
 
+  const handleVideoClick = React.useCallback(() => {
+    httpContext.setPage(`watchID=${id}`)
+    httpContext.setPageComponent(
+      <Watch id={id} />
+    )
+    videoContext.setID(id)
+  }, [id, httpContext, videoContext]) //pretty sure this will cause inf loop
+
   return (
-    <Card variant="outlined" sx={{ maxWidth: 360 }}>
+    <Card
+      variant="outlined"
+      sx={{ maxWidth: 360 }}
+      onClick={handleVideoClick}
+    >
       <Box
         sx={{ p: 2 }}
       >
