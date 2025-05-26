@@ -1,6 +1,5 @@
 import * as React from "react";
 import Card from '@mui/material/Card';
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
@@ -9,6 +8,10 @@ import { VideoContext } from "..";
 import { HTTPContext } from "..";
 
 import Watch from "../watch";
+
+
+
+
 
 function VideoInfo({title, userName, userIcon, totalViews, uploadDate}) {
   return (
@@ -50,7 +53,7 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
   }, [])
 
   const handleVideoClick = React.useCallback(() => {
-    httpContext.setPage(`watchID=${id}`)
+    httpContext.setPage(`/watchID=${id}`)
     httpContext.setPageComponent(
       <Watch id={id} />
     )
@@ -58,13 +61,11 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
   }, [id, httpContext, videoContext]) //pretty sure this will cause inf loop
 
   return (
+    
     <Card
       variant="outlined"
       sx={{ maxWidth: 360 }}
       onClick={handleVideoClick}
-    >
-      <Box
-        sx={{ p: 2 }}
       >
         <video controls width="100%" height="100%">
           <source src="/media/cc0-videos/flower.webm" type="video/webm" />
@@ -73,12 +74,8 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
             type="video/mp4"
           />
         </video>
-      </Box>
       <Divider />
-      <Box sx={{ p: 2 }}>
-        <VideoInfo title={title} userName={userName} userIcon={userIcon} totalViews={totalViews} uploadDate={uploadDate} />
-      </Box>
-
+      <VideoInfo title={title} userName={userName} userIcon={userIcon} totalViews={totalViews} uploadDate={uploadDate} />
     </Card>
   );
 }
