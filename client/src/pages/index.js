@@ -34,7 +34,7 @@ export default function Pages() {
         "user_name": userName,
         "video_id": videoID
       };
-      if (sessionToken != undefined) {
+      if (sessionToken !== undefined) {
         payloadObject.token = sessionToken
       }
       var payloadJSON = JSON.stringify(payloadObject)
@@ -48,20 +48,6 @@ export default function Pages() {
     }, [])
 
 
-    React.useEffect(() => {
-        switch(page) {
-            case "home":
-                setPageComponent(
-                    <Home />
-                )
-                break;
-            case "watch":
-                setPageComponent(
-                    <Watch />
-                )
-                break;
-        }
-    }, [page])
   return (
     <UserContext.Provider
       value={{
@@ -106,7 +92,10 @@ export default function Pages() {
             >
               <Navbar />
               <Routes>
-                <Route path={page} element={pageComponent} />
+                <Route path="/" element={<Home />}>
+                  <Route index element={<Home />} />
+                  <Route path={page} element={pageComponent} />
+                </Route>
               </Routes>
             </Box>
           </BrowserRouter>

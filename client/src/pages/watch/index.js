@@ -51,7 +51,7 @@ export default function Watch() {
         >
           <Video />
           {
-            userContext.sessionToken == undefined ? undefined :
+            userContext.sessionToken === undefined ? undefined :
             <Comments />
             }
         </Box>
