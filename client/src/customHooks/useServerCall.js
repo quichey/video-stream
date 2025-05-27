@@ -3,10 +3,10 @@ import * as React from "react";
 import { HTTPContext } from "../pages";
 
 export const useServerCall = () => {
-  const httpContext = React.useContext(HTTPContext);
+  const {serverURL, postRequestPayload, refreshSessionToken} = React.useContext(HTTPContext);
   const fetchServer = React.useCallback((route, onResponse, method="POST") => {
       fetch(
-        `${httpContext.serverURL}/${route}`,
+        `${serverURL}/${route}`,
         {
           method: method,
           // may need to use POST later for adding params
@@ -15,20 +15,20 @@ export const useServerCall = () => {
           //method: "POST",
           // body: JSON.stringify({ limit: 30 }),
           // mode: "no-cors",
-          body: httpContext.postRequestPayload
+          body: postRequestPayload
         },
       )
       .then((response) => response.json())
       .then((json) => {
         console.log(json);
         onResponse(json)
-        httpContext.refreshSessionToken(json);
+        refreshSessionToken(json);
       })
       .catch((error) => {
         console.log(error);
       });
   
-    }, [httpContext])
+    }, [serverURL, postRequestPayload, refreshSessionToken])
 
   return fetchServer;
 };
