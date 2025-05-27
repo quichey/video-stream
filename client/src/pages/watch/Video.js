@@ -1,44 +1,26 @@
 import * as React from "react";
 
 import { VideoContext } from "..";
-import { HTTPContext } from "..";
+
+import { useServerCall } from "../../customHooks/useServerCall";
 
 
 export default function Video() {
-  const videoContext = React.useContext(VideoContext);
-  const httpContext = React.useContext(HTTPContext);
+  const {setFileDir, setFileName, fileDir, fileName} = React.useContext(VideoContext);
 
+  const handleServer = React.useCallback((json) => {
+    setFileDir(json.video_data.file_dir);
+    setFileName(json.video_data.file_name);
+  }, [setFileDir, setFileName])
 
-  fetch(
-    `${httpContext.serverURL}/video`,
-    {
-      method: "POST",
-      // may need to use POST later for adding params
-      // i think don't have to, could use query string
-      // POST is probably more secure cause body is probably encrypted
-      //method: "POST",
-      // body: JSON.stringify({ limit: 30 }),
-      // mode: "no-cors",
-      body: httpContext.postRequestPayload
-    },
-  )
-  .then((response) => response.json())
-  .then((json) => {
-    console.log(json);
-    videoContext.setFileDir(json.video_data.file_dir);
-    videoContext.setFileName(json.video_data.file_name);
-    httpContext.refreshSessionToken(json);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+  useServerCall("video", handleServer)
   
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
     <video controls width="70%" height="50%">
       <source src="/media/cc0-videos/flower.webm" type="video/webm" />
       <source
-        src={`${process.env.PUBLIC_URL}/videos/${videoContext.fileDir}/${videoContext.fileName}`}
+        src={`${process.env.PUBLIC_URL}/videos/${fileDir}/${fileName}`}
         type="video/mp4"
       />
       Download the
