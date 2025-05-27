@@ -7,13 +7,16 @@ import { useServerCall } from "../../customHooks/useServerCall";
 
 export default function Video() {
   const {setFileDir, setFileName, fileDir, fileName} = React.useContext(VideoContext);
+  const fetchData = useServerCall();
 
   const handleServer = React.useCallback((json) => {
     setFileDir(json.video_data.file_dir);
     setFileName(json.video_data.file_name);
   }, [setFileDir, setFileName])
 
-  useServerCall("video", handleServer)
+  React.useEffect(() => {
+    fetchData("video", handleServer);
+  }, [fetchData, handleServer])
   
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
