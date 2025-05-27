@@ -96,6 +96,7 @@ export default function Pages() {
               <Routes>
                 <Route path="/" element={<Home />}>
                   <Route index element={<Home />} />
+                  <Route path="home" element={<Home />} />
                   {recommendedVideos.map((video) => {
                     return <Route path={`/watch=${video.file_name}`} element={<Watch />} />;
                   })}
