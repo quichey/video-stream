@@ -17,6 +17,7 @@ export const HTTPContext = React.createContext(null);
 export default function Pages() {
   const [userID, setUserID] = React.useState(0)
   const [userName, setUserName] = React.useState("users_name_0")
+  const [recommendedVideos, setRecommendedVideos] = React.useState([])
   const [sessionToken, setSessionToken] = React.useState(undefined)
 
   const [videoID, setVideoID] = React.useState(0)
@@ -55,6 +56,7 @@ export default function Pages() {
           setID: setUserID,
           uName: userName,
           setName: setUserName,
+          setRecommendedVideos: setRecommendedVideos
       }}
     >
       <VideoContext.Provider
@@ -94,7 +96,9 @@ export default function Pages() {
               <Routes>
                 <Route path="/" element={<Home />}>
                   <Route index element={<Home />} />
-                  <Route path={page} element={pageComponent} />
+                  {recommendedVideos.map((video) => {
+                    return <Route path={`/watch=${video.file_name}`} element={<Watch />} />;
+                  })}
                 </Route>
               </Routes>
             </Box>

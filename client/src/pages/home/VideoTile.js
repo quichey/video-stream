@@ -3,6 +3,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
+import { NavLink } from "react-router";
 
 import { VideoContext } from "..";
 import { HTTPContext } from "..";
@@ -37,8 +38,8 @@ function VideoInfo({title, userName, userIcon, totalViews, uploadDate}) {
 }
 
 export default function VideoTile({ id, fileName, fileDir, userName }) {
-  const videoContext = React.useContext(VideoContext);
-  const httpContext = React.useContext(HTTPContext);
+  const {setID} = React.useContext(VideoContext);
+  const {setPage, setPageComponent} = React.useContext(HTTPContext)
 
   const [title, setTitle] = React.useState("");
   const [userIcon, setUserIcon] = React.useState("");
@@ -53,12 +54,12 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
   }, [])
 
   const handleVideoClick = React.useCallback(() => {
-    httpContext.setPage(`/watchID=${id}`)
-    httpContext.setPageComponent(
+    setPage(`/watchID=${id}`)
+    setPageComponent(
       <Watch id={id} />
     )
-    videoContext.setID(id)
-  }, [id, httpContext, videoContext]) //pretty sure this will cause inf loop
+    setID(id)
+  }, [id, setPage, setPageComponent, setID]) //pretty sure this will cause inf loop
 
   return (
     
@@ -67,13 +68,15 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
       sx={{ maxWidth: 360 }}
       onClick={handleVideoClick}
       >
-        <video controls width="100%" height="100%">
-          <source src="/media/cc0-videos/flower.webm" type="video/webm" />
-          <source
-            src={`${process.env.PUBLIC_URL}/videos/${fileDir}/${fileName}`}
-            type="video/mp4"
-          />
-        </video>
+        <NavLink to={`/watchID=${id}`} end>
+          <video controls width="100%" height="100%">
+            <source src="/media/cc0-videos/flower.webm" type="video/webm" />
+            <source
+              src={`${process.env.PUBLIC_URL}/videos/${fileDir}/${fileName}`}
+              type="video/mp4"
+            />
+          </video>
+        </NavLink>
       <Divider />
       <VideoInfo title={title} userName={userName} userIcon={userIcon} totalViews={totalViews} uploadDate={uploadDate} />
     </Card>
