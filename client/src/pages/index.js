@@ -53,6 +53,7 @@ export default function Pages() {
           setID: setUserID,
           uName: userName,
           setName: setUserName,
+          sessionToken: sessionToken,
       }}
     >
       <VideoContext.Provider
