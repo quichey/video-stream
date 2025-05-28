@@ -1,7 +1,7 @@
 import { Container } from "@mui/material";
 
 import useWindowDimensions from "./customHooks/useWindowDimensions";
-import Watch from "./pages/watch";
+import Pages from "./pages";
 
 import logo from "./logo.svg";
 import "./App.css";
@@ -21,7 +21,7 @@ function App() {
         //overflowX: "hidden",
       }}
     >
-      <Watch />
+      <Pages />
     </Container>
   );
 }
