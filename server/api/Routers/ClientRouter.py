@@ -26,9 +26,36 @@ class ClientRouter(Router):
     don't yet know what i would want in 
     here for ClientRouter, but i'm sure something
     will come up
+
+
+    TODO: set-up routes to keep track of comments inf scroll w/out needing
+    a user to be logged in
     """
     def set_up(self):
         return
+    
+    """
+    TODO: do re-usable token authentication through HTTP headers instead of payload
+    """
+    def auth_user(self, request):
+        cache = self.cache
+
+        form_data = json.loads(request.data)
+        # TODO: change later to something like request.form['username']
+        user_info = self.extract_user_info()
+        existing_session_info = form_data["token"] if "token" in form_data.keys() else None
+        try:
+            session_info = cache.get_user_session(user_info, existing_session_info)
+        except SecurityError as security_alarm:
+            data = {
+                "status": "error",
+                "msg": security_alarm.msg()
+            }
+            # later, check Flask docs
+            # update with flask framework
+            return data
+        
+        return session_info
     
     """
     TODO: do re-usable token authentication through HTTP headers instead of payload
@@ -70,31 +97,31 @@ class ClientRouter(Router):
             # temp instantiation of Cache object
             cache = self.cache
 
-            form_data = json.loads(request.data)
+            session_info = self.auth_user(request)
             video_info = self.extract_video_info()
-            # TODO: change later to something like request.form['username']
-            user_info = self.extract_user_info()
-            existing_session_info = form_data["token"] if "token" in form_data.keys() else None
-            try:
-                session_info = cache.get_session(user_info, existing_session_info, video_info)
-            except SecurityError as security_alarm:
-                data = {
-                    "status": "error",
-                    "msg": security_alarm.msg()
-                }
-                # later, check Flask docs
-                # update with flask framework
-                return data
-            """
-            Handle different cases of different combinations
-            of User_id with session_id
-            null case: session_id is empty
-            then: generate new session --- do i need extra code for this? i don't think so
-            case 1: user_id does not match value of session_id
-            then: return error code as most likely spoofing attempt
-            """
+            session_info = cache.start_video_session(session_info, video_info)
 
             video_data = cache.get_video(session_info)
+            data = {
+                "session_info": session_info,
+                "video_data": video_data,
+            }
+            data = jsonify(data)
+            return data
+
+        """
+        curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
+        """
+        #TODO: change methods to "GET" after
+        # adding upload_video route
+        # and moving session auth to HTTP HEADERS
+        @app.route('/video-list', methods=["POST"])
+        def get_video_list():
+            cache = self.cache
+
+            session_info = self.auth_user(request)
+
+            video_data = cache.get_video_list(session_info)
             data = {
                 "session_info": session_info,
                 "video_data": video_data,
@@ -126,21 +153,7 @@ class ClientRouter(Router):
             # temp instantiation of Cache object
             cache = self.cache
 
-            form_data = json.loads(request.data)
-            video_info = self.extract_video_info()
-            # TODO: change later to something like request.form['username']
-            user_info = self.extract_user_info()
-            existing_session_info = form_data["token"] if "token" in form_data.keys() else None
-            try:
-                session_info = cache.get_session(user_info, existing_session_info, video_info)
-            except SecurityError as security_alarm:
-                data = {
-                    "status": "error",
-                    "msg": security_alarm.msg()
-                }
-                # later, check Flask docs
-                # update with flask framework
-                return data
+            session_info = self.auth_user(request)
             """
             Handle different cases of different combinations
             of User_id with session_id
