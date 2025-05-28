@@ -7,8 +7,10 @@ import Comments from "./comments/index";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
+
+
 export default function Watch() {
-  const userContext = React.useContext(UserContext);
+  const {sessionToken} = React.useContext(UserContext);
   return (
     <Box
       component="form"
@@ -51,7 +53,7 @@ export default function Watch() {
         >
           <Video />
           {
-            userContext.sessionToken === undefined ? undefined :
+            sessionToken === undefined ? undefined :
             <Comments />
             }
         </Box>

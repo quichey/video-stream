@@ -10,8 +10,8 @@ export default function Video() {
   const fetchData = useServerCall();
 
   const handleServer = React.useCallback((json) => {
-    setFileDir(json.video_data.file_dir);
-    setFileName(json.video_data.file_name);
+    setFileDir(json?.video_data?.file_dir);
+    setFileName(json?.video_data?.file_name);
   }, [setFileDir, setFileName])
 
   React.useEffect(() => {
@@ -26,11 +26,6 @@ export default function Video() {
         src={`${process.env.PUBLIC_URL}/videos/${fileDir}/${fileName}`}
         type="video/mp4"
       />
-      Download the
-      <a href="/media/cc0-videos/flower.webm">WEBM</a>
-      or
-      <a href="/media/cc0-videos/flower.mp4">MP4</a>
-      video.
     </video>
   );
 }
