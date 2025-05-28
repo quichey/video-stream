@@ -95,11 +95,9 @@ export default function Pages() {
               <Navbar />
               <Routes>
                 <Route path="/" element={<Home />}>
-                  <Route index element={<Home />} />
-                  <Route path="home" element={<Home />} />
-                  {recommendedVideos.map((video) => {
-                    return <Route path={`/watch=${video.file_name}`} element={<Watch />} />;
-                  })}
+                <Route path="watch">
+                  <Route path=":video" element={<Watch />} />
+                </Route>
                 </Route>
               </Routes>
             </Box>
