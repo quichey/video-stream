@@ -6,9 +6,6 @@ import Typography from '@mui/material/Typography';
 import { NavLink } from "react-router";
 
 import { VideoContext } from "..";
-import { HTTPContext } from "..";
-
-import Watch from "../watch";
 
 
 
@@ -39,7 +36,6 @@ function VideoInfo({title, userName, userIcon, totalViews, uploadDate}) {
 
 export default function VideoTile({ id, fileName, fileDir, userName }) {
   const {setID} = React.useContext(VideoContext);
-  const {setPage, setPageComponent} = React.useContext(HTTPContext)
 
   const [title, setTitle] = React.useState("");
   const [userIcon, setUserIcon] = React.useState("");
@@ -54,12 +50,8 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
   }, [])
 
   const handleVideoClick = React.useCallback(() => {
-    setPage(`/watchID=${id}`)
-    setPageComponent(
-      <Watch id={id} />
-    )
     setID(id)
-  }, [id, setPage, setPageComponent, setID]) //pretty sure this will cause inf loop
+  }, [id, setID]) //pretty sure this will cause inf loop
 
   return (
     
@@ -68,7 +60,7 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
       sx={{ maxWidth: 360 }}
       onClick={handleVideoClick}
       >
-        <NavLink to={`/watchID=${id}`} end>
+        <NavLink to={`/watch/${id}`} end>
           <video controls width="100%" height="100%">
             <source src="/media/cc0-videos/flower.webm" type="video/webm" />
             <source

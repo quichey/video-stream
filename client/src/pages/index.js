@@ -17,7 +17,6 @@ export const HTTPContext = React.createContext(null);
 export default function Pages() {
   const [userID, setUserID] = React.useState(0)
   const [userName, setUserName] = React.useState("users_name_0")
-  const [recommendedVideos, setRecommendedVideos] = React.useState([])
   const [sessionToken, setSessionToken] = React.useState(undefined)
 
   const [videoID, setVideoID] = React.useState(0)
@@ -25,8 +24,6 @@ export default function Pages() {
   const [videoFileDir, setVideoFileDir] = React.useState()
 
   const [postRequestPayload, setPostRequestPayload] = React.useState(0)
-  const [page, setPage] = React.useState("home")
-    const [pageComponent, setPageComponent] = React.useState()
 
 
     React.useEffect(() => {
@@ -56,7 +53,6 @@ export default function Pages() {
           setID: setUserID,
           uName: userName,
           setName: setUserName,
-          setRecommendedVideos: setRecommendedVideos
       }}
     >
       <VideoContext.Provider
@@ -74,8 +70,6 @@ export default function Pages() {
             refreshSessionToken: refreshSessionToken,
             serverURL: serverURL,
             postRequestPayload: postRequestPayload,
-            setPage: setPage,
-            setPageComponent: setPageComponent
           }}
         >
           <BrowserRouter>
@@ -94,10 +88,9 @@ export default function Pages() {
             >
               <Navbar />
               <Routes>
-                <Route path="/" element={<Home />}>
+                <Route path="/" element={<Home />} />
                 <Route path="watch">
-                  <Route path=":video" element={<Watch />} />
-                </Route>
+                  <Route path=":videoID" element={<Watch />} />
                 </Route>
               </Routes>
             </Box>
