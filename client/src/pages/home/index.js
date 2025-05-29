@@ -5,16 +5,16 @@ import { useServerCall } from "../../customHooks/useServerCall";
 import RecommendedVideos from "./RecommendedVideos";
 
 export default function Home() {
-  const [videoList, setVideoList] = React.useState([])
+  const [videoList, setVideoList] = React.useState([]);
   const fetchData = useServerCall();
-  
+
   const handleServer = React.useCallback((json) => {
     setVideoList(json.video_data);
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     fetchData("video-list", handleServer);
-  }, [fetchData, handleServer])
+  }, [fetchData, handleServer]);
 
   return (
     <Box

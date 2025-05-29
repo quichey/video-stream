@@ -6,7 +6,6 @@ import { useServerCall } from "../../../customHooks/useServerCall";
 
 import Comment from "./Comment";
 
-
 export default function Comments() {
   const fetchServer = useServerCall();
 
@@ -16,38 +15,23 @@ export default function Comments() {
 
   const handleFirstPageResponse = React.useCallback((json) => {
     const tmpComments = json.comment_data.map((comment) => {
-      return (
-        <Comment
-          comment={comment.comment}
-          user={comment.user_name}
-        />
-      );
+      return <Comment comment={comment.comment} user={comment.user_name} />;
     });
     setComments(tmpComments);
   }, []);
-  const route = "/getcomments"
+  const route = "/getcomments";
   React.useEffect(() => {
-    fetchServer(route, handleFirstPageResponse)
-  }, [
-    fetchServer,
-    route,
-    handleFirstPageResponse,
-  ]);
-
+    fetchServer(route, handleFirstPageResponse);
+  }, [fetchServer, route, handleFirstPageResponse]);
 
   const handleNextPageResponse = React.useCallback((json) => {
     const tmpComments = json.comment_data.map((comment) => {
-      return (
-        <Comment
-          comment={comment.comment}
-          user={comment.user_name}
-        />
-      );
+      return <Comment comment={comment.comment} user={comment.user_name} />;
     });
-    
+
     setComments((prevComments) => {
-      const newComments = [...prevComments, ...tmpComments]
-      return newComments
+      const newComments = [...prevComments, ...tmpComments];
+      return newComments;
     });
   }, []);
 
@@ -69,9 +53,7 @@ export default function Comments() {
   ]);
 
   return (
-    <List
-      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-    >
+    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       {comments}
     </List>
   );
