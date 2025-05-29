@@ -1,1 +1,6 @@
 Creating filestructure for cloud-init protocols
+
+user-data # emulating user actions?
+meta-data # VM specifications?
+vendor-data # cloud service specifications
+# yaml type files 
