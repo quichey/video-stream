@@ -4,3 +4,6 @@ user-data # emulating user actions?
 meta-data # VM specifications?
 vendor-data # cloud service specifications
 # yaml type files 
+
+# Deciding to not use cloud-init Linux package 
+# Instead using Python-google-Cloud package for Cloud Initialization
