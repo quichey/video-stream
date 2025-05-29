@@ -2,9 +2,7 @@ import * as React from "react";
 import { List } from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 
-
 import VideoTile from "./VideoTile";
-
 
 export default function RecommendedVideos({ videoList }) {
   return (
@@ -17,8 +15,7 @@ export default function RecommendedVideos({ videoList }) {
               fileName={videoInfo.file_name}
               fileDir={videoInfo.file_dir}
               userName={videoInfo.userName}
-            >
-            </VideoTile>
+            ></VideoTile>
           </ListItem>
         );
       })}

@@ -3,9 +3,7 @@ import { Container } from "@mui/material";
 import useWindowDimensions from "./customHooks/useWindowDimensions";
 import Pages from "./pages";
 
-import logo from "./logo.svg";
 import "./App.css";
-import { useEffect } from "react";
 
 function App() {
   const { width: windowWidth } = useWindowDimensions();

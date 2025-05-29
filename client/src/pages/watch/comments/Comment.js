@@ -5,7 +5,6 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import ImageIcon from "@mui/icons-material/Image";
 
-
 export default function Comment({ comment, user }) {
   return (
     <ListItem>
