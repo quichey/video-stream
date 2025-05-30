@@ -4,3 +4,4 @@ LXD/*
 
 deploy/.env
 Deploy/.env
+deploy/poetry.lock
