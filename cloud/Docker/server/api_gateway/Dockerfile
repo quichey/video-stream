@@ -8,13 +8,7 @@ COPY ~/repos/video-stream/server ./server
 RUN pip install poetry
 RUN poetry install
 
-
-# TODO: install mysql
-RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.30-1_all.deb
-RUN sudo dpkg -i mysql-apt-config_0.8.30-1_all.deb
-RUN sudo apt update
-RUN sudo apt install mysql-server
-# TODO: run Seed on mysql
+ 
 # ---- figure out how to do it w/out python interpreter
 
 # Copy in the source code
