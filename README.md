@@ -101,3 +101,6 @@ update records_to_insert during randomization to use Declarative Base Classes/in
 
 
 # commit for first branch of video-upload feature branch
+- Research/Remember from ISS how uploading files/file-streams works *** Do this first 
+- Create GUI for user to upload a video
+- Create an API route for client to send video data
