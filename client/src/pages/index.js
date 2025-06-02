@@ -4,6 +4,7 @@ import { Box } from "@mui/material";
 
 import Home from "./home";
 import Watch from "./watch";
+import VideoUpload from "./video_upload";
 import Navbar from "./Navbar";
 
 export const UserContext = React.createContext(null);
@@ -88,6 +89,7 @@ export default function Pages() {
                 <Route path="watch">
                   <Route path=":videoID" element={<Watch />} />
                 </Route>
+                <Route path="upload" element={<VideoUpload />} />
               </Routes>
             </Box>
           </BrowserRouter>

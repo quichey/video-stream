@@ -43,6 +43,9 @@ export default function Navbar() {
       <Search />
       <IconButton aria-label="create" size="small" style={{ width: 50 }}>
         <VideocamIcon fontSize="inherit" />
+        {/*
+          TODO: I think add navlink to /upload route here
+          */}
       </IconButton>
       <IconButton aria-label="notifications" size="small" style={{ width: 50 }}>
         <NotificationsIcon fontSize="inherit" />
