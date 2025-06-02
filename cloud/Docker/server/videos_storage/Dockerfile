@@ -9,14 +9,6 @@ RUN pip install poetry
 RUN poetry install
 
 
-# TODO: install mysql
-RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.30-1_all.deb
-RUN sudo dpkg -i mysql-apt-config_0.8.30-1_all.deb
-RUN sudo apt update
-RUN sudo apt install mysql-server
-# TODO: run Seed on mysql
-# ---- figure out how to do it w/out python interpreter
-
 # Copy in the source code
 COPY src ./src
 EXPOSE 5000
@@ -25,5 +17,5 @@ EXPOSE 5000
 RUN useradd app
 USER app
 
-# start up flask server
+# start up daemon?
 CMD ["flask", "--app", "api", "run"]
