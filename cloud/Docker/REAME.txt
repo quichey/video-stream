@@ -1,0 +1,9 @@
+# Question
+Do I want to do docker-compose / Multiple containers?
+
+I suppose so --- it most mimics cloud services
+
+1) db
+2) api gateway
+3) videos db/storage ?
+4) client daemon
