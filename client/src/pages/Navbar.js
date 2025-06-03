@@ -3,17 +3,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DehazeIcon from "@mui/icons-material/Dehaze";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import VideocamIcon from "@mui/icons-material/Videocam";
-import {
-  Box,
-  Container,
-  IconButton,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { NavLink } from "react-router";
 
 import Search from "./Search";
