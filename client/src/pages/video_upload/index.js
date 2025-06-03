@@ -1,26 +1,12 @@
 import React from "react";
 //import axios from "axios";
-import { useServerCall } from "../../customHooks/useServerCall";
 
-//const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-list";
+const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-list";
 
 export default function VideoUpload() {
   const [file, setFile] = React.useState(null);
   const [name, setName] = React.useState("");
-  const fetchData = useServerCall();
-  const handleServer = React.useCallback((json) => {
-    console.log(`reached video-upload-handle-server: ${json}`);
-  }, []);
-  const handleSubmit = React.useCallback(() => {
-    const file_tmp = file.name;
-    const extraParams = {
-      //body: { file: file },
-      body: { file: file_tmp },
-      headers: { "content-type": "multipart/form-data" },
-    };
-    fetchData("video-upload", handleServer, extraParams);
-  }, [fetchData, file, handleServer]);
-  /*
+
   const handleSubmit = React.useCallback(
     (event) => {
       /*
@@ -35,7 +21,6 @@ export default function VideoUpload() {
       });
       */
 
-  /*
       const body = {
         user_id: 0,
         user_name: "3",
@@ -46,7 +31,6 @@ export default function VideoUpload() {
       const fetchParams = {
         body: JSON.stringify(body),
         method: "POST",
-        headers: { "content-type": "application/json" },
       };
       fetch(UPLOAD_ENDPOINT, fetchParams)
         .then((response) => response.json())
@@ -59,7 +43,6 @@ export default function VideoUpload() {
     },
     [file, name],
   );
-  */
 
   const handleFileChange = React.useCallback((e) => {
     setFile(e.target.files[0]);
