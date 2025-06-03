@@ -23,6 +23,8 @@ export default function VideoUpload() {
 
       const body = {
         user_id: 0,
+        user_name: "3",
+        token: 0,
         file: file,
         name: name,
       };
@@ -42,18 +44,21 @@ export default function VideoUpload() {
     [file, name],
   );
 
+  const handleFileChange = React.useCallback((e) => {
+    setFile(e.target.files[0]);
+  }, []);
+
+  const handleNameChange = React.useCallback((e) => {
+    setName(e.target.value);
+  }, []);
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <h1>React File Upload</h1>
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <input
-        type="text"
-        onChange={(e) => setName(e.target.value)}
-        value={name}
-      />
-      <button type="submit" disabled={!(file && name)} onClick={handleSubmit}>
+      <input type="file" onChange={handleFileChange} />
+      <input type="text" onChange={handleNameChange} value={name} />
+      <button disabled={!(file && name)} onClick={handleSubmit}>
         Upload File
       </button>
-    </form>
+    </div>
   );
 }
