@@ -13,55 +13,63 @@ export default function VideoUpload() {
       const fileContent = event.target.result;
       console.log(fileContent); // Process the file content
     };
-    reader.readAsText(file); // Read as text
+    const fileAsText = reader.readAsText(file); // Read as text
 
-    // incorporate async reading
-    // define the streaming of the file
-    // recursively like at ISS
-    async function readStream(url) {
-      const response = await fetch(url);
-      for await (const chunk of response.body) {
-        console.log(chunk);
-      }
-    }
-    readStream("your-file-url");
+    return fileAsText; // want this to be an array
   }, []);
 
-  const handleSubmit = React.useCallback(
-    (event) => {
-      /*
-      event.preventDefault();
-      const formData = new FormData();
-      formData.append("avatar", file);
-      formData.append("name", name);
-      axios.post(UPLOAD_ENDPOINT, formData, {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      });
-      */
-
+  const fetchFileStreamer = React.useCallback(
+    (readFileStream, pageNum) => {
+      const firstIdx = pageNum * 1000;
+      const lastIdx = pageNum + 1000;
+      const baseCaseReached = lastIdx >= readFileStream.length();
+      var file_stream;
+      if (baseCaseReached) {
+        file_stream = "DONE";
+      } else {
+        file_stream = readFileStream.splice(firstIdx, lastIdx);
+      }
       const body = {
         user_id: 0,
         user_name: "3",
         token: 0,
-        file: file,
+        file: file_stream,
         name: name,
       };
       const fetchParams = {
         body: JSON.stringify(body),
         method: "POST",
       };
+      if (baseCaseReached) {
+        fetch(UPLOAD_ENDPOINT, fetchParams)
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
       fetch(UPLOAD_ENDPOINT, fetchParams)
         .then((response) => response.json())
         .then((json) => {
+          fetchFileStreamer(readFileStream, pageNum + 1);
           console.log(json);
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    [file, name],
+    [name],
+  );
+
+  const handleSubmit = React.useCallback(
+    (event) => {
+      const file_stream = readFile(file);
+      fetchFileStreamer(file_stream, 0);
+    },
+    [fetchFileStreamer, readFile, file],
   );
 
   const handleFileChange = React.useCallback((e) => {
