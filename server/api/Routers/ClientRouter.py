@@ -115,6 +115,46 @@ class ClientRouter(Router):
         #TODO: change methods to "GET" after
         # adding upload_video route
         # and moving session auth to HTTP HEADERS
+        @app.route('/video-upload', methods=["POST"])
+        def upload_video():
+            """
+            analyze what the client is sending
+            -- i remember taht the file JSON.stringify
+            -- was returning empty object
+            -- discover how to correctly send file info in request
+
+            gather all the different parts
+            of the video file
+            stitch em all together
+
+            and then place in the client-side videos public folder
+            """
+
+
+
+            # the above is an example of getting data from the POST request
+
+            # temp instantiation of Cache object
+            cache = self.cache
+
+            session_info = self.auth_user(request)
+            video_info = self.extract_video_info()
+            session_info = cache.start_video_session(session_info, video_info)
+
+            video_data = cache.get_video(session_info)
+            data = {
+                "session_info": session_info,
+                "video_data": video_data,
+            }
+            data = jsonify(data)
+            return data
+
+        """
+        curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
+        """
+        #TODO: change methods to "GET" after
+        # adding upload_video route
+        # and moving session auth to HTTP HEADERS
         @app.route('/video-list', methods=["POST"])
         def get_video_list():
             cache = self.cache
