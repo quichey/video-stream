@@ -33,8 +33,11 @@ export default function VideoUpload() {
 
   React.useEffect(() => {
     if (file !== undefined) {
-      const extraParams = { file: file };
-      fetchData("video-upload", handleServer, "POST", extraParams);
+      const extraParams = {
+        body: { file: file },
+        headers: { "content-type": "multipart/form-data" },
+      };
+      fetchData("video-upload", handleServer, extraParams);
     }
   }, [fetchData, handleServer, file]);
   return (
