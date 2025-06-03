@@ -1,78 +1,46 @@
-import * as React from "react";
-import { Typography } from "@mui/material";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import Button from "@mui/material";
+import React from "react";
+//import axios from "axios";
 
-import { useServerCall } from "../../customHooks/useServerCall";
-
-/*
-
--- Video upload ICON --
-
-"Drag and drop video files to upload
-
-Your videos will be private until you publish them."
-
--- Select files BUTTON --
-
-*/
+const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-list";
 
 export default function VideoUpload() {
-  const [file, setFile] = React.useState(undefined);
-  // TODO: maybe don't do useServerCall as headers need to be different
-  const fetchData = useServerCall();
+  const [file, setFile] = React.useState(null);
+  const [name, setName] = React.useState("");
 
-  const handleClick = React.useCallback((e) => {
-    console.log(e);
-    setFile(e.target.files[0]);
-  }, []);
+  const handleSubmit = React.useCallback(
+    (event) => {
+      /*
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append("avatar", file);
+      formData.append("name", name);
+      axios.post(UPLOAD_ENDPOINT, formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      });
+      */
 
-  const handleServer = React.useCallback((json) => {
-    console.log(`reached video-upload-handle-server: ${json}`);
-  }, []);
-
-  React.useEffect(() => {
-    if (file !== undefined) {
-      const extraParams = {
-        body: { file: file },
-        headers: { "content-type": "multipart/form-data" },
+      const body = {
+        user_id: 0,
+        file: file,
+        name: name,
       };
-      fetchData("video-upload", handleServer, extraParams);
-    }
-  }, [fetchData, handleServer, file]);
-  return (
-    <div>
-      <FileUploadIcon />
-      <Typography>Drag and drop video files to upload</Typography>
-      <Typography>
-        Your videos will be private until you publish them.
-      </Typography>
-      {
-        // have to use form input type="file" or MUI file thing to open file explorer
-      }
-      <Button onClick={handleClick}>Select Files</Button>
-    </div>
+      const fetchParams = {
+        body: JSON.stringify(body),
+        method: "POST",
+      };
+      fetch(UPLOAD_ENDPOINT, fetchParams)
+        .then((response) => response.json())
+        .then((json) => {
+          console.log(json);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    [file, name],
   );
-}
-
-/*
-
-  const handleSubmit = async (event) => {
-    setStatus(""); // Reset status
-    event.preventDefault();
-    const formData = new FormData();
-    formData.append("avatar", file);
-    formData.append("name", name);
-
-
-
-    const extraParams = { file: file };
-      fetchData("video-upload", handleServer, "POST", extraParams)
-
-
-
-    setStatus(resp.status === 200 ? "Thank you!" : "Error.");
-  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -83,10 +51,9 @@ export default function VideoUpload() {
         onChange={(e) => setName(e.target.value)}
         value={name}
       />
-      <button type="submit" disabled={!(file && name)}>
+      <button type="submit" disabled={!(file && name)} onClick={handleSubmit}>
         Upload File
       </button>
-      {status ? <h1>{status}</h1> : null}
     </form>
   );
-*/
+}
