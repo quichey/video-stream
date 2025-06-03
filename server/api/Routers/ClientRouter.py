@@ -142,10 +142,9 @@ class ClientRouter(Router):
             #session_info = cache.start_video_session(session_info, video_info)
             cache.store_video(video_file_info)
 
-            video_data = cache.get_video(session_info)
             data = {
                 "session_info": session_info,
-                "video_data": video_data,
+                "status": "OK",
             }
             data = jsonify(data)
             return data

@@ -11,12 +11,14 @@ export default function VideoUpload() {
     (readFileStream, pageNum) => {
       const firstIdx = pageNum * 1000;
       const lastIdx = pageNum + 1000;
-      const baseCaseReached = lastIdx >= readFileStream.length();
+      readFileStream = readFileStream[0];
+      const baseCaseReached = firstIdx >= readFileStream.length;
       var file_stream;
       if (baseCaseReached) {
         file_stream = "DONE";
       } else {
-        file_stream = readFileStream.splice(firstIdx, lastIdx);
+        //file_stream = readFileStream.splice(firstIdx, lastIdx);
+        file_stream = readFileStream;
       }
       const body = {
         user_id: 0,
