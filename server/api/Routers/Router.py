@@ -31,6 +31,11 @@ class Router():
             video_info["id"] = form_data['video_id']
         return video_info
 
+
+    """
+    TODO: at some point
+    implement way to handle chunked data
+    """
     def extract_video_file_info(self):
         print(f"\n\n reached extract_video_file_info \n\n")
         form_data = json.loads(self.request.data)
@@ -38,9 +43,13 @@ class Router():
         if "file" in form_data:
             file = form_data['file']
             print(f"file: {file}")
-            video_file_info["id"] = file
+            video_file_info["stream"] = file
+        video_file_info["stream"] = self.decode_video(video_file_info["stream"])
         return video_file_info
 
+    def decode_video(self, file_stream):
+        as_bytes = bytes(file_stream)
+        return as_bytes.decode('utf-8', errors='ignore')
 
     def set_up(self):
         pass
