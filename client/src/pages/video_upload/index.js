@@ -12,8 +12,10 @@ export default function VideoUpload() {
     console.log(`reached video-upload-handle-server: ${json}`);
   }, []);
   const handleSubmit = React.useCallback(() => {
+    const file_tmp = file.name;
     const extraParams = {
-      body: { file: file },
+      //body: { file: file },
+      body: { file: file_tmp },
       headers: { "content-type": "multipart/form-data" },
     };
     fetchData("video-upload", handleServer, extraParams);
