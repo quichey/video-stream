@@ -7,6 +7,26 @@ export default function VideoUpload() {
   const [file, setFile] = React.useState(null);
   const [name, setName] = React.useState("");
 
+  const readFile = React.useCallback((file) => {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const fileContent = event.target.result;
+      console.log(fileContent); // Process the file content
+    };
+    reader.readAsText(file); // Read as text
+
+    // incorporate async reading
+    // define the streaming of the file
+    // recursively like at ISS
+    async function readStream(url) {
+      const response = await fetch(url);
+      for await (const chunk of response.body) {
+        console.log(chunk);
+      }
+    }
+    readStream("your-file-url");
+  }, []);
+
   const handleSubmit = React.useCallback(
     (event) => {
       /*
