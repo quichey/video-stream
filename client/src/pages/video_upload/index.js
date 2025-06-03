@@ -47,6 +47,9 @@ export default function VideoUpload() {
       <Typography>
         Your videos will be private until you publish them.
       </Typography>
+      {
+        // have to use form input type="file" or MUI file thing to open file explorer
+      }
       <Button onClick={handleClick}>Select Files</Button>
     </div>
   );
