@@ -4,19 +4,8 @@ import React from "react";
 const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-upload";
 
 export default function VideoUpload() {
-  const [file, setFile] = React.useState(null);
+  const [file, setFile] = React.useState([]);
   const [name, setName] = React.useState("");
-
-  const readFile = React.useCallback((file) => {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const fileContent = event.target.result;
-      console.log(fileContent); // Process the file content
-    };
-    const fileAsText = reader.readAsText(file); // Read as text
-
-    return fileAsText; // want this to be an array
-  }, []);
 
   const fetchFileStreamer = React.useCallback(
     (readFileStream, pageNum) => {
@@ -66,14 +55,33 @@ export default function VideoUpload() {
 
   const handleSubmit = React.useCallback(
     (event) => {
-      const file_stream = readFile(file);
+      const file_stream = file;
       fetchFileStreamer(file_stream, 0);
     },
-    [fetchFileStreamer, readFile, file],
+    [fetchFileStreamer, file],
   );
 
-  const handleFileChange = React.useCallback((e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = React.useCallback(async (e) => {
+    const fileObject = e.target.files[0];
+    if (!fileObject) {
+      console.log("No file selected.");
+      return;
+    }
+    const stream = fileObject.stream();
+    const reader = stream.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        console.log("Stream reading complete.");
+        return;
+      }
+      // Process the chunk of data
+      console.log("Chunk:", value);
+      setFile((prevFileArray) => {
+        const valueAsArray = value;
+        return prevFileArray.concat(valueAsArray);
+      });
+    }
   }, []);
 
   const handleNameChange = React.useCallback((e) => {
