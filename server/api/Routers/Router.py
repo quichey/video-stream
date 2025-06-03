@@ -31,6 +31,17 @@ class Router():
             video_info["id"] = form_data['video_id']
         return video_info
 
+    def extract_video_file_info(self):
+        print(f"\n\n reached extract_video_file_info \n\n")
+        form_data = json.loads(self.request.data)
+        video_file_info = {}
+        if "file" in form_data:
+            file = form_data['file']
+            print(f"file: {file}")
+            video_file_info["id"] = file
+        return video_file_info
+
+
     def set_up(self):
         pass
 

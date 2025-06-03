@@ -138,8 +138,8 @@ class ClientRouter(Router):
             cache = self.cache
 
             session_info = self.auth_user(request)
-            video_info = self.extract_video_info()
-            session_info = cache.start_video_session(session_info, video_info)
+            video_file_info = self.extract_video_file_info()
+            #session_info = cache.start_video_session(session_info, video_info)
 
             video_data = cache.get_video(session_info)
             data = {
