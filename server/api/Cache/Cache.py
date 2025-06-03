@@ -51,6 +51,10 @@ class Cache():
         self.engine = engine
         return engine
 
+    def store_video(self, video_file_info):
+        #TODO: copy to client/public/videos folder
+        # also save to mysql db
+        pass
 
     def get_user_session(self, user_info, existing_session_info):
         # extract user identity from request object
