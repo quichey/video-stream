@@ -1,7 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-from db.Schema import database_specs, Base
+from db.Schema import database_specs, Base, Video
+from db.Schema.Video import VideoFileManager
 #from api.Cache.SessionManagement import SessionManagement
 from .SessionManagement import SessionManagement
 
@@ -53,8 +55,15 @@ class Cache():
 
     def store_video(self, video_file_info):
         #TODO: copy to client/public/videos folder
+        video = Video(**video_file_info)
+        manager = VideoFileManager()
+        manager.store_video(video_record=video, seeding_db=False, byte_stream=video_file_info.bytes)
         # also save to mysql db
-        pass
+        with Session(self.engine) as session:
+            session.add(video)
+            session.commit()
+            
+        return "OK"
 
     def get_user_session(self, user_info, existing_session_info):
         # extract user identity from request object
