@@ -115,6 +115,8 @@ class ClientRouter(Router):
         #TODO: change methods to "GET" after
         # adding upload_video route
         # and moving session auth to HTTP HEADERS
+        #TODO: client side is sending multiple requests
+        # handle extra request or get rid of it somehow
         @app.route('/video-upload', methods=["POST"])
         def upload_video():
             """
