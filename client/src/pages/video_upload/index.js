@@ -7,6 +7,28 @@ export default function VideoUpload() {
   const [file, setFile] = React.useState([]);
   const [name, setName] = React.useState("");
 
+  const chunkByteArray = React.useCallback((byteArray, startIdx, endIdx) => {
+    const byteArray = new Uint8Array([1, 2, 3, 4, 5]);
+
+    // Example: Remove elements at index 1 and 2, and insert 6 and 7
+    const start = 1;
+    const deleteCount = 2;
+    const insert = new Uint8Array([6, 7]);
+
+    const newByteArray = new Uint8Array(
+      byteArray.length - deleteCount + insert.length,
+    );
+
+    newByteArray.set(byteArray.slice(0, start));
+    newByteArray.set(insert, start);
+    newByteArray.set(
+      byteArray.slice(start + deleteCount),
+      start + insert.length,
+    );
+
+    console.log(newByteArray); // Output: Uint8Array [1, 6, 7, 4, 5]
+  }, []);
+
   const fetchFileStreamer = React.useCallback(
     (readFileStream, pageNum) => {
       const firstIdx = pageNum * 1000;
@@ -19,8 +41,7 @@ export default function VideoUpload() {
       if (baseCaseReached) {
         file_stream = "DONE";
       } else {
-        //file_stream = readFileStream.splice(firstIdx, lastIdx);
-        file_stream = readFileStream;
+        file_stream = readFileStream.slice(firstIdx, lastIdx);
       }
       const fileInfo = {
         file_stream: file_stream,
