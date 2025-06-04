@@ -45,16 +45,20 @@ class Router():
     implement way to handle chunked data
     """
     def extract_video_file_info(self):
+        user_info = self.extract_user_info()
         print(f"\n\n reached extract_video_file_info \n\n")
         form_data = json.loads(self.request.data)
         video_file_info = {}
-        if "file" in form_data:
-            file = form_data['file']
-            print(f"file: {file}")
+        if "file_info" in form_data:
+            file_info = form_data['file_info']
+            print(f"\n\n file_info: {file_info} \n\n")
+            file_stream = dict(file_info["file_stream"])
+            file_name = file_info["name"]
             # file being loaded as str
             # convert to something consumable by bytes() construct
-            video_file_info["bytes"] = dict(file)
-            video_file_info["name"] = "tmp"
+            video_file_info["bytes"] = file_stream
+            video_file_info["name"] = file_name
+            #video_file_info["user_id"] = user_info["id"]
             video_file_info["user_id"] = 1
             video_file_info["upload_date"] = "now"
         video_file_info["bytes"] = self.decode_video(video_file_info["bytes"])
