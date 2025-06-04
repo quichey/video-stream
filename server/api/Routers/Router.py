@@ -7,7 +7,7 @@ Logic that I see in ClientRouter and AdminRouter
 """
 
 @dataclass
-class VideoUpload():
+class VideoUpload:
     name: str
     bytes: bytes
     user_id: int

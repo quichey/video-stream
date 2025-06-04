@@ -73,7 +73,10 @@ class VideoFileManager():
 				shutil.copy(source_path, client_full_file_location)
 			#TODO: handle saving file from user upload
 			else:
-				pass
+				file = open(client_full_file_location, "w")
+				file.write(str(byte_stream))
+				file.close()
+				
 				
 
 		#NOTE: do not need to do sqlalchemy stuff cause session in Seed will handle once 
