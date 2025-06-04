@@ -48,7 +48,7 @@ class VideoFileManager():
 		user_folder = f"{user_id}"
 		return user_folder
 
-	def store_video(self, video_record, seeding_db=True):
+	def store_video(self, video_record, seeding_db=True, byte_stream=None):
 		file_location = self.determine_file_location(video_record)
 		server_full_file_location = f"{SERVER_ASSETS_FOLDER}"
 		client_full_file_location = f"{CLIENT_PUBLIC_FOLDER}/{file_location}"
@@ -72,6 +72,9 @@ class VideoFileManager():
 				source_path = server_full_file_name
 				shutil.copy(source_path, client_full_file_location)
 			#TODO: handle saving file from user upload
+			else:
+				pass
+				
 
 		#NOTE: do not need to do sqlalchemy stuff cause session in Seed will handle once 
 		# it flushes
