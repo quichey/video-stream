@@ -74,8 +74,18 @@ class VideoFileManager():
 			#TODO: handle saving file from user upload
 			else:
 				#TODO: handle mp4 files
-				file = open(client_full_file_name, "w")
-				file.write(str(byte_stream))
+				file = open(client_full_file_name, "wb")
+				"""
+				as_str = str(byte_stream)
+				print(f"\n\n length of as_str: {len(as_str)} \n\n")
+				# take out 
+				str_to_remove = "Create videos with https://clipchamp.com/en/video-editor - free online video editor, video compressor, video converter."
+				new_text = as_str.replace(str_to_remove, "")
+				print(f"\n\n length of new_text: {len(new_text)} \n\n")
+				file.write(new_text)
+				"""
+				print(f"\n\n length of byte_stream: {len(byte_stream)} \n\n")
+				file.write(byte_stream)
 				file.close()
 				
 				

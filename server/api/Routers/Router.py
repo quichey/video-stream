@@ -72,9 +72,12 @@ class Router():
             #print(f"\n\n bytes(b): {bytes(b)} \n\n")
             as_array.append(b)
         print(f"\n\n as_array: {as_array} \n\n")
+        print(f"\n\n len(as_array): {len(as_array)} \n\n")
         as_bytes = bytes(as_array)
         print(f"\n\n as_bytes: {as_bytes} \n\n")
-        return as_bytes.decode('utf-8', errors='ignore')
+        print(f"\n\n len(as_bytes): {len(as_bytes)} \n\n")
+        return as_bytes
+        #return as_bytes.decode('utf-8', errors='ignore')
 
     def set_up(self):
         pass
