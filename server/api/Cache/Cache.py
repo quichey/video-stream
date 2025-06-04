@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from db.Schema import database_specs, Base, Video
 from db.Schema.Video import VideoFileManager
+from api.Routers import VideoUpload
 #from api.Cache.SessionManagement import SessionManagement
 from .SessionManagement import SessionManagement
 
@@ -53,9 +54,13 @@ class Cache():
         self.engine = engine
         return engine
 
-    def store_video(self, video_file_info):
+    def store_video(self, video_file_info: VideoUpload):
         #TODO: copy to client/public/videos folder
-        video = Video(**video_file_info)
+        video = Video(
+            user_id=video_file_info.user_id,
+            file_dir=video_file_info.user_id,
+            file_name=video_file_info.name,
+        )
         manager = VideoFileManager()
         manager.store_video(video_record=video, seeding_db=False, byte_stream=video_file_info.bytes)
         # also save to mysql db
