@@ -55,7 +55,7 @@ class Router():
             # convert to something consumable by bytes() construct
             video_file_info["bytes"] = dict(file)
             video_file_info["name"] = "tmp"
-            video_file_info["user_id"] = 0
+            video_file_info["user_id"] = 1
             video_file_info["upload_date"] = "now"
         video_file_info["bytes"] = self.decode_video(video_file_info["bytes"])
         video_file_info = VideoUpload(**video_file_info)
