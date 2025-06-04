@@ -95,7 +95,7 @@ export default function VideoUpload() {
   return (
     <div>
       <h1>React File Upload</h1>
-      <input type="file" onChange={handleFileChange} />
+      <input type="file" accept="video/mp4" onChange={handleFileChange} />
       <input type="text" onChange={handleNameChange} value={name} />
       <button disabled={!(file && name)} onClick={handleSubmit}>
         Upload File
