@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from api.Routers import VideoUpload as VideoUploadPayload
+
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
 
@@ -21,10 +23,17 @@ class Video:
     comments: Comments
 
 @dataclass
+class VideoUpload:
+    #id: int
+    name: str
+    byte_stream: bytes
+
+@dataclass
 class User:
     id: int
     token: int
     video: Optional[Video] = None
+    video_upload: Optional[VideoUpload] = None
 
 """
 NOTE: possible datastructure involving the dataclasses above
@@ -160,6 +169,25 @@ class SessionManagement():
         )
         self.current_state[token] = user_state
         return existing_session_info
+    
+    def start_video_upload(self, existing_session_info, video_upload_info: VideoUploadPayload):
+        token = existing_session_info
+        user_state = self.current_state[token]
+        user_state.video_upload = VideoUpload(
+            name=video_upload_info.name,
+            byte_stream=video_upload_info.bytes
+        )
+        self.current_state[token] = user_state
+        return existing_session_info
+    
+    def video_upload(self, existing_session_info, video_upload_info):
+        token = existing_session_info
+        user_state = self.current_state[token]
+        user_state.video_upload.byte_stream += video_upload_info.bytes
+        return existing_session_info
+    
+    def end_video_upload(self, existing_session_info, video_upload_info):
+        pass
     
     """
     get all data associated with the session

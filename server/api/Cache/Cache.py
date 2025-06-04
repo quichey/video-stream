@@ -55,6 +55,15 @@ class Cache():
         return engine
 
     def store_video(self, video_file_info: VideoUpload):
+        """
+        check if user has started a VideoUpload session
+        if not, start one,
+        else, continue.
+
+        if reached 0 bytes, store the video
+        """
+
+
         #TODO: copy to client/public/videos folder
         video = Video(
             user_id=video_file_info.user_id,
