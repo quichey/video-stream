@@ -20,12 +20,15 @@ export default function VideoUpload() {
         //file_stream = readFileStream.splice(firstIdx, lastIdx);
         file_stream = readFileStream;
       }
+      const fileInfo = {
+        file_stream: file_stream,
+        name: name,
+      };
       const body = {
         user_id: 0,
         user_name: "3",
         token: 0,
-        file: file_stream,
-        name: name,
+        file_info: fileInfo,
       };
       const fetchParams = {
         body: JSON.stringify(body),
