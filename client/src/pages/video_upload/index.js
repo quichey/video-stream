@@ -12,6 +12,8 @@ export default function VideoUpload() {
       const firstIdx = pageNum * 1000;
       const lastIdx = pageNum + 1000;
       readFileStream = readFileStream[0];
+      // TODO: check length of readFileStream here
+      console.log(`readFileStream.length: ${readFileStream.length}`);
       const baseCaseReached = firstIdx >= readFileStream.length;
       var file_stream;
       if (baseCaseReached) {
