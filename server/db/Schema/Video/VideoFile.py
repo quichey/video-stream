@@ -73,7 +73,7 @@ class VideoFileManager():
 				shutil.copy(source_path, client_full_file_location)
 			#TODO: handle saving file from user upload
 			else:
-				file = open(client_full_file_location, "w")
+				file = open(client_full_file_name, "w")
 				file.write(str(byte_stream))
 				file.close()
 				
