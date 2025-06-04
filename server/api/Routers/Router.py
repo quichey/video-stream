@@ -53,6 +53,7 @@ class Router():
             file_info = form_data['file_info']
             print(f"\n\n file_info: {file_info} \n\n")
             file_stream = dict(file_info["file_stream"])
+            print(f"\n\n len(file_stream.keys()): {len(file_stream.keys())} \n\n")
             file_name = file_info["name"]
             # file being loaded as str
             # convert to something consumable by bytes() construct
