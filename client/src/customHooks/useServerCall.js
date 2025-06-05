@@ -39,13 +39,21 @@ export const useServerCall = () => {
     [],
   );
   const fetchServer = React.useCallback(
-    (route, onResponse, extraParams = {}) => {
+    (route, onResponse, extraParams = {}, extraOnResponseParams = []) => {
       const fetchParams = generate_params(postRequestPayload, extraParams);
       fetch(`${serverURL}/${route}`, fetchParams)
         .then((response) => response.json())
         .then((json) => {
           console.log(json);
-          onResponse(json);
+          if (extraOnResponseParams) {
+            onResponse(
+              json,
+              extraOnResponseParams[0],
+              extraOnResponseParams[1],
+            );
+          } else {
+            onResponse(json);
+          }
           refreshSessionToken(json);
         })
         .catch((error) => {
