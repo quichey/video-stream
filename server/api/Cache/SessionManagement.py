@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from api.Routers import VideoUpload as VideoUploadPayload
 
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
@@ -171,7 +170,7 @@ class SessionManagement():
         self.current_state[token] = user_state
         return existing_session_info
     
-    def video_upload(self, existing_session_info, video_upload_info: VideoUploadPayload):
+    def video_upload(self, existing_session_info, video_upload_info):
         token = existing_session_info
         user_state = self.current_state[token]
 
@@ -188,7 +187,7 @@ class SessionManagement():
 
         return video_upload_session
     
-    def start_video_upload(self, existing_session_info, video_upload_info: VideoUploadPayload):
+    def start_video_upload(self, existing_session_info, video_upload_info):
         token = existing_session_info
         user_state = self.current_state[token]
         user_state.video_upload = VideoUpload(
