@@ -142,9 +142,11 @@ class SessionManagement():
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
         if existing_session_info is not None:
+            print(f"\n\n reached this for loop. \n\n")
             return self.authenticate_user(user_info, existing_session_info)
 
-        print(f"self.current_users: {self.current_users}")
+        print(f"\n\n SessionManagement register_user existing_session_info: {existing_session_info} \n\n")
+        print(f"\n\n self.current_users: {self.current_users} \n\n")
         if user_id in self.current_users:
             raise Exception("User already registered")
         
