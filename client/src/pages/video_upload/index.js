@@ -31,7 +31,7 @@ export default function VideoUpload() {
       };
       const body = {
         ...JSON.parse(postRequestPayload),
-        token: 0,
+        //token: 0,
         file_info: fileInfo,
       };
       const fetchParams = {

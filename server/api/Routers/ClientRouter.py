@@ -45,6 +45,7 @@ class ClientRouter(Router):
         user_info = self.extract_user_info()
         existing_session_info = form_data["token"] if "token" in form_data.keys() else None
         try:
+            print(f"\n\n ClientRouter auth_user existing_session_info: {existing_session_info} \n\n")
             session_info = cache.get_user_session(user_info, existing_session_info)
         except SecurityError as security_alarm:
             data = {
