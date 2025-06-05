@@ -6,7 +6,7 @@ from db.Schema import database_specs, Base, Video
 from db.Schema.Video import VideoFileManager
 from api.Routers import VideoUpload
 #from api.Cache.SessionManagement import SessionManagement
-from .SessionManagement import SessionManagement
+from .SessionManagement import SessionManagement, VideoUpload as VideoUploadSession
 
 """
 In my experience working at CliniComp,
@@ -54,7 +54,7 @@ class Cache():
         self.engine = engine
         return engine
 
-    def store_video(self, video_file_info: VideoUpload):
+    def store_video(self, video_file_info: VideoUpload, session_info):
         """
         check if user has started a VideoUpload session
         if not, start one,
@@ -62,7 +62,12 @@ class Cache():
 
         if reached 0 bytes, store the video
         """
-
+        video_upload_session = self.session_manager.video_upload(
+            session_info,
+            video_upload_info=video_file_info
+        )
+        if not video_upload_session.is_done:
+            return video_upload_session.is_done
 
         #TODO: copy to client/public/videos folder
         video = Video(
@@ -71,13 +76,17 @@ class Cache():
             file_name=video_file_info.name,
         )
         manager = VideoFileManager()
-        manager.store_video(video_record=video, seeding_db=False, byte_stream=video_file_info.bytes)
+        manager.store_video(
+            video_record=video,
+            seeding_db=False,
+            byte_stream=video_upload_session.bytes
+        )
         # also save to mysql db
         with Session(self.engine) as session:
             session.add(video)
             session.commit()
             
-        return "OK"
+        return video_upload_session.is_done
 
     def get_user_session(self, user_info, existing_session_info):
         # extract user identity from request object

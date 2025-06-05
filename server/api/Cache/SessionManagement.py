@@ -27,6 +27,7 @@ class VideoUpload:
     #id: int
     name: str
     byte_stream: bytes
+    is_done: bool
 
 @dataclass
 class User:
@@ -170,24 +171,42 @@ class SessionManagement():
         self.current_state[token] = user_state
         return existing_session_info
     
+    def video_upload(self, existing_session_info, video_upload_info: VideoUploadPayload):
+        token = existing_session_info
+        user_state = self.current_state[token]
+
+        if user_state.video_upload is None:
+            video_upload_session = self.start_video_upload(
+                existing_session_info=existing_session_info,
+                video_upload_info=video_upload_info,
+            )
+        else:
+            video_upload_session = self.continue_video_upload(
+                existing_session_info=existing_session_info,
+                video_upload_info=video_upload_info,
+            )
+
+        return video_upload_session
+    
     def start_video_upload(self, existing_session_info, video_upload_info: VideoUploadPayload):
         token = existing_session_info
         user_state = self.current_state[token]
         user_state.video_upload = VideoUpload(
             name=video_upload_info.name,
-            byte_stream=video_upload_info.bytes
+            byte_stream=video_upload_info.bytes,
+            is_done=False
         )
         self.current_state[token] = user_state
-        return existing_session_info
+        return user_state.video_upload
     
-    def video_upload(self, existing_session_info, video_upload_info):
+    def continue_video_upload(self, existing_session_info, video_upload_info):
         token = existing_session_info
         user_state = self.current_state[token]
         user_state.video_upload.byte_stream += video_upload_info.bytes
-        return existing_session_info
-    
-    def end_video_upload(self, existing_session_info, video_upload_info):
-        pass
+        if len(video_upload_info.bytes) == 0:
+            user_state.video_upload.is_done = True
+        return user_state.video_upload
+   
     
     """
     get all data associated with the session
