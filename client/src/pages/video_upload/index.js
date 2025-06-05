@@ -9,7 +9,8 @@ export default function VideoUpload() {
 
   const fetchFileStreamer = React.useCallback(
     (readFileStream, pageNum) => {
-      const pageSize = 64000;
+      //const pageSize = 64000;
+      const pageSize = 6400000;
       const firstIdx = pageNum * pageSize;
       const lastIdx = pageNum + pageSize;
       // TODO: check length of readFileStream here

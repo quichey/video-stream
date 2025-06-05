@@ -5,7 +5,8 @@ from typing import Optional
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
 
-VIDEO_UPLOAD_PAGE_SIZE = 64000
+#VIDEO_UPLOAD_PAGE_SIZE = 64000
+VIDEO_UPLOAD_PAGE_SIZE = 6400000
 
 
 class SecurityError(Exception):
@@ -172,6 +173,10 @@ class SessionManagement():
         self.current_state[token] = user_state
         return existing_session_info
     
+    """
+    as of now, largest sample video works w/one server request
+    but most likely i think need multiple for multiple gig sized files
+    """
     def video_upload(self, existing_session_info, video_upload_info):
         token = existing_session_info
         user_state = self.current_state[token]
