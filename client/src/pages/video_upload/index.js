@@ -2,9 +2,12 @@ import React from "react";
 //import axios from "axios";
 
 //try to useServerCall
-const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-upload";
+import { useServerCall } from "../../customHooks/useServerCall";
+
+const UPLOAD_ENDPOINT = "blah";
 
 export default function VideoUpload() {
+  const fetchData = useServerCall();
   const [file, setFile] = React.useState(new Uint8Array());
   const [name, setName] = React.useState("");
 
@@ -48,17 +51,35 @@ export default function VideoUpload() {
           });
       }
 
-      fetch(UPLOAD_ENDPOINT, fetchParams)
-        .then((response) => response.json())
-        .then((json) => {
-          fetchFileStreamer(readFileStream, pageNum + 1);
-          console.log(json);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      baseFetch(readFileStream, pageNum);
     },
-    [name],
+    [name, baseFetch],
+  );
+
+  const handleServer = React.useCallback(
+    (json, readFileStream, pageNum) => {
+      console.log(`reached video-upload-handle-server: ${json}`);
+      fetchFileStreamer(readFileStream, pageNum + 1);
+    },
+    [fetchFileStreamer],
+  );
+
+  const baseFetch = React.useCallback(
+    (readFileStream, pageNum) => {
+      if (file !== undefined) {
+        const extraParams = {
+          body: { file: file },
+        };
+        const extraOnResponseParams = [readFileStream, pageNum];
+        fetchData(
+          "video-upload",
+          handleServer,
+          extraParams,
+          extraOnResponseParams,
+        );
+      }
+    },
+    [fetchData, handleServer, file],
   );
 
   const handleSubmit = React.useCallback(
