@@ -1,13 +1,12 @@
 import React from "react";
 //import axios from "axios";
 
-//try to useServerCall
-import { useServerCall } from "../../customHooks/useServerCall";
-
-const UPLOAD_ENDPOINT = "blah";
+import { HTTPContext } from "..";
 
 export default function VideoUpload() {
-  const fetchData = useServerCall();
+  const { serverURL, postRequestPayload, refreshSessionToken } =
+    React.useContext(HTTPContext);
+  const [UPLOAD_ENDPOINT] = React.useState(`${serverURL}/video-upload`);
   const [file, setFile] = React.useState(new Uint8Array());
   const [name, setName] = React.useState("");
 
@@ -31,9 +30,7 @@ export default function VideoUpload() {
         name: name,
       };
       const body = {
-        user_id: 0,
-        user_name: "3",
-        token: 0,
+        ...postRequestPayload,
         file_info: fileInfo,
       };
       const fetchParams = {
@@ -44,42 +41,24 @@ export default function VideoUpload() {
         fetch(UPLOAD_ENDPOINT, fetchParams)
           .then((response) => response.json())
           .then((json) => {
-            console.log(json);
+            refreshSessionToken(json);
           })
           .catch((error) => {
             console.log(error);
           });
       }
 
-      baseFetch(readFileStream, pageNum);
+      fetch(UPLOAD_ENDPOINT, fetchParams)
+        .then((response) => response.json())
+        .then((json) => {
+          fetchFileStreamer(readFileStream, pageNum + 1);
+          refreshSessionToken(json);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-    [name, baseFetch],
-  );
-
-  const handleServer = React.useCallback(
-    (json, readFileStream, pageNum) => {
-      console.log(`reached video-upload-handle-server: ${json}`);
-      fetchFileStreamer(readFileStream, pageNum + 1);
-    },
-    [fetchFileStreamer],
-  );
-
-  const baseFetch = React.useCallback(
-    (readFileStream, pageNum) => {
-      if (file !== undefined) {
-        const extraParams = {
-          body: { file: file },
-        };
-        const extraOnResponseParams = [readFileStream, pageNum];
-        fetchData(
-          "video-upload",
-          handleServer,
-          extraParams,
-          extraOnResponseParams,
-        );
-      }
-    },
-    [fetchData, handleServer, file],
+    [name, postRequestPayload, UPLOAD_ENDPOINT, refreshSessionToken],
   );
 
   const handleSubmit = React.useCallback(
