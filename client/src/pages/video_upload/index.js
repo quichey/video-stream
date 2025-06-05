@@ -1,6 +1,7 @@
 import React from "react";
 //import axios from "axios";
 
+//try to useServerCall
 const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-upload";
 
 export default function VideoUpload() {
