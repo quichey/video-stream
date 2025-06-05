@@ -79,7 +79,7 @@ class Cache():
         manager.store_video(
             video_record=video,
             seeding_db=False,
-            byte_stream=video_upload_session.bytes
+            byte_stream=video_upload_session.byte_stream
         )
         # also save to mysql db
         with Session(self.engine) as session:

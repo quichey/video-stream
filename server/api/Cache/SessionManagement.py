@@ -5,6 +5,8 @@ from typing import Optional
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
 
+VIDEO_UPLOAD_PAGE_SIZE = 64000
+
 
 class SecurityError(Exception):
     pass
@@ -190,10 +192,13 @@ class SessionManagement():
     def start_video_upload(self, existing_session_info, video_upload_info):
         token = existing_session_info
         user_state = self.current_state[token]
+        is_done=False
+        if len(video_upload_info.bytes) < VIDEO_UPLOAD_PAGE_SIZE:
+            is_done = True
         user_state.video_upload = VideoUpload(
             name=video_upload_info.name,
             byte_stream=video_upload_info.bytes,
-            is_done=False
+            is_done=is_done
         )
         self.current_state[token] = user_state
         return user_state.video_upload
@@ -202,7 +207,7 @@ class SessionManagement():
         token = existing_session_info
         user_state = self.current_state[token]
         user_state.video_upload.byte_stream += video_upload_info.bytes
-        if len(video_upload_info.bytes) == 0:
+        if len(video_upload_info.bytes) < VIDEO_UPLOAD_PAGE_SIZE:
             user_state.video_upload.is_done = True
         return user_state.video_upload
    
