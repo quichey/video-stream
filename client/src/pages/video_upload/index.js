@@ -4,14 +4,14 @@ import React from "react";
 const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-upload";
 
 export default function VideoUpload() {
-  const [file, setFile] = React.useState([]);
+  const [file, setFile] = React.useState(new Uint8Array());
   const [name, setName] = React.useState("");
 
   const fetchFileStreamer = React.useCallback(
     (readFileStream, pageNum) => {
-      const firstIdx = pageNum * 1000;
-      const lastIdx = pageNum + 1000;
-      readFileStream = readFileStream[0];
+      const pageSize = 64000;
+      const firstIdx = pageNum * pageSize;
+      const lastIdx = pageNum + pageSize;
       // TODO: check length of readFileStream here
       console.log(`readFileStream.length: ${readFileStream.length}`);
       const baseCaseReached = firstIdx >= readFileStream.length;
@@ -84,8 +84,15 @@ export default function VideoUpload() {
       // Process the chunk of data
       console.log("Chunk:", value);
       setFile((prevFileArray) => {
-        const valueAsArray = value;
-        return prevFileArray.concat(valueAsArray);
+        function joinByteArrays(array1, array2) {
+          const mergedArray = new Uint8Array(array1.length + array2.length);
+          mergedArray.set(array1, 0);
+          mergedArray.set(array2, array1.length);
+          return mergedArray;
+        }
+        //const valueAsArray = value;
+        //return prevFileArray.concat(valueAsArray);
+        return joinByteArrays(prevFileArray, value);
       });
     }
   }, []);
