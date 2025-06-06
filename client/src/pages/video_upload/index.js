@@ -1,9 +1,12 @@
 import React from "react";
 //import axios from "axios";
 
-const UPLOAD_ENDPOINT = "http://127.0.0.1:5000/video-upload";
+import { HTTPContext } from "..";
 
-export default function VideoUpload() {
+export default function VideoUpload({ token }) {
+  const { serverURL, postRequestPayload, refreshSessionToken } =
+    React.useContext(HTTPContext);
+  const [UPLOAD_ENDPOINT] = React.useState(`${serverURL}/video-upload`);
   const [file, setFile] = React.useState(new Uint8Array());
   const [name, setName] = React.useState("");
 
@@ -27,11 +30,16 @@ export default function VideoUpload() {
         name: name,
       };
       const body = {
-        user_id: 0,
-        user_name: "3",
-        token: 0,
+        ...JSON.parse(postRequestPayload),
+        //token: 0,
         file_info: fileInfo,
       };
+      if (token !== undefined && body.token === undefined) {
+        body.token = token;
+      }
+      if (body.token === undefined) {
+        body.token = 0;
+      }
       const fetchParams = {
         body: JSON.stringify(body),
         method: "POST",
@@ -40,7 +48,7 @@ export default function VideoUpload() {
         fetch(UPLOAD_ENDPOINT, fetchParams)
           .then((response) => response.json())
           .then((json) => {
-            console.log(json);
+            refreshSessionToken(json);
           })
           .catch((error) => {
             console.log(error);
@@ -51,13 +59,13 @@ export default function VideoUpload() {
         .then((response) => response.json())
         .then((json) => {
           fetchFileStreamer(readFileStream, pageNum + 1);
-          console.log(json);
+          refreshSessionToken(json);
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    [name],
+    [name, postRequestPayload, UPLOAD_ENDPOINT, refreshSessionToken, token],
   );
 
   const handleSubmit = React.useCallback(
