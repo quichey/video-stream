@@ -26,7 +26,6 @@ class Video:
 
 @dataclass
 class VideoUpload:
-    #id: int
     name: str
     byte_stream: bytes
     is_done: bool
@@ -128,10 +127,10 @@ class SessionManagement():
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
-        print(f"user_id: {user_id}")
-        print(f"existing_session_info: {existing_session_info}")
-        print(f"type(user_id): {type(user_id)}")
-        print(f"type(existing_session_info): {type(existing_session_info)}")
+        #print(f"user_id: {user_id}")
+        #print(f"existing_session_info: {existing_session_info}")
+        #print(f"type(user_id): {type(user_id)}")
+        #print(f"type(existing_session_info): {type(existing_session_info)}")
         if int(user_id) != int(existing_session_info):
             raise SecurityError("Hijacked Session Token")
         return existing_session_info
@@ -142,11 +141,11 @@ class SessionManagement():
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
         if existing_session_info is not None:
-            print(f"\n\n reached this for loop. \n\n")
+            #print(f"\n\n reached this for loop. \n\n")
             return self.authenticate_user(user_info, existing_session_info)
 
-        print(f"\n\n SessionManagement register_user existing_session_info: {existing_session_info} \n\n")
-        print(f"\n\n self.current_users: {self.current_users} \n\n")
+        #print(f"\n\n SessionManagement register_user existing_session_info: {existing_session_info} \n\n")
+        #print(f"\n\n self.current_users: {self.current_users} \n\n")
         if user_id in self.current_users:
             raise Exception("User already registered")
         

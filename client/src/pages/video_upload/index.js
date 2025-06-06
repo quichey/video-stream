@@ -1,5 +1,4 @@
 import React from "react";
-//import axios from "axios";
 
 import { HTTPContext } from "..";
 
@@ -17,7 +16,7 @@ export default function VideoUpload({ token }) {
       const firstIdx = pageNum * pageSize;
       const lastIdx = pageNum + pageSize;
       // TODO: check length of readFileStream here
-      console.log(`readFileStream.length: ${readFileStream.length}`);
+      //console.log(`readFileStream.length: ${readFileStream.length}`);
       const baseCaseReached = firstIdx >= readFileStream.length;
       var file_stream;
       if (baseCaseReached) {
@@ -79,7 +78,7 @@ export default function VideoUpload({ token }) {
   const handleFileChange = React.useCallback(async (e) => {
     const fileObject = e.target.files[0];
     if (!fileObject) {
-      console.log("No file selected.");
+      //console.log("No file selected.");
       return;
     }
     const stream = fileObject.stream();
@@ -87,11 +86,11 @@ export default function VideoUpload({ token }) {
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
-        console.log("Stream reading complete.");
+        //console.log("Stream reading complete.");
         return;
       }
       // Process the chunk of data
-      console.log("Chunk:", value);
+      //console.log("Chunk:", value);
       setFile((prevFileArray) => {
         function joinByteArrays(array1, array2) {
           const mergedArray = new Uint8Array(array1.length + array2.length);
@@ -99,8 +98,6 @@ export default function VideoUpload({ token }) {
           mergedArray.set(array2, array1.length);
           return mergedArray;
         }
-        //const valueAsArray = value;
-        //return prevFileArray.concat(valueAsArray);
         return joinByteArrays(prevFileArray, value);
       });
     }
