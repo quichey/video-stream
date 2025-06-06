@@ -48,7 +48,7 @@ class VideoFileManager():
 		user_folder = f"{user_id}"
 		return user_folder
 
-	def store_video(self, video_record, seeding_db=True):
+	def store_video(self, video_record, seeding_db=True, byte_stream=None):
 		file_location = self.determine_file_location(video_record)
 		server_full_file_location = f"{SERVER_ASSETS_FOLDER}"
 		client_full_file_location = f"{CLIENT_PUBLIC_FOLDER}/{file_location}"
@@ -72,6 +72,23 @@ class VideoFileManager():
 				source_path = server_full_file_name
 				shutil.copy(source_path, client_full_file_location)
 			#TODO: handle saving file from user upload
+			else:
+				#TODO: handle mp4 files
+				file = open(client_full_file_name, "wb")
+				"""
+				as_str = str(byte_stream)
+				print(f"\n\n length of as_str: {len(as_str)} \n\n")
+				# take out 
+				str_to_remove = "Create videos with https://clipchamp.com/en/video-editor - free online video editor, video compressor, video converter."
+				new_text = as_str.replace(str_to_remove, "")
+				print(f"\n\n length of new_text: {len(new_text)} \n\n")
+				file.write(new_text)
+				"""
+				print(f"\n\n length of byte_stream: {len(byte_stream)} \n\n")
+				file.write(byte_stream)
+				file.close()
+				
+				
 
 		#NOTE: do not need to do sqlalchemy stuff cause session in Seed will handle once 
 		# it flushes
