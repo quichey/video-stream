@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
 
+
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
+
+#VIDEO_UPLOAD_PAGE_SIZE = 64000
+VIDEO_UPLOAD_PAGE_SIZE = 6400000
 
 
 class SecurityError(Exception):
@@ -21,10 +25,17 @@ class Video:
     comments: Comments
 
 @dataclass
+class VideoUpload:
+    name: str
+    byte_stream: bytes
+    is_done: bool
+
+@dataclass
 class User:
     id: int
     token: int
     video: Optional[Video] = None
+    video_upload: Optional[VideoUpload] = None
 
 """
 NOTE: possible datastructure involving the dataclasses above
@@ -116,10 +127,10 @@ class SessionManagement():
         user_id = user_info["id"]
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
-        print(f"user_id: {user_id}")
-        print(f"existing_session_info: {existing_session_info}")
-        print(f"type(user_id): {type(user_id)}")
-        print(f"type(existing_session_info): {type(existing_session_info)}")
+        #print(f"user_id: {user_id}")
+        #print(f"existing_session_info: {existing_session_info}")
+        #print(f"type(user_id): {type(user_id)}")
+        #print(f"type(existing_session_info): {type(existing_session_info)}")
         if int(user_id) != int(existing_session_info):
             raise SecurityError("Hijacked Session Token")
         return existing_session_info
@@ -130,9 +141,11 @@ class SessionManagement():
         # TODO: Check if user_info matches existing_session_info,
         # otherwise throw a security error
         if existing_session_info is not None:
+            #print(f"\n\n reached this for loop. \n\n")
             return self.authenticate_user(user_info, existing_session_info)
 
-        print(f"self.current_users: {self.current_users}")
+        #print(f"\n\n SessionManagement register_user existing_session_info: {existing_session_info} \n\n")
+        #print(f"\n\n self.current_users: {self.current_users} \n\n")
         if user_id in self.current_users:
             raise Exception("User already registered")
         
@@ -146,6 +159,7 @@ class SessionManagement():
         self.current_state[token] = user_state
         return token
     
+    # regression test
     def start_video_session(self, existing_session_info, video_info):
         token = existing_session_info
         user_state = self.current_state[token]
@@ -160,6 +174,50 @@ class SessionManagement():
         )
         self.current_state[token] = user_state
         return existing_session_info
+    
+    """
+    as of now, largest sample video works w/one server request
+    but most likely i think need multiple for multiple gig sized files
+    """
+    def video_upload(self, existing_session_info, video_upload_info):
+        token = existing_session_info
+        user_state = self.current_state[token]
+
+        if user_state.video_upload is None:
+            video_upload_session = self.start_video_upload(
+                existing_session_info=existing_session_info,
+                video_upload_info=video_upload_info,
+            )
+        else:
+            video_upload_session = self.continue_video_upload(
+                existing_session_info=existing_session_info,
+                video_upload_info=video_upload_info,
+            )
+
+        return video_upload_session
+    
+    def start_video_upload(self, existing_session_info, video_upload_info):
+        token = existing_session_info
+        user_state = self.current_state[token]
+        is_done=False
+        if len(video_upload_info.bytes) < VIDEO_UPLOAD_PAGE_SIZE:
+            is_done = True
+        user_state.video_upload = VideoUpload(
+            name=video_upload_info.name,
+            byte_stream=video_upload_info.bytes,
+            is_done=is_done
+        )
+        self.current_state[token] = user_state
+        return user_state.video_upload
+    
+    def continue_video_upload(self, existing_session_info, video_upload_info):
+        token = existing_session_info
+        user_state = self.current_state[token]
+        user_state.video_upload.byte_stream += video_upload_info.bytes
+        if len(video_upload_info.bytes) < VIDEO_UPLOAD_PAGE_SIZE:
+            user_state.video_upload.is_done = True
+        return user_state.video_upload
+   
     
     """
     get all data associated with the session

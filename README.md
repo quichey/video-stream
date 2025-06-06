@@ -98,3 +98,9 @@ No longer need the generate_random_primary_key function i think
 update records_to_insert during randomization to use Declarative Base Classes/instances w/session.add()
 --need to check if sqlalchemy sessions auto_flushing handles multi-threading
 --- research how to do foreign_key stuff with declarative base
+
+
+# commit for first branch of video-upload feature branch
+- Research/Remember from ISS how uploading files/file-streams works *** Do this first 
+- Create GUI for user to upload a video
+- Create an API route for client to send video data

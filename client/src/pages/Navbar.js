@@ -3,17 +3,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DehazeIcon from "@mui/icons-material/Dehaze";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import VideocamIcon from "@mui/icons-material/Videocam";
-import {
-  Box,
-  Container,
-  IconButton,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton } from "@mui/material";
+import { NavLink } from "react-router";
 
 import Search from "./Search";
 
@@ -41,9 +32,14 @@ export default function Navbar() {
         <DehazeIcon fontSize="inherit" />
       </IconButton>
       <Search />
-      <IconButton aria-label="create" size="small" style={{ width: 50 }}>
-        <VideocamIcon fontSize="inherit" />
-      </IconButton>
+      <NavLink to={"/upload"} end>
+        <IconButton aria-label="create" size="small" style={{ width: 50 }}>
+          <VideocamIcon fontSize="inherit" />
+          {/*
+          TODO: I think add navlink to /upload route here
+          */}
+        </IconButton>
+      </NavLink>
       <IconButton aria-label="notifications" size="small" style={{ width: 50 }}>
         <NotificationsIcon fontSize="inherit" />
       </IconButton>
