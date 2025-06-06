@@ -89,7 +89,11 @@ export default function Pages() {
                 <Route path="watch">
                   <Route path=":videoID" element={<Watch />} />
                 </Route>
-                <Route index path="upload" element={<VideoUpload />} />
+                <Route
+                  index
+                  path="upload"
+                  element={<VideoUpload token={sessionToken} />}
+                />
               </Routes>
             </Box>
           </BrowserRouter>

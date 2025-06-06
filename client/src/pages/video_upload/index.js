@@ -3,7 +3,7 @@ import React from "react";
 
 import { HTTPContext } from "..";
 
-export default function VideoUpload() {
+export default function VideoUpload({ token }) {
   const { serverURL, postRequestPayload, refreshSessionToken } =
     React.useContext(HTTPContext);
   const [UPLOAD_ENDPOINT] = React.useState(`${serverURL}/video-upload`);
@@ -34,6 +34,12 @@ export default function VideoUpload() {
         //token: 0,
         file_info: fileInfo,
       };
+      if (token !== undefined && body.token === undefined) {
+        body.token = token;
+      }
+      if (body.token === undefined) {
+        body.token = 0;
+      }
       const fetchParams = {
         body: JSON.stringify(body),
         method: "POST",
@@ -59,7 +65,7 @@ export default function VideoUpload() {
           console.log(error);
         });
     },
-    [name, postRequestPayload, UPLOAD_ENDPOINT, refreshSessionToken],
+    [name, postRequestPayload, UPLOAD_ENDPOINT, refreshSessionToken, token],
   );
 
   const handleSubmit = React.useCallback(
