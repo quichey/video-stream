@@ -160,6 +160,7 @@ class SessionManagement():
         self.current_state[token] = user_state
         return token
     
+    # regression test
     def start_video_session(self, existing_session_info, video_info):
         token = existing_session_info
         user_state = self.current_state[token]
