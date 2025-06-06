@@ -46,14 +46,14 @@ class Router():
     """
     def extract_video_file_info(self):
         user_info = self.extract_user_info()
-        print(f"\n\n reached extract_video_file_info \n\n")
+        #print(f"\n\n reached extract_video_file_info \n\n")
         form_data = json.loads(self.request.data)
         video_file_info = {}
         if "file_info" in form_data:
             file_info = form_data['file_info']
-            print(f"\n\n file_info: {file_info} \n\n")
+            #print(f"\n\n file_info: {file_info} \n\n")
             file_stream = dict(file_info["file_stream"])
-            print(f"\n\n len(file_stream.keys()): {len(file_stream.keys())} \n\n")
+            #print(f"\n\n len(file_stream.keys()): {len(file_stream.keys())} \n\n")
             file_name = file_info["name"]
             # file being loaded as str
             # convert to something consumable by bytes() construct
@@ -71,11 +71,11 @@ class Router():
         for _, b in file_stream.items():
             #print(f"\n\n bytes(b): {bytes(b)} \n\n")
             as_array.append(b)
-        print(f"\n\n as_array: {as_array} \n\n")
-        print(f"\n\n len(as_array): {len(as_array)} \n\n")
+        #print(f"\n\n as_array: {as_array} \n\n")
+        #print(f"\n\n len(as_array): {len(as_array)} \n\n")
         as_bytes = bytes(as_array)
-        print(f"\n\n as_bytes: {as_bytes} \n\n")
-        print(f"\n\n len(as_bytes): {len(as_bytes)} \n\n")
+        #print(f"\n\n as_bytes: {as_bytes} \n\n")
+        #print(f"\n\n len(as_bytes): {len(as_bytes)} \n\n")
         return as_bytes
         #return as_bytes.decode('utf-8', errors='ignore')
 
