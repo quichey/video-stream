@@ -13,9 +13,8 @@
 ###################################################
 
 ###################################################
-# Consolidate client machines and server machines
-# possibly Terraform or similar utilities
-# infra?
+# Consolidate all machines required for sending HTML/CSS
+# to client computers
 ###################################################
 
 ###################################################
@@ -52,49 +51,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   ###################################################
-  # Service: server
-  # 
-  # This service is the Node.js server that provides the API for the app.
-  # When the container starts, it will use the image that results
-  # from building the Dockerfile, targeting the backend-dev stage.
-  #
-  # The Compose Watch configuration is used to automatically sync the code
-  # from the host machine to the container. This allows the server to be
-  # automatically reloaded when code changes are made.
-  #
-  # The environment variables configure the application to connect to the
-  # database, which is also configured in this Compose file. We obviously
-  # wouldn't hard-code these values in a production environment. But, in
-  # dev, these values are fine.
-  #
-  # Finally, the labels are used to configure Traefik (the reverse proxy) with
-  # the appropriate routing rules. In this case, all requests to localhost/api/*
-  # will be forwarded to this service's port 3000. 
-  ###################################################
-  server:
-    build:
-      context: ./
-      # this 'target' is the image name
-      # TODO: find out image name of my server's things
-      # place it here
-      target: api-dev
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_DB: todos
-    develop:
-      video-stream:
-        - path: ./backend/src
-          action: sync
-          target: /usr/local/app/src
-        - path: ./backend/package.json
-          action: rebuild
-    labels:
-      traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
-      traefik.http.services.backend.loadbalancer.server.port: 3000
-
-  ###################################################
   # Service: client
   #
   # The client service is the React app that provides the frontend for the app.
@@ -128,6 +84,30 @@ services:
       traefik.http.services.client.loadbalancer.server.port: 5173
 
 
+  ###################################################
+  # Service: phpmyadmin
+  #
+  # This service provides a web interface to the MySQL database. It's useful
+  # for debugging and troubleshooting data, schemas, and more. The image for 
+  # this service comes directly from Docker Hub and is a Docker Official Image.
+  #
+  # The environment variables configure the connection to the database and 
+  # provide the default credentials, letting us immediately open the interface
+  # without needing to log in.
+  #
+  # The labels are used to configure Traefik (the reverse proxy) with the
+  # routing rules. In this case, all requests to db.localhost will be forwarded
+  # to this service's port 80.
+  ###################################################
+  phpmyadmin:
+    image: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: secret
+    labels:
+      traefik.http.routers.phpmyadmin.rule: Host(`db.localhost`)
+      traefik.http.services.phpmyadmin.loadbalancer.server.port: 80
 
 ###################################################
 # Volumes
