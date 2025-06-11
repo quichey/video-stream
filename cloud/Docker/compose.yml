@@ -65,9 +65,12 @@ services:
   # the appropriate routing rules. In this case, all requests to localhost/api/*
   # will be forwarded to this service's port 3000. 
   ###################################################
-  backend:
+  server:
     build:
       context: ./
+      # this 'target' is the image name
+      # TODO: find out image name of my server's things
+      # place it here
       target: backend-dev
     environment:
       MYSQL_HOST: mysql
@@ -75,7 +78,7 @@ services:
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
     develop:
-      watch:
+      video-stream:
         - path: ./backend/src
           action: sync
           target: /usr/local/app/src
@@ -103,9 +106,12 @@ services:
   client:
     build:
       context: ./
+      # this 'target' is the image name
+      # TODO: find out image name of my client's things
+      # place it here
       target: client-dev
     develop:
-      watch:
+      video-stream:
         - path: ./client/src
           action: sync
           target: /usr/local/app/src
@@ -115,6 +121,29 @@ services:
       traefik.http.routers.client.rule: Host(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173
 
+
+  ###################################################
+  # Service: seed
+  #
+  # Create demo-able/test-able dataset
+  ###################################################
+  seed:
+    build:
+      context: ./
+      # this 'target' is the image name
+      # TODO: find out image name of my seed's things
+      # place it here
+      target: seed-dev
+    develop:
+      video-stream:
+        - path: ./client/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./client/package.json
+          action: rebuild
+    labels:
+      traefik.http.routers.client.rule: Host(`localhost`)
+      traefik.http.services.client.loadbalancer.server.port: 5173
 
   ###################################################
   # Service: mysql
