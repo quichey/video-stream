@@ -1,4 +1,4 @@
-FROM python:3.10.12
+FROM python:3.10.12 as seed-dev
 WORKDIR /usr/local/app
 
 # I intend to run this from video-stream/cloud/Docker
