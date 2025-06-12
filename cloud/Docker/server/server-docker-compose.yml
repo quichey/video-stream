@@ -25,6 +25,8 @@
 # For each service, a separate container will be launched.
 ###################################################
 services:
+  include:
+    - server/db/db-docker-compose.yml
 
   ###################################################
   # Service: proxy

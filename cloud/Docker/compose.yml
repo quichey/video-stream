@@ -25,6 +25,9 @@
 # For each service, a separate container will be launched.
 ###################################################
 services:
+  include:
+    - client/client-docker-compose.yml
+    - server/server-docker-compose.yml
 
   ###################################################
   # Service: proxy
@@ -51,7 +54,7 @@ services:
       # this 'target' is the image name
       # TODO: find out image name of my server's things
       # place it here
-      target: api-dev
+      target: server-dev
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
