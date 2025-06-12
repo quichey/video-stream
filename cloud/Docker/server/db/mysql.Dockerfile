@@ -1,6 +1,6 @@
 # MIGHT NOT NEED THIS
 # Image is already available on Docker hub 
-#
+# think need to do things to hook it up to g-cloud
 #
 # Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
 #
