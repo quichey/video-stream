@@ -88,6 +88,19 @@ services:
           target: /usr/local/app/src
         - path: ./client/package.json
           action: rebuild
+    #TODO: remember how ISS
+    # used env variables to secretly
+    # pass along host address information
+    #
+    # github workflows/actions
+    # w/github secrets
+    #
+    # or some conjunction of aws cognito
+    # here, use google cloud cybersecurity
+    # utils
+    #
+    # google AI bot says use both github secrets
+    # AND g-cloud security things
     labels:
       traefik.http.routers.client.rule: Host(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173
