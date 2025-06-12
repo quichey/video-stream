@@ -15,6 +15,7 @@
 ###################################################
 # Consolidate all machines required for sending HTML/CSS
 # to client computers
+# should I put CDN (Content-Delivery-Network) Here?
 ###################################################
 
 ###################################################
@@ -28,19 +29,7 @@ services:
   ###################################################
   # Service: proxy
   #
-  # This service is a reverse proxy that will route requests to the appropriate
-  # service. Think of it like a HTTP router or a load balancer. It simply 
-  # forwards requests and allows us to simulate the final version of the 
-  # application where the frontend and backend are bundled together. We can 
-  # also use it to route requests to phpMyAdmin, which won't be accessible at 
-  # localhost, but at db.localhost.
-  #
-  # The image for this service comes directly from Docker Hub and is a Docker
-  # Official Image. Since Traefik can be configured in a variety of ways, we
-  # configure it here to watch the Docker events for new containers and to use
-  # their labels for configuration. That's why the Docker socket is mounted.
-  #
-  # We also expose port 80 to connect to the proxy from the host machine.
+  # Do I need this?
   ###################################################
   proxy:
     image: traefik:v2.11
@@ -51,27 +40,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   ###################################################
-  # Service: client
+  # Service: html
   #
-  # The client service is the React app that provides the frontend for the app.
-  # When the container starts, it will use the image that results from building
-  # the Dockerfile, targeting the dev stage.
-  #
-  # The Compose Watch configuration is used to automatically sync the code from
-  # the host machine to the container. This allows the client to be automatically
-  # reloaded when code changes are made.
-  # 
-  # The labels are used to configure Traefik (the reverse proxy) with the 
-  # appropriate routing rules. In this case, all requests to localhost will be
-  # forwarded to this service's port 5173.
+  # deliver all UI html/css stuff
   ###################################################
-  client:
+  html:
     build:
       context: ./
       # this 'target' is the image name
       # TODO: find out image name of my client's things
       # place it here
-      target: client-dev
+      target: html-dev
     develop:
       video-stream:
         - path: ./client/src
@@ -85,29 +64,27 @@ services:
 
 
   ###################################################
-  # Service: phpmyadmin
+  # Service: cdn
   #
-  # This service provides a web interface to the MySQL database. It's useful
-  # for debugging and troubleshooting data, schemas, and more. The image for 
-  # this service comes directly from Docker Hub and is a Docker Official Image.
-  #
-  # The environment variables configure the connection to the database and 
-  # provide the default credentials, letting us immediately open the interface
-  # without needing to log in.
-  #
-  # The labels are used to configure Traefik (the reverse proxy) with the
-  # routing rules. In this case, all requests to db.localhost will be forwarded
-  # to this service's port 80.
+  # deliver all video/mp4 files
   ###################################################
-  phpmyadmin:
-    image: phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      PMA_USER: root
-      PMA_PASSWORD: secret
+  cdn:
+    build:
+      context: ./
+      # this 'target' is the image name
+      # TODO: find out image name of my client's things
+      # place it here
+      target: cdn-dev
+    develop:
+      video-stream:
+        - path: ./client/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./client/package.json
+          action: rebuild
     labels:
-      traefik.http.routers.phpmyadmin.rule: Host(`db.localhost`)
-      traefik.http.services.phpmyadmin.loadbalancer.server.port: 80
+      traefik.http.routers.client.rule: Host(`localhost`)
+      traefik.http.services.client.loadbalancer.server.port: 5173
 
 ###################################################
 # Volumes
