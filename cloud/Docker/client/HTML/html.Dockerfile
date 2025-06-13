@@ -1,4 +1,4 @@
-FROM node:20 as html-dev
+FROM node:20 as build
 WORKDIR /usr/local/app
 
 # I intend to run this from video-stream/cloud/Docker
@@ -19,3 +19,7 @@ USER app
 
 # TODO: build
 CMD ["npm", "build"]
+
+
+# Dockerfile inheriting from the base image (app.Dockerfile)
+FROM proxy:latest as html

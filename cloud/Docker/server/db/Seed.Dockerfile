@@ -1,4 +1,4 @@
-FROM python:3.10.12 as seed-dev
+FROM python:3.10.12 as seed
 WORKDIR /usr/local/app
 
 # I intend to run this from video-stream/cloud/Docker
@@ -20,3 +20,8 @@ USER app
 # run python3 load_db.run
 # ---- figure out how to do it w/out python interpreter
 CMD ["python3", "load_db", "run"]
+
+
+# Dockerfile inheriting from the base image (app.Dockerfile)
+FROM proxy:latest as connect-do-db
+# do i need this one?

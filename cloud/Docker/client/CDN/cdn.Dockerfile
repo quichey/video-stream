@@ -1,4 +1,6 @@
-FROM node:20 as cdn-dev
+# Dockerfile inheriting from the base image (app.Dockerfile)
+FROM proxy:latest as cdn-dev
+#Assuming proxy was built from util.daemon.Dockerfile
 WORKDIR /usr/local/app
 
 # I intend to run this from video-stream/cloud/Docker

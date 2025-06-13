@@ -1,4 +1,4 @@
-FROM python:3.10.12 AS api-dev
+FROM python:3.10.12 AS build
 WORKDIR /usr/local/app
 
 # I intend to run this from video-stream/cloud/Docker
@@ -21,3 +21,7 @@ USER app
 
 # start up flask server
 CMD ["flask", "--app", "api", "run"]
+
+
+# Dockerfile inheriting from the base image (app.Dockerfile)
+FROM proxy:latest as api
