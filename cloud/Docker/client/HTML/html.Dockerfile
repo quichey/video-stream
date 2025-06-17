@@ -5,9 +5,14 @@ RUN ls
 # I intend to run this from video-stream/cloud/Docker
 
 # Install the application dependencies
-COPY src src
 COPY package.json package.json
 RUN npm install
+
+RUN npx create-react-app bullshit
+WORKDIR /usr/local/app/bullshit
+COPY src src
+RUN npm start || true
+
 
 #FROM build as install
 ##RUN npm install
@@ -22,7 +27,7 @@ RUN useradd app
 USER app
 ##
 ### TODO: build
-CMD ["ls"]
+CMD ["ls", "src"]
 
 
 # Dockerfile inheriting from the base image (app.Dockerfile)
