@@ -1,14 +1,11 @@
-# Dockerfile inheriting from the base image (app.Dockerfile)
-FROM proxy:latest as cdn-dev
+FROM python:3.10.12 as build
 #Assuming proxy was built from util.daemon.Dockerfile
 WORKDIR /usr/local/app
+RUN ls
 
 # I intend to run this from video-stream/cloud/Docker
 
 # Install the application dependencies
-COPY ~/repos/video-stream/client ./client
-RUN npm install
-
 
 
 # Copy in the source code
@@ -21,3 +18,7 @@ USER app
 
 # TODO: build
 CMD ["npm", "build"]
+
+
+# Dockerfile inheriting from the base image (app.Dockerfile)
+FROM proxy:latest as cdn

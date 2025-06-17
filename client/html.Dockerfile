@@ -5,7 +5,6 @@ RUN ls
 # I intend to run this from video-stream/cloud/Docker
 
 # Install the application dependencies
-COPY src src
 COPY package.json package.json
 RUN npm install
 
