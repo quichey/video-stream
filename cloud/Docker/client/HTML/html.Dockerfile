@@ -11,7 +11,7 @@ RUN npm install
 RUN npx create-react-app bullshit
 WORKDIR /usr/local/app/bullshit
 COPY src src
-RUN npm start || true
+#RUN npm start || true
 
 
 #FROM build as install
@@ -27,7 +27,7 @@ RUN useradd app
 USER app
 ##
 ### TODO: build
-CMD ["ls", "src"]
+CMD ["npm", "start"]
 
 
 # Dockerfile inheriting from the base image (app.Dockerfile)
