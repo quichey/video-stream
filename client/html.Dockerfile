@@ -26,7 +26,7 @@ FROM react-install as prod-build
 RUN npm run build
 #RUN npm install -g server
 RUN npm install server
-RUN serve -s build
+#RUN serve -s build
 
 ## STAGE install snapd for server?
 #FROM prod-build as snap-install
@@ -47,7 +47,7 @@ RUN serve -s build
 ##
 ##
 ### Copy in the source code
-EXPOSE 5000
+EXPOSE 3000
 ##
 ### Setup an app user so the container doesn't run as the root user
 RUN useradd app
