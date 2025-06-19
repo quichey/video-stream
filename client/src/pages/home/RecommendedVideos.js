@@ -2,7 +2,7 @@ import * as React from "react";
 import { List } from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 
-import VideoTile from "./VideoTile";
+import VideoTile from "./VideoTile/VideoTile";
 
 export default function RecommendedVideos({ videoList }) {
   return (
