@@ -8,6 +8,7 @@ import { NavLink } from "react-router";
 import { VideoContext } from "..";
 
 function VideoInfo({ title, userName, userIcon, totalViews, uploadDate }) {
+  // do things here
   return (
     <Stack direction="row" spacing={1}>
       <Typography>{userName}</Typography>
