@@ -14,7 +14,7 @@ export default function RecommendedVideos({ videoList }) {
               id={videoInfo.id}
               fileName={videoInfo.file_name}
               fileDir={videoInfo.file_dir}
-              userName={videoInfo.userName}
+              userName={videoInfo.user_name}
             ></VideoTile>
           </ListItem>
         );

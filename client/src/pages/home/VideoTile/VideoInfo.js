@@ -9,11 +9,16 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
 
 
   // would like someway to store profile pictures
+
+  // Many things are clickable
+  // Video Title ----> Video watch page can do soon
+  // Username ---> channel page
+  // User icon ----> channel page
   return (
     <Stack direction="row" spacing={1}>
       <Typography>{userIcon}</Typography>
         <Stack direction="column" spacing={1}>
-            <Typography>{title}</Typography>
+            <Typography variant="h6">{title}</Typography>
             <Typography>{userName}</Typography>
             <Stack direction="row" spacing={1}>
                 <Typography>{totalViews}</Typography>
