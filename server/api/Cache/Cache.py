@@ -235,6 +235,7 @@ class Cache():
                 subquery.c.file_dir,
                 users_table.c.name,
                 users_table.c.profile_icon,
+                users_table.c.id,
             ]
             stmt = select(
                 *select_cols
@@ -258,6 +259,7 @@ class Cache():
                     "file_dir": row[2],
                     "user_name": row[3],
                     "user_icon": row[4],
+                    "user_id": row[5],
                 }
                 data.append(video_data_point)
 
