@@ -2,7 +2,9 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
-export default function VideoInfo({ title, userName, userIcon, totalViews, uploadDate }) {
+import UserIcon from "../../user/UserIcon";
+
+export default function VideoInfo({ title, userName, userIcon, totalViews, uploadDate, userID }) {
   // do things here
 
   // add Toolbar for saving to playlists and etc when the tables for those are ready
@@ -16,7 +18,7 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
   // User icon ----> channel page
   return (
     <Stack direction="row" spacing={1}>
-      <Typography>{userIcon}</Typography>
+        <UserIcon id={userID} userIcon={userIcon} />
         <Stack direction="column" spacing={1}>
             <Typography variant="h6">{title}</Typography>
             <Typography>{userName}</Typography>

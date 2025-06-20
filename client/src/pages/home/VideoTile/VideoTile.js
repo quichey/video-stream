@@ -6,17 +6,15 @@ import { NavLink } from "react-router";
 import { VideoContext } from "../..";
 import VideoInfo from "./VideoInfo";
 
-export default function VideoTile({ id, fileName, fileDir, userName }) {
+export default function VideoTile({ id, fileName, fileDir, userName, userIcon, userID }) {
   const { setID } = React.useContext(VideoContext);
 
   const [title, setTitle] = React.useState("");
-  const [userIcon, setUserIcon] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
   const [uploadDate, setUploadDate] = React.useState("");
 
   React.useEffect(() => {
     setTitle("test title");
-    setUserIcon("test userIcon");
     setTotalViews("test total views");
     setUploadDate("test upload date");
   }, []);
@@ -43,6 +41,7 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
         userIcon={userIcon}
         totalViews={totalViews}
         uploadDate={uploadDate}
+        userID={userID}
       />
     </Card>
   );
