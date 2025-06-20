@@ -1,7 +1,10 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
+import { ChannelContext } from "..";
+
 export default function User() {
+  const { id, name } = React.useContext(ChannelContext);
   return (
     <Box
       component="form"
@@ -17,7 +20,7 @@ export default function User() {
       }}
     >
       <p>
-        User Channel Page
+        {`Channel ID: ${id}: Channel Name: ${name}`}
       </p>
     </Box>
   );
