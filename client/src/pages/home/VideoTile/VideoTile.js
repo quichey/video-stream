@@ -42,6 +42,7 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
         totalViews={totalViews}
         uploadDate={uploadDate}
         userID={userID}
+        videoID={id}
       />
     </Card>
   );

@@ -1,10 +1,16 @@
 import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { NavLink } from "react-router";
+
+import { ChannelContext } from "../..";
+import { VideoContext } from "../..";
 
 import UserIcon from "../../user/UserIcon";
 
-export default function VideoInfo({ title, userName, userIcon, totalViews, uploadDate, userID }) {
+export default function VideoInfo({ title, userName, userIcon, totalViews, uploadDate, userID, videoID }) {
+  const { setID, setName } = React.useContext(ChannelContext);
+  const { setID: setVideoID } = React.useContext(VideoContext);
   // do things here
 
   // add Toolbar for saving to playlists and etc when the tables for those are ready
@@ -16,12 +22,27 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
   // Video Title ----> Video watch page can do soon
   // Username ---> channel page
   // User icon ----> channel page
+  
+    const handleTitleClick = React.useCallback(() => {
+      setVideoID(videoID);
+    }, [videoID, setVideoID]); 
+  
+  
+    const handleChannelClick = React.useCallback(() => {
+      setID(userID)
+      setName(userName);
+    }, [userID, userName, setID, setName]); 
+  
   return (
     <Stack direction="row" useFlexGap spacing={1}>
         <UserIcon id={userID} userIcon={userIcon} userName={userName}/>
         <Stack direction="column" spacing={1}>
-            <Typography variant="h6">{title}</Typography>
-            <Typography>{userName}</Typography>
+            <NavLink to={`/watch/${videoID}`} onClick={handleTitleClick} end>
+                <Typography variant="h6">{title}</Typography>
+            </NavLink>
+            <NavLink to={`/channel/${userID}`} onClick={handleChannelClick} end>
+                <Typography>{userName}</Typography>
+            </NavLink>
             <Stack direction="row" spacing={1}>
                 <Typography>{totalViews}</Typography>
                 <Typography>{uploadDate}</Typography>
