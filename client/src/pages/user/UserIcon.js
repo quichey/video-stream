@@ -2,14 +2,15 @@ import * as React from "react";
 import Card from "@mui/material/Card";
 import { NavLink } from "react-router";
 
+import { ChannelContext } from "..";
 
-export default function UserIcon({ id, userIcon }) {
-    const [channelID, setChannelID] = React.useState()
+export default function UserIcon({ id, userIcon, userName }) {
+  const { setID, setName } = React.useContext(ChannelContext);
 
   const handleIconClick = React.useCallback(() => {
-    console.log(channelID)
-    setChannelID(id);
-  }, [id, channelID]); //pretty sure this will cause inf loop
+    setID(id)
+    setName(userName);
+  }, [id, userName, setID, setName]); //pretty sure this will cause inf loop
 
   return (
     <Card variant="outlined" sx={{ maxWidth: 360 }} onClick={handleIconClick}>
