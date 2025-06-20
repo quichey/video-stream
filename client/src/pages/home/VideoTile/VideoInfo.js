@@ -17,7 +17,7 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
   // Username ---> channel page
   // User icon ----> channel page
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" useFlexGap spacing={1}>
         <UserIcon id={userID} userIcon={userIcon} userName={userName}/>
         <Stack direction="column" spacing={1}>
             <Typography variant="h6">{title}</Typography>

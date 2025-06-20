@@ -1,5 +1,6 @@
 import * as React from "react";
 import Card from "@mui/material/Card";
+import { Box } from "@mui/material";
 import { NavLink } from "react-router";
 
 import { ChannelContext } from "..";
@@ -13,7 +14,7 @@ export default function UserIcon({ id, userIcon, userName }) {
   }, [id, userName, setID, setName]); //pretty sure this will cause inf loop
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 360 }} onClick={handleIconClick}>
+    <Box  sx={{ maxWidth: 360 }} onClick={handleIconClick}>
       <NavLink to={`/channel/${id}`} end>
         <img
             alt={userIcon}
@@ -22,6 +23,6 @@ export default function UserIcon({ id, userIcon, userName }) {
             height="20px"
         />
       </NavLink>
-    </Card>
+    </Box>
   );
 }
