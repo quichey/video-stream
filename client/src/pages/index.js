@@ -4,6 +4,7 @@ import { Box } from "@mui/material";
 
 import Home from "./home";
 import Watch from "./watch";
+import User from "./user";
 import VideoUpload from "./video_upload";
 import Navbar from "./Navbar";
 
@@ -88,6 +89,9 @@ export default function Pages() {
                 <Route path="/" element={<Home />} />
                 <Route path="watch">
                   <Route path=":videoID" element={<Watch />} />
+                </Route>
+                <Route path="channel">
+                  <Route path=":userID" element={<User />} />
                 </Route>
                 <Route
                   index
