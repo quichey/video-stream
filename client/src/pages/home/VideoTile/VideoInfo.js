@@ -37,11 +37,11 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
     <Stack direction="row" useFlexGap spacing={1}>
         <UserIcon id={userID} userIcon={userIcon} userName={userName}/>
         <Stack direction="column" spacing={1}>
-            <NavLink to={`/watch/${videoID}`} onClick={handleTitleClick} end>
-                <Typography variant="h6">{title}</Typography>
+            <NavLink to={`/watch/${videoID}`} end>
+                <Typography variant="h6" onClick={handleTitleClick}>{title}</Typography>
             </NavLink>
-            <NavLink to={`/channel/${userID}`} onClick={handleChannelClick} end>
-                <Typography>{userName}</Typography>
+            <NavLink to={`/channel/${userID}`} end>
+                <Typography onClick={handleChannelClick}>{userName}</Typography>
             </NavLink>
             <Stack direction="row" spacing={1}>
                 <Typography>{totalViews}</Typography>
