@@ -219,7 +219,9 @@ class Cache():
                 videos_table.c.id,
                 videos_table.c.file_name,
                 videos_table.c.file_dir,
-                videos_table.c.user_id
+                videos_table.c.user_id,
+                videos_table.c.date_created,
+                videos_table.c.date_updated,
             ]
             subquery = select(
                 *subquery_select_cols
@@ -236,6 +238,8 @@ class Cache():
                 users_table.c.name,
                 users_table.c.profile_icon,
                 users_table.c.id,
+                subquery.c.date_created,
+                subquery.c.date_updated,
             ]
             stmt = select(
                 *select_cols
@@ -260,6 +264,8 @@ class Cache():
                     "user_name": row[3],
                     "user_icon": row[4],
                     "user_id": row[5],
+                    "date_created": row[6],
+                    "date_updated": row[7],
                 }
                 data.append(video_data_point)
 
