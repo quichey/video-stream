@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from db.Schema import database_specs, Base, Video
 from db.Schema.Video import VideoFileManager
@@ -74,6 +75,8 @@ class Cache():
             user_id=video_file_info.user_id,
             file_dir=video_file_info.user_id,
             file_name=video_file_info.name,
+            date_created=datetime.now(),
+            date_updated=datetime.now(),
         )
         manager = VideoFileManager()
         manager.store_video(
