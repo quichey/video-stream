@@ -82,6 +82,7 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
             </NavLink>
             <Stack direction="row" spacing={1}>
                 <Typography>{totalViews}</Typography>
+                <Typography>-</Typography>
                 <Typography>{formatTimeAgo(new Date(uploadDate))}</Typography>
             </Stack>
         </Stack>
