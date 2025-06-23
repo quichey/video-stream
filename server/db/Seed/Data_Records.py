@@ -49,6 +49,8 @@ class Data_Records():
             if key in ["file_dir"]:
                 continue
 
+            # add branch case for profile pic here possibly
+
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
