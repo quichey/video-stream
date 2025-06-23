@@ -45,16 +45,29 @@ class Data_Records():
             if self.is_foreign_key(column):
                 continue
 
+            special_cases = [
+                "file_dir", #videos
+                "profile_icon", #user images
+            ]
             # for video storage
-            if key in ["file_dir"]:
+            if key in special_cases:
                 continue
-
-            # add branch case for profile pic here possibly
 
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
         
+        """
+        if table.name == "users":
+            # handle profile pics here
+
+            # THIS COMMENT BLOCK only problem for populating client/public images
+            # TODO: doesn't know userid until flushed to DB
+            # -------- move this "if" to after flushing
+            # NOT TODO: don't need to worry about this until 20+ users
+            pass
+        """
+
         #TODO: check out to dynamically create a class from a variable class name
         record = self.insert_foreign_keys(table, record)
         record = self.seed.schema.get_record_factory(table.name)(**record)
@@ -105,6 +118,11 @@ class Data_Records():
             file_names = os.listdir("./db/assets")
             random_test_video_file_name = file_names[random.randint(0, len(file_names) - 1)]
             return random_test_video_file_name
+        # for profile pics
+        if column_name in ["profile_icon"]:
+            file_names = os.listdir("./db/assets/images")
+            random_test_image_file_name = file_names[random.randint(0, len(file_names) - 1)]
+            return random_test_image_file_name
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
