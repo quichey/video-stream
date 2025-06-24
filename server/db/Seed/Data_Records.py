@@ -47,7 +47,7 @@ class Data_Records():
 
             special_cases = [
                 "file_dir", #videos
-                "profile_icon", #user images
+                #"profile_icon", #user images
             ]
             # for video storage
             if key in special_cases:
@@ -124,8 +124,11 @@ class Data_Records():
         if column_name in ["profile_icon"]:
             dir_path = "./db/assets/images"
             file_names = os.listdir(dir_path)
+            print(f"\n\n images file_names: {file_names} \n\n")
             files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
+            print(f"\n\n images files_only: {files_only} \n\n")
             random_test_images_file_name = files_only[random.randint(0, len(files_only) - 1)]
+            print(f"\n\n images random_test_images_file_name: {random_test_images_file_name} \n\n")
             return random_test_images_file_name
         
         def random_date(start_date, end_date):

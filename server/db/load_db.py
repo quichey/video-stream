@@ -54,6 +54,19 @@ testing_state_small = {
         #},
     ]
 }
+testing_state_users_only = {
+    "tables_random_populate": [
+        {
+            "name": "users",
+            "num_records": 2, #10
+        },
+        
+        #{
+        #    "name": "comment_likes",
+        #    "num_records": 10
+        #},
+    ]
+}
 testing_state_comments_only = {
     "tables_random_populate": [
         {
@@ -74,3 +87,6 @@ def run():
 
 def run_small():
     seed.initiate_test_environment(testing_state_small)
+
+def run_users():
+    seed.initiate_test_environment(testing_state_users_only)
