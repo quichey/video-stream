@@ -115,14 +115,18 @@ class Data_Records():
         
         # for video storage
         if column_name in ["file_name"]:
-            file_names = os.listdir("./db/assets")
-            random_test_video_file_name = file_names[random.randint(0, len(file_names) - 1)]
+            dir_path = "./db/assets"
+            file_names = os.listdir(dir_path)
+            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
+            random_test_video_file_name = files_only[random.randint(0, len(files_only) - 1)]
             return random_test_video_file_name
         # for profile pics
         if column_name in ["profile_icon"]:
-            file_names = os.listdir("./db/assets/images")
-            random_test_image_file_name = file_names[random.randint(0, len(file_names) - 1)]
-            return random_test_image_file_name
+            dir_path = "./db/assets/images"
+            file_names = os.listdir(dir_path)
+            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
+            random_test_images_file_name = files_only[random.randint(0, len(files_only) - 1)]
+            return random_test_images_file_name
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
