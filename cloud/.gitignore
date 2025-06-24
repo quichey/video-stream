@@ -1,1 +1,7 @@
 Cloud-init/tutorial/noble-server-cloudimg-amd64.img
+
+LXD/*
+
+deploy/.env
+Deploy/.env
+deploy/poetry.lock
