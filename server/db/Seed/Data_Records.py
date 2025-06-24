@@ -45,14 +45,18 @@ class Data_Records():
             if self.is_foreign_key(column):
                 continue
 
+            special_cases = [
+                "file_dir", #videos
+            ]
             # for video storage
-            if key in ["file_dir"]:
+            if key in special_cases:
                 continue
 
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
-        
+
+
         #TODO: check out to dynamically create a class from a variable class name
         record = self.insert_foreign_keys(table, record)
         record = self.seed.schema.get_record_factory(table.name)(**record)
@@ -97,12 +101,19 @@ class Data_Records():
         column_name = column.name
         table_name = column.table.name
 
-        
+        def get_random_file_name(dir_path):
+            file_names = os.listdir(dir_path)
+            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
+            random_test_file_name = files_only[random.randint(0, len(files_only) - 1)]
+            return random_test_file_name
         # for video storage
         if column_name in ["file_name"]:
-            file_names = os.listdir("./db/assets")
-            random_test_video_file_name = file_names[random.randint(0, len(file_names) - 1)]
-            return random_test_video_file_name
+            dir_path = "./db/assets"
+            return get_random_file_name(dir_path)
+        # for profile pics
+        if column_name in ["profile_icon"]:
+            dir_path = "./db/assets/images"
+            return get_random_file_name(dir_path)
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
@@ -125,6 +136,7 @@ class Data_Records():
             return f"{table_name}_{column_name}_{rand_int}"
         
         elif isinstance(data_type, DateTime):
+            # code fix should be somewhere around here
             return random_date(hardcoded_start_date, hardcoded_end_date)
 
 

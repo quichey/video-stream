@@ -1,37 +1,20 @@
 import * as React from "react";
 import Card from "@mui/material/Card";
-import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
-import Typography from "@mui/material/Typography";
 import { NavLink } from "react-router";
 
-import { VideoContext } from "..";
+import { VideoContext } from "../..";
+import VideoInfo from "./VideoInfo";
 
-function VideoInfo({ title, userName, userIcon, totalViews, uploadDate }) {
-  return (
-    <Stack direction="row" spacing={1}>
-      <Typography>{userName}</Typography>
-      <Typography>{title}</Typography>
-      <Typography>{userIcon}</Typography>
-      <Typography>{totalViews}</Typography>
-      <Typography>{uploadDate}</Typography>
-    </Stack>
-  );
-}
-
-export default function VideoTile({ id, fileName, fileDir, userName }) {
+export default function VideoTile({ id, fileName, fileDir, userName, userIcon, userID, dateCreated }) {
   const { setID } = React.useContext(VideoContext);
 
   const [title, setTitle] = React.useState("");
-  const [userIcon, setUserIcon] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
-  const [uploadDate, setUploadDate] = React.useState("");
 
   React.useEffect(() => {
     setTitle("test title");
-    setUserIcon("test userIcon");
     setTotalViews("test total views");
-    setUploadDate("test upload date");
   }, []);
 
   const handleVideoClick = React.useCallback(() => {
@@ -55,7 +38,9 @@ export default function VideoTile({ id, fileName, fileDir, userName }) {
         userName={userName}
         userIcon={userIcon}
         totalViews={totalViews}
-        uploadDate={uploadDate}
+        uploadDate={dateCreated}
+        userID={userID}
+        videoID={id}
       />
     </Card>
   );

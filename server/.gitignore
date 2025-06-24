@@ -189,3 +189,4 @@ cython_debug/
 
 #
 db/assets/*
+!db/assets/images
