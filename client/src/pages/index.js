@@ -4,10 +4,13 @@ import { Box } from "@mui/material";
 
 import Home from "./home";
 import Watch from "./watch";
+import User from "./user";
 import VideoUpload from "./video_upload";
 import Navbar from "./Navbar";
 
 export const UserContext = React.createContext(null);
+
+export const ChannelContext = React.createContext(null);
 
 export const VideoContext = React.createContext(null);
 
@@ -18,6 +21,9 @@ export default function Pages() {
   const [userID, setUserID] = React.useState(0);
   const [userName, setUserName] = React.useState("users_name_0");
   const [sessionToken, setSessionToken] = React.useState(undefined);
+
+  const [channelID, setChannelID] = React.useState(0);
+  const [channelName, setChannelName] = React.useState("users_name_0");
 
   const [videoID, setVideoID] = React.useState(0);
   const [videoFileName, setVideoFileName] = React.useState();
@@ -50,6 +56,14 @@ export default function Pages() {
         uName: userName,
         setName: setUserName,
         sessionToken: sessionToken,
+      }}
+    >
+    <ChannelContext.Provider
+      value={{
+        id: channelID,
+        setID: setChannelID,
+        name: channelName,
+        setName: setChannelName,
       }}
     >
       <VideoContext.Provider
@@ -89,6 +103,9 @@ export default function Pages() {
                 <Route path="watch">
                   <Route path=":videoID" element={<Watch />} />
                 </Route>
+                <Route path="channel">
+                  <Route path=":userID" element={<User />} />
+                </Route>
                 <Route
                   index
                   path="upload"
@@ -99,6 +116,7 @@ export default function Pages() {
           </BrowserRouter>
         </HTTPContext.Provider>
       </VideoContext.Provider>
+    </ChannelContext.Provider>
     </UserContext.Provider>
   );
 }

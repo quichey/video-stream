@@ -89,6 +89,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     email: Mapped[Optional[str]] = mapped_column(String(30))
+    profile_icon: Mapped[Optional[str]] = mapped_column(String(30))
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
@@ -123,8 +124,8 @@ class Video(Base):
     file_name: Mapped[str] = mapped_column(String(30))
     file_dir: Mapped[str] = mapped_column(String(100))
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-
-
+    date_updated: Mapped[str] = mapped_column(DateTime)
+    date_created: Mapped[str] = mapped_column(DateTime)
 
     def __repr__(self) -> str:
         return f"Video(id={self.id!r}, file={self.file!r}, user_id={self.user_id!r})"

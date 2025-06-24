@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from db.Schema import database_specs, Base, Video
 from db.Schema.Video import VideoFileManager
@@ -74,6 +75,8 @@ class Cache():
             user_id=video_file_info.user_id,
             file_dir=video_file_info.user_id,
             file_name=video_file_info.name,
+            date_created=datetime.now(),
+            date_updated=datetime.now(),
         )
         manager = VideoFileManager()
         manager.store_video(
@@ -219,7 +222,9 @@ class Cache():
                 videos_table.c.id,
                 videos_table.c.file_name,
                 videos_table.c.file_dir,
-                videos_table.c.user_id
+                videos_table.c.user_id,
+                videos_table.c.date_created,
+                videos_table.c.date_updated,
             ]
             subquery = select(
                 *subquery_select_cols
@@ -233,7 +238,11 @@ class Cache():
                 subquery.c.id,
                 subquery.c.file_name,
                 subquery.c.file_dir,
-                users_table.c.name
+                users_table.c.name,
+                users_table.c.profile_icon,
+                users_table.c.id,
+                subquery.c.date_created,
+                subquery.c.date_updated,
             ]
             stmt = select(
                 *select_cols
@@ -255,7 +264,11 @@ class Cache():
                     "id": row[0],
                     "file_name": row[1],
                     "file_dir": row[2],
-                    "user_name": row[3]
+                    "user_name": row[3],
+                    "user_icon": row[4],
+                    "user_id": row[5],
+                    "date_created": row[6],
+                    "date_updated": row[7],
                 }
                 data.append(video_data_point)
 
