@@ -47,7 +47,6 @@ class Data_Records():
 
             special_cases = [
                 "file_dir", #videos
-                #"profile_icon", #user images
             ]
             # for video storage
             if key in special_cases:
@@ -56,17 +55,7 @@ class Data_Records():
             record[key] = self.create_random_value(column)
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
-        
-        """
-        if table.name == "users":
-            # handle profile pics here
 
-            # THIS COMMENT BLOCK only problem for populating client/public images
-            # TODO: doesn't know userid until flushed to DB
-            # -------- move this "if" to after flushing
-            # NOT TODO: don't need to worry about this until 20+ users
-            pass
-        """
 
         #TODO: check out to dynamically create a class from a variable class name
         record = self.insert_foreign_keys(table, record)
@@ -112,24 +101,19 @@ class Data_Records():
         column_name = column.name
         table_name = column.table.name
 
-        
+        def get_random_file_name(dir_path):
+            file_names = os.listdir(dir_path)
+            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
+            random_test_file_name = files_only[random.randint(0, len(files_only) - 1)]
+            return random_test_file_name
         # for video storage
         if column_name in ["file_name"]:
             dir_path = "./db/assets"
-            file_names = os.listdir(dir_path)
-            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
-            random_test_video_file_name = files_only[random.randint(0, len(files_only) - 1)]
-            return random_test_video_file_name
+            return get_random_file_name(dir_path)
         # for profile pics
         if column_name in ["profile_icon"]:
             dir_path = "./db/assets/images"
-            file_names = os.listdir(dir_path)
-            print(f"\n\n images file_names: {file_names} \n\n")
-            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
-            print(f"\n\n images files_only: {files_only} \n\n")
-            random_test_images_file_name = files_only[random.randint(0, len(files_only) - 1)]
-            print(f"\n\n images random_test_images_file_name: {random_test_images_file_name} \n\n")
-            return random_test_images_file_name
+            return get_random_file_name(dir_path)
         
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
