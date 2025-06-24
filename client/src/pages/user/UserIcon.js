@@ -17,7 +17,7 @@ export default function UserIcon({ id, userIcon, userName }) {
       <NavLink to={`/channel/${id}`} end>
         <img
             alt={userIcon}
-            src={`${process.env.PUBLIC_URL}/images/${id}/${userIcon}.png`}
+            src={`${process.env.PUBLIC_URL}/images/${id}/${userIcon}`}
             width="20px"
             height="20px"
         />
