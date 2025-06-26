@@ -50,6 +50,8 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "eslint": "^8.57.0",
     "prettier": "^3.3.3",
-    "prettier-eslint": "^16.3.0"
+    "prettier-eslint": "^16.3.0",
+    "ncp": "^2.0.0",
+    "rimraf": "^3.0.2"
   }
 }
