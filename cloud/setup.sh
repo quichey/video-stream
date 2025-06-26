@@ -16,6 +16,8 @@
 
 set -eEo pipefail
 
+#Hoping this doesn't need to be altered
+# will it fudge up cause this was run using the monolith-tutorial repo?
 if [ -z "$CLOUD_SHELL" ]; then
   printf "Checking for required npm version...\n"
 
@@ -33,26 +35,33 @@ if [ -z "$CLOUD_SHELL" ]; then
   printf "Completed.\n\n"
 fi
 
-printf "Installing monolith dependencies...\n"
-cd ./monolith
-npm install
-printf "Completed.\n\n"
+#printf "Installing monolith dependencies...\n"
+#cd ./monolith
+#npm install
+#printf "Completed.\n\n"
 
-printf "Installing microservices dependencies...\n"
-cd ../microservices
-npm install
-printf "Completed.\n\n"
+#printf "Installing microservices dependencies...\n"
+#cd ../microservices
+#npm install
+#printf "Completed.\n\n"
 
 printf "Installing React app dependencies...\n"
-cd ../react-app
+cd ../client
 npm install
 printf "Completed.\n\n"
 
-printf "Building React app and placing into sub projects...\n"
+printf "Building React app and placing into client/public/. ...\n"
 npm run build
 printf "Completed.\n\n"
 
 printf "Setup completed successfully!\n"
+
+########
+#
+# want to automate loading cloud/Docker/...Dockerfiles into 
+# correct subdirs such as from cloud/Docker/client/HTML/tutorial.Dockerfile into client/Dockerfile
+#
+########
 
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
