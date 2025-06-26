@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# sets bash script environment to be robust w/error-handling
 set -eEo pipefail
 
 #Hoping this doesn't need to be altered
@@ -62,6 +63,7 @@ printf "Setup completed successfully!\n"
 # correct subdirs such as from cloud/Docker/client/HTML/tutorial.Dockerfile into client/Dockerfile
 #
 ########
+cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
