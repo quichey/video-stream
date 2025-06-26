@@ -20,11 +20,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "prebuild": "npm run build:monolith",
+    "prebuild": "npm run build:html",
     "build": "react-scripts build",
-    "postbuild": "node scripts/post-build.js ./build ../microservices/src/frontend/public",
-    "build:monolith": "env-cmd -f .env.monolith react-scripts build",
-    "postbuild:monolith": "node scripts/post-build.js ./build ../monolith/public",
+    "postbuild": "node scripts/post-build.js ./build ../client/src/public",
+    "build:html": "env-cmd -f .env.html react-scripts build",
+    "postbuild:html": "node scripts/post-build.js ./build ../public",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
