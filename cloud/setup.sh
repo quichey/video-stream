@@ -49,6 +49,15 @@ fi
 #npm install
 #printf "Completed.\n\n"
 
+############
+# SERVER SIDE SET-UP
+############
+
+##
+## Hoping I can have just one script to run from here
+##
+
+
 printf "Installing React app dependencies...\n"
 cd ../client
 npm install

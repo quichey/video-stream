@@ -40,3 +40,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 HEALTHCHECK CMD /healthcheck.sh
 EXPOSE 3306 33060
 CMD ["mysqld"]
+
+# I think need to test this one locally on Docker Desktop
