@@ -19,13 +19,16 @@ set -eEo pipefail
 
 #Hoping this doesn't need to be altered
 # will it fudge up cause this was run using the monolith-tutorial repo?
+### it appears this block is just for making sure Node is up to date
+### and accessible from the shell
+### does not appear to be specific to the monolith-tutorial
 if [ -z "$CLOUD_SHELL" ]; then
   printf "Checking for required npm version...\n"
 
-  npm install -g npm > /dev/null 2>&1
+  npm install -g npm > /dev/null 2>&1 #upgrade npm?
   printf "Completed.\n\n"
 
-  printf "Setting up NVM...\n"
+  printf "Setting up NVM...\n" # Node Version manager
   export NVM_DIR="/usr/local/nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
