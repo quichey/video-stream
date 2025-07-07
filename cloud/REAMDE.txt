@@ -1,2 +1,15 @@
 # using google cloud
 # and probably docker
+
+# Trying to launch public Web-app on Google cloud
+# started out with local development
+# Trying to understand the Google Cloud Run/Docker Tutorial
+# To Integrate the service into my existing local file-structure/program
+
+# I usually see DockerFiles in the same folder as the sub-service
+# However, I would like to encapsulate the Cloud-Architecture
+# as much as possible
+# to align with my own understanding of Web Software
+### plan is to modify the scripts from the monolith tutorial repo 
+### so that DockerFiles in the cloud/Docker subdir get loaded into
+### necessary micro-services
