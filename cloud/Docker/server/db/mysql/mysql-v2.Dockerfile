@@ -10,7 +10,7 @@ EXPOSE 8080
 ##
 # Copy the custom MySQL configuration file
 COPY ./mysql/my.cnf /etc/mysql/conf.d/my.cnf
-
+RUN chmod 644 /etc/mysql/conf.d/my.cnf
 # Start the MySQL server in the foreground, using the custom configuration
 CMD ["mysqld", "--defaults-file=/etc/mysql/conf.d/my.cnf"]
 
