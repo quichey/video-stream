@@ -4,8 +4,9 @@
 # This base stage ensures all other stages are using the same base image
 # and provides common configuration for all stages, such as the working dir.
 ###################################################
-FROM node:20 AS base
-WORKDIR /usr/local/app
+
+FROM node:16 as base
+WORKDIR /usr/src/app
 
 ################## CLIENT STAGES ##################
 
@@ -16,22 +17,18 @@ WORKDIR /usr/local/app
 # since there are common steps needed for each.
 ###################################################
 FROM base AS client-base
-COPY client/package.json client/yarn.lock ./
-RUN yarn cache clean
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install
-COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
-COPY client/public ./public
-COPY client/src ./src
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
 
-###################################################
-# Stage: client-dev
-# 
-# This stage is used for development of the client application. It sets 
-# the default command to start the Vite development server.
-###################################################
-FROM client-base AS client-dev
-CMD ["yarn", "dev"]
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
+
+# Bundle app source
+COPY . .
+
 
 ###################################################
 # Stage: client-build
@@ -40,7 +37,9 @@ CMD ["yarn", "dev"]
 # JS files that can be served by the backend.
 ###################################################
 FROM client-base AS client-build
-RUN yarn build
+EXPOSE 8080
+CMD [ "node", "src/server.js" ]
+
 
 
 
