@@ -54,13 +54,27 @@ CMD [ "node", "src/server.js" ]
 # This stage is used as the base for the backend-dev and test stages, since
 # there are common steps needed for each.
 ###################################################
-FROM base AS backend-dev
-COPY backend/package.json backend/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile
-COPY backend/spec ./spec
-COPY backend/src ./src
-CMD ["yarn", "dev"]
+# Google Gemini AI recommened I
+# Use a lightweight official Python image as the base
+FROM python:3.9-slim-buster
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the requirements file and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# in order to have this whole webapp work from one
+# instance of google cloud run, need to have the 
+# node Express JS serve as a proxy from server to client
+
+# Define the command to run your Flask application
+# Using gunicorn for production is recommended, according to Google Cloud
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"] 
 
 
 ###################################################
