@@ -84,6 +84,8 @@ CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
 # there are common steps needed for each.
 ###################################################
 
+# was able to run the mysql docker container but listening on port 3306
+# maybe just copy from the other branch the mysql image and go from there
 
 ###################################################
 # Sub-Stage: Seed
