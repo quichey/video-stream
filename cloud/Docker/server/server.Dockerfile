@@ -1,3 +1,18 @@
+###############################################################
+#
+# TRY TO MAKE SAME AS LOCAL SETUP FOR RUNNING API
+#
+# STAGES:
+# 1) download mysql
+# ------- create user?
+# 2) Run Seed program
+# 3) start up API
+#
+#
+#
+#
+###############################################################
+
 FROM python:3.10.12
 WORKDIR /usr/local/app
 
@@ -27,3 +42,6 @@ USER app
 
 # start up flask server
 CMD ["flask", "--app", "api", "run"]
+
+
+
