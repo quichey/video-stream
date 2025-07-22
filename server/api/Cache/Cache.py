@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from db.Schema import database_specs, Base, Video
+from db.Schema import database_specs, database_specs_cloud_sql, Base, Video
 from db.Schema.Video import VideoFileManager
 from api.Routers import VideoUpload
 #from api.Cache.SessionManagement import SessionManagement
@@ -34,8 +34,11 @@ comments session
 """
 class Cache():
 
-    def __init__(self):
-        self.database_specs = database_specs
+    def __init__(self, deployment="local"):
+        if deployment == "local":
+            self.database_specs = database_specs
+        elif deployment == "cloud":
+            self.database_specs = database_specs_cloud_sql
         self.metadata_obj = Base.metadata
         self.construct_engine(database_specs)
         self.session_manager = SessionManagement()

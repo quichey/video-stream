@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 from flask import Flask, request, Response
 from flask_cors import CORS
@@ -36,6 +37,7 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 
 """
 
+load_dotenv()
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -82,7 +84,8 @@ def create_app(test_config=None):
     just list out like in docs, but can store all the logic in Routes,
     and keep this file as managing state of whole micro-service/gateway-process
     """
-    cache = Cache()
+    deployment = os.getenv("DEPLOYMENT")
+    cache = Cache(deployment=deployment)
 
     client_router = ClientRouter(app=app, cache=cache, request=request)
     app.client_router = client_router
