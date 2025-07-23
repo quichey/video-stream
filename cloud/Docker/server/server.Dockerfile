@@ -3,9 +3,8 @@
 # TRY TO MAKE SAME AS LOCAL SETUP FOR RUNNING API
 #
 # STAGES:
-# 1) download mysql
-# ------- create user?
-# 2) Run Seed program
+# 1) prepare environment for connecting to g-cloud-sql instance
+# 2) Run Seed program -- NOT NEEDED (OPTIONAL)
 # 3) start up API
 #
 #
@@ -18,19 +17,42 @@ WORKDIR /usr/local/app
 
 # I intend to run this from video-stream/cloud/Docker
 
+########
+#
+# Stage
+# prep environment for connecting to g-cloud-sql instance
+#
+# copy over .env file?
+# 
+########
+
+########
+#
+# Stage
+# Run Seed program -- NOT NEEDED (OPTIONAL)
+#
+########
+
+
+########
+#
+# Stage
+# start up API
+#
+# do python/poetry packaging things
+# do flask things
+#
+########
+
 # Install the application dependencies
-COPY ~/repos/video-stream/server ./server
+COPY pyproject.toml ./
+COPY poetry.lock ./
+# Q: Which of the above 2 do i need?
+
 RUN pip install poetry
 RUN poetry install
 
 
-# TODO: install mysql
-RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.30-1_all.deb
-RUN sudo dpkg -i mysql-apt-config_0.8.30-1_all.deb
-RUN sudo apt update
-RUN sudo apt install mysql-server
-# TODO: run Seed on mysql
-# ---- figure out how to do it w/out python interpreter
 
 # Copy in the source code
 COPY src ./src
