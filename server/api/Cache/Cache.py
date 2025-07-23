@@ -39,8 +39,9 @@ class Cache():
             self.database_specs = database_specs
         elif deployment == "cloud":
             self.database_specs = database_specs_cloud_sql
+        print(f"\n\n self.database_specs: {self.database_specs} \n\n")
         self.metadata_obj = Base.metadata
-        self.construct_engine(database_specs)
+        self.construct_engine(self.database_specs)
         self.session_manager = SessionManagement()
     
     

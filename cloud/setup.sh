@@ -77,6 +77,14 @@ printf "Setup completed successfully!\n"
 ########
 cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 
+########
+#
+# want to automate loading cloud/Docker/...Dockerfiles into 
+# correct subdirs such as from cloud/Docker/server/server.Dockerfile into server/Dockerfile
+#
+########
+cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
+
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
   printf "###############################################################################\n"
