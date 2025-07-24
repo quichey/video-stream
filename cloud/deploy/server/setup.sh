@@ -20,27 +20,6 @@
 # sets bash script environment to be robust w/error-handling
 set -eEo pipefail
 
-#Hoping this doesn't need to be altered
-# will it fudge up cause this was run using the monolith-tutorial repo?
-### it appears this block is just for making sure Node is up to date
-### and accessible from the shell
-### does not appear to be specific to the monolith-tutorial
-if [ -z "$CLOUD_SHELL" ]; then
-  printf "Checking for required npm version...\n"
-
-  npm install -g npm > /dev/null 2>&1 #upgrade npm?
-  printf "Completed.\n\n"
-
-  printf "Setting up NVM...\n" # Node Version manager
-  export NVM_DIR="/usr/local/nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-  printf "Completed.\n\n"
-  
-  printf "Updating nodeJS version...\n"
-  nvm install --lts
-  printf "Completed.\n\n"
-fi
 
 #printf "Installing monolith dependencies...\n"
 #cd ./monolith
@@ -52,33 +31,8 @@ fi
 #npm install
 #printf "Completed.\n\n"
 
-############
-# SERVER SIDE SET-UP
-############
-
-##
-## Hoping I can have just one script to run from here
-##
 
 
-printf "Installing React app dependencies...\n"
-cd ../client
-npm install
-printf "Completed.\n\n"
-
-printf "Building React app and placing into client/public/. ...\n"
-npm run build
-printf "Completed.\n\n"
-
-printf "Setup completed successfully!\n"
-
-########
-#
-# want to automate loading cloud/Docker/...Dockerfiles into 
-# correct subdirs such as from cloud/Docker/client/HTML/tutorial.Dockerfile into client/Dockerfile
-#
-########
-cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 
 ########
 #
@@ -89,14 +43,3 @@ cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 cd ../server
 cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
 
-if [ -z "$CLOUD_SHELL" ]; then
-  printf "\n"
-  printf "###############################################################################\n"
-  printf "#                                   NOTICE                                    #\n"
-  printf "#                                                                             #\n"
-  printf "# Make sure you have a compatible nodeJS version with the following command:  #\n"
-  printf "#                                                                             #\n"
-  printf "# nvm install --lts                                                           #\n"
-  printf "#                                                                             #\n"
-  printf "###############################################################################\n"
-fi

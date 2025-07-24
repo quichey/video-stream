@@ -52,42 +52,27 @@ fi
 #npm install
 #printf "Completed.\n\n"
 
-############
-# SERVER SIDE SET-UP
-############
-
 ##
 ## Hoping I can have just one script to run from here
 ##
 
 
-printf "Installing React app dependencies...\n"
+############
+# CLIENT SET-UP
+############
+printf "Setting up Client"
 cd ../client
-npm install
-printf "Completed.\n\n"
 
-printf "Building React app and placing into client/public/. ...\n"
-npm run build
-printf "Completed.\n\n"
+## run client/setup.sh
 
-printf "Setup completed successfully!\n"
 
-########
-#
-# want to automate loading cloud/Docker/...Dockerfiles into 
-# correct subdirs such as from cloud/Docker/client/HTML/tutorial.Dockerfile into client/Dockerfile
-#
-########
-cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
-
-########
-#
-# want to automate loading cloud/Docker/...Dockerfiles into 
-# correct subdirs such as from cloud/Docker/server/server.Dockerfile into server/Dockerfile
-#
-########
+############
+# SERVER SIDE SET-UP
+############
+printf "Setting up Server"
 cd ../server
-cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
+
+## run server/setup.sh
 
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
