@@ -55,7 +55,7 @@ RUN poetry install
 
 
 # Copy in the source code
-COPY src ./src
+#TODO: do copy of source code -- ran local test of this file
 EXPOSE 5000
 
 # Setup an app user so the container doesn't run as the root user
