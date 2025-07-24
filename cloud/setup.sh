@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# WHERE SHOULD I RUN THIS COMMAND FROM?
+# video-stream/cloud ?
+
 # Copyright 2019 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -83,7 +86,8 @@ cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 # correct subdirs such as from cloud/Docker/server/server.Dockerfile into server/Dockerfile
 #
 ########
-cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
+cd ../server
+cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
 
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
