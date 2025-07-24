@@ -46,11 +46,12 @@ WORKDIR /usr/local/app
 
 # Install the application dependencies
 COPY pyproject.toml ./
-COPY poetry.lock ./
+COPY README.md ./
+#COPY api/poetry.lock ./ # somehow no poetry.lock in here
 # Q: Which of the above 2 do i need?
 
 RUN pip install poetry
-RUN poetry install
+RUN poetry install --no-root
 
 
 
