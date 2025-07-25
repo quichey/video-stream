@@ -46,3 +46,7 @@ location_of_server_subdir='../../server'
 
 # run this from video-stream/server folder
 docker build -t server-engine-dev -f ../Docker/server/server.Dockerfile $location_of_server_subdir
+
+#
+# FORGOT: google cloud uses different command to build docker
+#
