@@ -57,3 +57,4 @@ printf "Setup completed successfully!\n"
 cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 
 
+docker build -t client-engine-dev -f ./mysql/mysql-v2.Dockerfile .
