@@ -47,6 +47,9 @@ ARG APP_DIR=../../server
 # Install the application dependencies
 COPY pyproject.toml ./
 COPY README.md ./
+
+# attempt fix 'cannot import api module' error
+COPY . .
 #COPY api/poetry.lock ./ # somehow no poetry.lock in here
 # Q: Which of the above 2 do i need?
 
