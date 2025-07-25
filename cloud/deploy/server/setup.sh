@@ -31,7 +31,17 @@ set -eEo pipefail
 #npm install
 #printf "Completed.\n\n"
 
+###########
+#
+# getting location of where this script is run from
+#
+###########
+source ../util/util.sh
 
+# location of where this script is run needs to be tracked
+curr_dir = $relative_subdir
+location_of_this_script_called = 'video-stream/cloud/deploy' #w/in deploy/setup.sh
+location_of_server_subdir = 'video-stream/server'
 
 
 ########
@@ -41,5 +51,7 @@ set -eEo pipefail
 #
 ########
 cd ../server
-cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
+#cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile # run Docker from here instead?
 
+# run this from video-stream/server folder
+docker build -t server-engine-dev -f ../cloud/Docker/server/server.Dockerfile .
