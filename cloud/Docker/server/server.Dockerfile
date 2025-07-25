@@ -14,7 +14,7 @@
 
 FROM python:3.10.12
 WORKDIR /usr/local/app
-
+ARG APP_DIR=../../server
 # I intend to run this from video-stream/cloud/Docker
 
 ########
@@ -52,7 +52,7 @@ COPY README.md ./
 
 RUN pip install poetry
 RUN poetry install --no-root
-
+RUN pip install flask
 
 
 # Copy in the source code
