@@ -9,3 +9,11 @@ tools into their own encapsulated folders.
 # Just thought of Future Feature (Dev Ops)
 
 Curate (hopefully useful) scripts for quick local developing/debugging
+
+
+# Enforcing a suitable directory to run the scripts
+Hoping to have just one script I can run to setup everything 
+for production.
+
+Simplest to me as of now is:
+video-stream/cloud/deploy
