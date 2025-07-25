@@ -17,3 +17,8 @@ for production.
 
 Simplest to me as of now is:
 video-stream/cloud/deploy
+
+However, I am building solely the server/setup.sh and 
+testing it in isolation to avoid the client-side npm build everytime.
+Q: How can I write these scripts to facilitate this?
+A?: for development of the server/setup.sh, just run from same subdir

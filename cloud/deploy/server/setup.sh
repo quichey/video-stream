@@ -21,27 +21,18 @@
 set -eEo pipefail
 
 
-#printf "Installing monolith dependencies...\n"
-#cd ./monolith
-#npm install
-#printf "Completed.\n\n"
-
-#printf "Installing microservices dependencies...\n"
-#cd ../microservices
-#npm install
-#printf "Completed.\n\n"
 
 ###########
 #
 # getting location of where this script is run from
 #
 ###########
-source ../util/util.sh
+source util/util.sh
 
 # location of where this script is run needs to be tracked
-curr_dir = $relative_subdir
-location_of_this_script_called = 'video-stream/cloud/deploy' #w/in deploy/setup.sh
-location_of_server_subdir = 'video-stream/server'
+curr_dir=$relative_subdir
+location_of_this_script_called='video-stream/cloud/deploy' #w/in deploy/setup.sh
+location_of_server_subdir='../../server'
 
 
 ########
@@ -50,8 +41,8 @@ location_of_server_subdir = 'video-stream/server'
 # correct subdirs such as from cloud/Docker/server/server.Dockerfile into server/Dockerfile
 #
 ########
-cd ../server
+#cd ../server
 #cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile # run Docker from here instead?
 
 # run this from video-stream/server folder
-docker build -t server-engine-dev -f ../cloud/Docker/server/server.Dockerfile .
+docker build -t server-engine-dev -f ../Docker/server/server.Dockerfile $location_of_server_subdir
