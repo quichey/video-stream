@@ -46,6 +46,7 @@ ARG APP_DIR=../../server
 
 # Install the application dependencies
 COPY pyproject.toml ./
+COPY poetry.lock ./
 COPY README.md ./
 
 # attempt fix 'cannot import api module' error
@@ -53,9 +54,13 @@ COPY . .
 #COPY api/poetry.lock ./ # somehow no poetry.lock in here
 # Q: Which of the above 2 do i need?
 
-RUN pip install poetry
-RUN poetry install --no-root
-RUN pip install flask
+#RUN pip install poetry
+#RUN pip install --upgrade pip && pip install --upgrade poetry
+RUN pip install poetry==1.8.3
+
+#RUN poetry install --no-root
+RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
+RUN pip install -r requirements.txt
 
 
 # Copy in the source code
@@ -67,7 +72,8 @@ RUN useradd app
 USER app
 
 # start up flask server
-CMD ["flask", "--app", "api", "run"]
+#CMD ["flask", "--app", "api", "run"]
+CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0"]
 
 
 
