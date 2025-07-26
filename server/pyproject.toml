@@ -28,6 +28,9 @@ version = "0.1.0"
 description = "Server-side deployment"
 authors = ["Anon <anon@example.com>"]
 
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 
