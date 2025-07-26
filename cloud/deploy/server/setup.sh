@@ -45,7 +45,18 @@ location_of_server_subdir='../../server'
 #cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile # run Docker from here instead?
 
 # run this from video-stream/server folder
-docker build -t server-engine-dev -f ../Docker/server/server.Dockerfile $location_of_server_subdir
+case "$DEPLOY_ENV" in
+  cloud)
+    gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/server-dev:1.0.0 -f ../Docker/server/server.Dockerfile $location_of_server_subdir
+    ;;
+  local)
+    docker build -t server-engine-dev -f ../Docker/server/server.Dockerfile $location_of_server_subdir
+    ;;
+  *)
+    echo "Unknown DEPLOY_ENV: $DEPLOY_ENV"
+    exit 1
+    ;;
+esac
 
 #
 # FORGOT: google cloud uses different command to build docker
