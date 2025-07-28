@@ -51,6 +51,7 @@ COPY poetry.lock ./
 COPY README.md ./
 
 # attempt fix 'cannot import api module' error
+# TODO: I think update this line to not include the local machine's poetry installation or something
 COPY . .
 #COPY api/poetry.lock ./ # somehow no poetry.lock in here
 # Q: Which of the above 2 do i need?
