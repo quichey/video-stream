@@ -47,7 +47,9 @@ location_of_server_subdir='../../server'
 # run this from video-stream/server folder
 case "$DEPLOY_ENV" in
   cloud)
-    gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/server-dev:1.0.0 -f ../Docker/server/server.Dockerfile $location_of_server_subdir
+    gcloud builds submit $location_of_server_subdir \
+  --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/server-dev:1.0.0 \
+  --file ../Docker/server/server.Dockerfile
     ;;
   local)
     docker build -t server-engine-dev -f ../Docker/server/server.Dockerfile $location_of_server_subdir
