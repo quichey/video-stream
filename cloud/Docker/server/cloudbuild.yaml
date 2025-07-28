@@ -5,7 +5,7 @@ steps:
   - '-t'
   - 'gcr.io/$PROJECT_ID/server-dev:1.0.0'
   - '-f'
-  - '../Docker/server/server.Dockerfile'
+  - '../cloud/Docker/server/server.Dockerfile'
   - '.'
 images:
 - 'gcr.io/$PROJECT_ID/server-dev:1.0.0'
