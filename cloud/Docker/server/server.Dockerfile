@@ -67,7 +67,8 @@ RUN pip install -r requirements.txt
 
 # Copy in the source code
 #TODO: do copy of source code -- ran local test of this file
-EXPOSE 5000
+#EXPOSE 5000
+EXPOSE 8080
 
 # Setup an app user so the container doesn't run as the root user
 RUN useradd -m app
