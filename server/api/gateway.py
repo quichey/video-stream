@@ -47,6 +47,7 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
 
+    # TODO: maybe need to update this host for cloud build
     CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
     # different optional start-up configs
