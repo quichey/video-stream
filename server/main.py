@@ -1,6 +1,6 @@
 import os
 
-from .main import create_app
+from api import create_app
 
 
 if __name__ == "__main__":
