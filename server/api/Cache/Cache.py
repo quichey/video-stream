@@ -39,6 +39,10 @@ class Cache():
             self.database_specs = database_specs
         elif deployment == "cloud":
             self.database_specs = database_specs_cloud_sql
+        # temporary hotfix based off reading cloud run error logs
+        else:
+            self.database_specs = database_specs_cloud_sql
+
         print(f"\n\n self.database_specs: {self.database_specs} \n\n")
         self.metadata_obj = Base.metadata
         self.construct_engine(self.database_specs)
