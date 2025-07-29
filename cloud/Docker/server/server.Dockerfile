@@ -79,10 +79,20 @@ USER app
 # Make sure pip-installed executables are on PATH
 ENV PATH="/usr/local/bin:${PATH}"
 
-# start up flask server
+###
+#
+# STAGE: start up flask server
+#
+##
+
 #CMD ["flask", "--app", "api", "run"]
-CMD ["poetry", "run", "flask", "--app", "api", "run", "--host=0.0.0.0", "--port=8080"]
 #CMD ["flask", "--app", "api", "run", "--host=0.0.0.0"]
+
+# this one worked before
+#CMD ["poetry", "run", "flask", "--app", "api", "run", "--host=0.0.0.0", "--port=8080"]
+
+# trying out this one from CHATGPT suggestion
+CMD ["python", "api/main.py"]
 
 
 
