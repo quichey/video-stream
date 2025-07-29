@@ -92,7 +92,7 @@ ENV PATH="/usr/local/bin:${PATH}"
 #CMD ["poetry", "run", "flask", "--app", "api", "run", "--host=0.0.0.0", "--port=8080"]
 
 # trying out this one from CHATGPT suggestion
-CMD ["python", "api/main.py"]
+CMD ["python", "main.py"]
 
 
 
