@@ -50,7 +50,8 @@ case "$DEPLOY_ENV" in
     # set Version
     : "${VERSION:=1}"  # default to 1 if not set
 
-    source util/cloudify_docker.sh
+    #source util/cloudify_docker.sh
+    cp ../Docker/server/server.Dockerfile $location_of_server_subdir
     gcloud builds submit $location_of_server_subdir \
       --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/server-dev-test:${VERSION}.0.0
     ;;
