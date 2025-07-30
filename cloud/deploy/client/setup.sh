@@ -1,60 +1,46 @@
 #!/usr/bin/env bash
 
-# WHERE SHOULD I RUN THIS COMMAND FROM?
-# video-stream/cloud ?
-
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # sets bash script environment to be robust w/error-handling
 set -eEo pipefail
 
+###########
+#
+# getting location of where this script is run from
+#
+###########
+source util/util.sh
+source util/env_vars.sh client
 
-#printf "Installing monolith dependencies...\n"
-#cd ./monolith
-#npm install
-#printf "Completed.\n\n"
-
-#printf "Installing microservices dependencies...\n"
-#cd ../microservices
-#npm install
-#printf "Completed.\n\n"
-
-
-##
-## Hoping I can have just one script to run from here
-##
-
-
-printf "Installing React app dependencies...\n"
-cd ../client
-npm install
-printf "Completed.\n\n"
-
-printf "Building React app and placing into client/public/. ...\n"
-npm run build
-printf "Completed.\n\n"
-
-printf "Setup completed successfully!\n"
+# location of where this script is run needs to be tracked
+curr_dir=$relative_subdir
+location_of_this_script_called='video-stream/cloud/deploy' # adjust if different
+location_of_client_subdir='../../client'
 
 ########
 #
-# want to automate loading cloud/Docker/...Dockerfiles into 
-# correct subdirs such as from cloud/Docker/client/HTML/tutorial.Dockerfile into client/Dockerfile
+# Automate loading cloud/Docker/...Dockerfiles into 
+# correct subdirs such as from cloud/Docker/client/client.Dockerfile into client/Dockerfile
 #
 ########
-cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 
+case "$DEPLOY_ENV" in
+  cloud)
+    # set Version
+    : "${VERSION:=1}"  # default to 1 if not set
 
-docker build -t client-engine-dev -f ./mysql/mysql-v2.Dockerfile .
+    # Copy Dockerfile from cloud to client folder
+    cp ../Docker/client/client.Dockerfile ../../client/Dockerfile
+
+    # Submit cloud build
+    gcloud builds submit $location_of_client_subdir \
+      --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/client-dev-test:${VERSION}.0.0
+    ;;
+  local)
+    docker build -t client-engine-dev -f ../Docker/client/client.Dockerfile $location_of_client_subdir
+    ;;
+  *)
+    echo "Unknown DEPLOY_ENV: $DEPLOY_ENV"
+    exit 1
+    ;;
+esac
+
