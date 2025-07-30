@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Usage: ./script.sh client
-#        ./script.sh server
+# Usage: ./env_vars.sh client
+#        ./env_vars.sh server
 
 TARGET=$1
 
