@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 
-# Usage: ./env_vars.sh client
-#        ./env_vars.sh server
+ROOT_DIR="../../"
 
 TARGET=$1
 
 if [ "$TARGET" == "client" ]; then
-  [ ! -f client/.env ] && cp client/.env.example client/.env
-  echo "Copied client/.env.example to client/.env if missing."
+  [ ! -f "${ROOT_DIR}client/.env" ] && cp "${ROOT_DIR}client/.env.example" "${ROOT_DIR}client/.env"
+  echo "Copied ${ROOT_DIR}client/.env.example to ${ROOT_DIR}client/.env if missing."
   
-  [ ! -f client/env ] && cp client/.env client/env
-  echo "Copied client/.env to client/env if missing."
+  [ ! -f "${ROOT_DIR}client/env" ] && cp "${ROOT_DIR}client/.env" "${ROOT_DIR}client/env"
+  echo "Copied ${ROOT_DIR}client/.env to ${ROOT_DIR}client/env if missing."
 
 elif [ "$TARGET" == "server" ]; then
-  [ ! -f server/.env ] && cp server/.env.example server/.env
-  echo "Copied server/.env.example to server/.env if missing."
+  [ ! -f "${ROOT_DIR}server/.env" ] && cp "${ROOT_DIR}server/.env.example" "${ROOT_DIR}server/.env"
+  echo "Copied ${ROOT_DIR}server/.env.example to ${ROOT_DIR}server/.env if missing."
   
-  [ ! -f server/env ] && cp server/.env server/env
-  echo "Copied server/.env to server/env if missing."
+  [ ! -f "${ROOT_DIR}server/env" ] && cp "${ROOT_DIR}server/.env" "${ROOT_DIR}server/env"
+  echo "Copied ${ROOT_DIR}server/.env to ${ROOT_DIR}server/env if missing."
 
 else
   echo "Usage: $0 [client|server]"
