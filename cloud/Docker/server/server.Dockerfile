@@ -25,7 +25,7 @@ ARG APP_DIR=../../server
 # copy over .env file?
 # 
 ########
-COPY .env ./
+COPY env ./.env
 
 ########
 #
@@ -51,6 +51,7 @@ COPY poetry.lock ./
 COPY README.md ./
 
 # attempt fix 'cannot import api module' error
+# TODO: I think update this line to not include the local machine's poetry installation or something
 COPY . .
 #COPY api/poetry.lock ./ # somehow no poetry.lock in here
 # Q: Which of the above 2 do i need?
@@ -78,10 +79,20 @@ USER app
 # Make sure pip-installed executables are on PATH
 ENV PATH="/usr/local/bin:${PATH}"
 
-# start up flask server
+###
+#
+# STAGE: start up flask server
+#
+##
+
 #CMD ["flask", "--app", "api", "run"]
-CMD ["poetry", "run", "flask", "--app", "api", "run", "--host=0.0.0.0", "--port=8080"]
 #CMD ["flask", "--app", "api", "run", "--host=0.0.0.0"]
+
+# this one worked before
+#CMD ["poetry", "run", "flask", "--app", "api", "run", "--host=0.0.0.0", "--port=8080"]
+
+# trying out this one from CHATGPT suggestion
+CMD ["python", "main.py"]
 
 
 

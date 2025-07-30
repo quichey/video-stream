@@ -85,6 +85,7 @@ def create_app(test_config=None):
     just list out like in docs, but can store all the logic in Routes,
     and keep this file as managing state of whole micro-service/gateway-process
     """
+    #TODO: properly setup things for the DEPOYMENT ENV Variable
     deployment = os.getenv("DEPLOYMENT")
     cache = Cache(deployment=deployment)
 
