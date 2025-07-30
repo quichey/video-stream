@@ -69,8 +69,8 @@ cd ../client
 ############
 # SERVER SIDE SET-UP
 ############
-printf "Setting up Server"
-cd ../server
+#printf "Setting up Server"
+#cd ../server
 
 ## run server/setup.sh
 

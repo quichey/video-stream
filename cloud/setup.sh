@@ -86,8 +86,8 @@ cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
 # correct subdirs such as from cloud/Docker/server/server.Dockerfile into server/Dockerfile
 #
 ########
-cd ../server
-cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
+#cd ../server
+#cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
 
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
