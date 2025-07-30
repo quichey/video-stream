@@ -1,0 +1,118 @@
+###################################################
+# This Compose file provides the development environment for the todo app.
+# 
+# Seeing the final version of the application bundles the frontend with the
+# backend, we are able to "simulate" that by using a proxy to route requests
+# to the appropriate service. All requests to /api will be routed to the 
+# backend while all other requests will be sent to the client service. While
+# there is some overlap in the routing rules, the proxy determines the service
+# based on the most specific rule.
+#
+# To support easier debugging and troubleshooting, phpMyAdmin is also included
+# to provide a web interface to the MySQL database.
+###################################################
+
+###################################################
+# Consolidate db engine w/Seed dataset creation
+###################################################
+
+###################################################
+# Services
+#
+# The services define the individual components of our application stack.
+# For each service, a separate container will be launched.
+###################################################
+services:
+
+  ###################################################
+  # Service: proxy
+  #
+  # do I need this?
+  # TODO: find out
+  ###################################################
+  proxy:
+    image: traefik:v2.11
+    command: --providers.docker
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  ###################################################
+  # Service: db-engine
+  # 
+  # from folder server/db/
+  ###################################################
+  db-engine:
+    build:
+      context: ./
+      # this 'target' is the image name
+      # TODO: find out image name of my server's things
+      # place it here
+      target: db-engine-dev
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+    develop:
+      video-stream:
+        - path: ./backend/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./backend/package.json
+          action: rebuild
+    labels:
+      traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
+      traefik.http.services.backend.loadbalancer.server.port: 3000
+
+  ###################################################
+  # Service: Seed
+  # 
+  # from folder server/db
+  ###################################################
+  seed:
+    build:
+      context: ./
+      # this 'target' is the image name
+      # TODO: find out image name of my client's things
+      # place it here
+      target: seed-dev
+    # This is used to define the dev environment
+    # for uses-cases such as dev-stage-prod workflows
+    # TODO: Consider if necessary
+    develop:
+      video-stream:
+        - path: ./client/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./client/package.json
+          action: rebuild
+    #TODO: remember how ISS
+    # used env variables to secretly
+    # pass along host address information
+    #
+    # github workflows/actions
+    # w/github secrets
+    #
+    # or some conjunction of aws cognito
+    # here, use google cloud cybersecurity
+    # utils
+    #
+    # google AI bot says use both github secrets
+    # AND g-cloud security things
+    labels:
+      traefik.http.routers.client.rule: Host(`localhost`)
+      traefik.http.services.client.loadbalancer.server.port: 5173
+
+
+
+###################################################
+# Volumes
+#
+# For this application stack, we only have one volume. It's used to persist the
+# data for the MySQL service. We are only going to use the default values,
+# hence the lack of any configuration for the volume.
+###################################################
+volumes:
+  todo-mysql-data:
