@@ -7,3 +7,6 @@ I suppose so --- it most mimics cloud services
 2) api gateway
 3) videos db/storage ?
 4) client daemon
+
+
+monolith.Dockerfile is temporary until i savvy up on Dockerfile and docker-compose.yml
