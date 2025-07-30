@@ -25,3 +25,8 @@ yarn-error.log*
 #
 /public/videos/*
 /public/images/*
+/public/index.html
+/public/asset-manifest.json
+/public/static/
+
+Dockerfile
