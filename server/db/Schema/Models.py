@@ -34,6 +34,27 @@ database_specs = {
     "dbname": "video_stream"
 }
 
+"""
+create _specs but for g-cloud sql
+"""
+admin_specs_cloud_sql = {
+    "dialect": "mysql",
+    "db_api": "mysqlconnector",
+    "user": "mysql-db-on-g-cloud-sql",
+    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
+    "hostname": "35.226.88.211:3306"
+}
+
+database_specs_cloud_sql = {
+    "dialect": "mysql",
+    "db_api": "mysqlconnector",
+    "user": "mysql-db-on-g-cloud-sql",
+    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
+    "hostname": "35.226.88.211:3306",
+    "dbname": "video_stream",
+    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
+}
+
 users_table = Table(
     "users",
     metadata_obj,
