@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
 
-# Copy .env examples to .env if they don't already exist
-[ ! -f client/.env ] && cp client/.env.example client/.env
-[ ! -f server/.env ] && cp server/.env.example server/.env
+# Usage: ./script.sh client
+#        ./script.sh server
 
-echo "Copied .env.example files to .env if missing."
+TARGET=$1
 
-# Copy .env examples to .env if they don't already exist
-[ ! -f client/.env ] && cp client/.env client/env
-[ ! -f server/.env ] && cp server/.env server/env
+if [ "$TARGET" == "client" ]; then
+  [ ! -f client/.env ] && cp client/.env.example client/.env
+  echo "Copied client/.env.example to client/.env if missing."
+  
+  [ ! -f client/env ] && cp client/.env client/env
+  echo "Copied client/.env to client/env if missing."
 
-echo "Copied .env files to env if missing."
+elif [ "$TARGET" == "server" ]; then
+  [ ! -f server/.env ] && cp server/.env.example server/.env
+  echo "Copied server/.env.example to server/.env if missing."
+  
+  [ ! -f server/env ] && cp server/.env server/env
+  echo "Copied server/.env to server/env if missing."
+
+else
+  echo "Usage: $0 [client|server]"
+  exit 1
+fi
