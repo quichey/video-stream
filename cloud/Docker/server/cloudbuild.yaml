@@ -1,0 +1,17 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - 'gcr.io/$PROJECT_ID/server-dev:1.0.0'
+  - '-f'
+  - '../cloud/Docker/server/server.Dockerfile'
+  - '.'
+images:
+- 'gcr.io/$PROJECT_ID/server-dev:1.0.0'
+
+# seems like the location subdir for args is video-stream/cloud/deploy
+# where "server/setup.sh" is run
+
+# a tarball of video-stream/server is uploaded, so i'm guessing
+# the video-stream/cloud subdir is not available at runtime
