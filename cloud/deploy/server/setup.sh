@@ -47,9 +47,13 @@ location_of_server_subdir='../../server'
 # run this from video-stream/server folder
 case "$DEPLOY_ENV" in
   cloud)
+    # set Version
+    : "${VERSION:=1}"  # default to 1 if not set
+
+    #source util/cloudify_docker.sh
     cp ../Docker/server/server.Dockerfile ../../server/Dockerfile
     gcloud builds submit $location_of_server_subdir \
-      --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/server-dev-test:1.0.0
+      --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/server-dev-test:${VERSION}.0.0
     ;;
   local)
     docker build -t server-engine-dev -f ../Docker/server/server.Dockerfile $location_of_server_subdir

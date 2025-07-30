@@ -51,7 +51,8 @@ database_specs_cloud_sql = {
     "user": "mysql-db-on-g-cloud-sql",
     "pw": os.getenv("MYSQL_ADMIN_SECRET"),
     "hostname": "35.226.88.211:3306",
-    "dbname": "video_stream"
+    "dbname": "video_stream",
+    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
 }
 
 users_table = Table(
