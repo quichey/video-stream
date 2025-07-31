@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY public ./public
 
 # Copy runtime server code
-COPY src ./src
+COPY daemon ./daemon
 COPY package*.json ./
 
 EXPOSE 8080
