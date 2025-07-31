@@ -10,4 +10,4 @@ COPY src ./src
 COPY package*.json ./
 
 EXPOSE 8080
-CMD ["node", "src/daemon.js"]
+CMD ["node", "daemon/daemon.js"]
