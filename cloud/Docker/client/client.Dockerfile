@@ -38,7 +38,7 @@ COPY . .
 ###################################################
 FROM client-base AS client-build
 EXPOSE 8080
-CMD [ "node", "src/server.js" ]
+CMD [ "node", "src/daemon.js" ]
 
 
 
