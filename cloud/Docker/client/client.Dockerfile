@@ -44,65 +44,6 @@ CMD [ "node", "src/server.js" ]
 
 
 
-###################################################
-################  BACKEND STAGES  #################
-###################################################
-
-###################################################
-# Stage: backend-base
-#
-# This stage is used as the base for the backend-dev and test stages, since
-# there are common steps needed for each.
-###################################################
-# Google Gemini AI recommened I
-# Use a lightweight official Python image as the base
-FROM python:3.9-slim-buster
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the requirements file and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# in order to have this whole webapp work from one
-# instance of google cloud run, need to have the 
-# node Express JS serve as a proxy from server to client
-
-# Define the command to run your Flask application
-# Using gunicorn for production is recommended, according to Google Cloud
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"] 
-
-
-###################################################
-# Sub-Stage: db
-#
-# This stage is used as the base for the backend-dev and test stages, since
-# there are common steps needed for each.
-###################################################
-
-# was able to run the mysql docker container but listening on port 3306
-# maybe just copy from the other branch the mysql image and go from there
-
-###################################################
-# Sub-Stage: Seed
-#
-# This stage is used as the base for the backend-dev and test stages, since
-# there are common steps needed for each.
-###################################################
-
-
-###################################################
-# Sub-Stage: API
-#
-# This stage is used as the base for the backend-dev and test stages, since
-# there are common steps needed for each.
-###################################################
-
-
 
 ###################################################
 # Stage: final
