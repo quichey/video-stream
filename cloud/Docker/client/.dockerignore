@@ -1,2 +1,38 @@
+# Node modules & build cache
+node_modules
+npm-debug.log
+yarn-error.log
 
-*.git
+# Local build artifacts
+build
+dist
+.tmp
+
+# Environment & config files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Docker related
+docker-compose*.yml
+Dockerfile*
+
+# Logs
+logs
+*.log
+
+# Tests (optional if you don’t need them in the image)
+__tests__/
+coverage/
