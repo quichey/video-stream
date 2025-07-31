@@ -5,7 +5,7 @@
 # and provides common configuration for all stages, such as the working dir.
 ###################################################
 
-FROM node:16 as base
+FROM node:22.14.0 as base
 WORKDIR /usr/src/app
 
 ################## CLIENT STAGES ##################
