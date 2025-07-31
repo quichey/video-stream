@@ -17,6 +17,7 @@ WORKDIR /usr/src/app
 # since there are common steps needed for each.
 ###################################################
 FROM base AS client-base
+
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
@@ -29,7 +30,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-
 ###################################################
 # Stage: client-build
 #
@@ -37,34 +37,35 @@ COPY . .
 # JS files that can be served by the backend.
 ###################################################
 FROM client-base AS client-build
+
+# Build React app
+RUN npm run build
+
+# Expose port if needed (not usually required in build stage)
 EXPOSE 8080
-CMD [ "node", "src/daemon.js" ]
 
-
-
-
-
+# No CMD here because this stage is only for building
 
 ###################################################
 # Stage: final
 #
-# This stage is intended to be the final "production" image. It sets up the
-# backend and copies the built client application from the client-build stage.
-#
-# It pulls the package.json and yarn.lock from the test stage to ensure that
-# the tests run (without this, the test stage would simply be skipped).
+# This stage is intended to be the final "production" image.
 ###################################################
 FROM base AS final
+
 ENV NODE_ENV=production
 
-# Copy package files from client-base stage for dependencies
-COPY --from=client-base /usr/src/app/package.json /usr/src/app/package-lock.json ./
+# Copy package files for production dependencies
+COPY package*.json ./
 
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install --production --frozen-lockfile
+# Install only production dependencies
+RUN npm ci --only=production
 
-# Copy built static client files from client-build stage
-COPY --from=client-build /usr/src/app/build ./src/static
+# Copy all source files, including the public folder which post-build.js
+# ensures contains the built React app
+COPY . .
 
-EXPOSE 3000
-CMD ["node", "src/index.js"]
+EXPOSE 8080
+
+# Run your server (renamed daemon.js as you mentioned)
+CMD ["node", "src/daemon.js"]
