@@ -63,8 +63,6 @@ COPY --from=client-base /usr/src/app/package.json /usr/src/app/package-lock.json
 RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
     yarn install --production --frozen-lockfile
 
-COPY backend/src ./src
-
 # Copy built static client files from client-build stage
 COPY --from=client-build /usr/src/app/build ./src/static
 
