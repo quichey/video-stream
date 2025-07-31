@@ -23,6 +23,25 @@ location_of_client_subdir='../../client'
 #
 ########
 
+##
+## Hoping I can have just one script to run from here
+##
+
+
+printf "Installing React app dependencies...\n"
+cd $location_of_client_subdir
+npm install
+printf "Completed.\n\n"
+
+printf "Building React app and placing into client/public/. ...\n"
+npm run build
+printf "Completed.\n\n"
+
+printf "Setup completed successfully!\n"
+
+# back to deploy folder
+cd $location_of_this_script_called
+
 case "$DEPLOY_ENV" in
   cloud)
     # set Version
