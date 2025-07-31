@@ -13,7 +13,7 @@ source util/env_vars.sh client
 
 # location of where this script is run needs to be tracked
 curr_dir=$relative_subdir
-location_of_this_script_called='video-stream/cloud/deploy' # adjust if different
+location_of_this_script_called='cloud/deploy' # adjust if different
 location_of_client_subdir='../../client'
 
 ########
@@ -40,7 +40,7 @@ printf "Completed.\n\n"
 printf "Setup completed successfully!\n"
 
 # back to deploy folder
-cd $location_of_this_script_called
+cd ../${location_of_this_script_called}
 
 case "$DEPLOY_ENV" in
   cloud)
