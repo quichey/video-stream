@@ -56,10 +56,17 @@ CMD [ "node", "src/daemon.js" ]
 ###################################################
 FROM base AS final
 ENV NODE_ENV=production
-COPY --from=test /usr/local/app/package.json /usr/local/app/yarn.lock ./
+
+# Copy package files from client-base stage for dependencies
+COPY --from=client-base /usr/src/app/package.json /usr/src/app/package-lock.json ./
+
 RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
     yarn install --production --frozen-lockfile
+
 COPY backend/src ./src
-COPY --from=client-build /usr/local/app/dist ./src/static
+
+# Copy built static client files from client-build stage
+COPY --from=client-build /usr/src/app/build ./src/static
+
 EXPOSE 3000
 CMD ["node", "src/index.js"]
