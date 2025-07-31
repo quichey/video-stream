@@ -1,38 +1,33 @@
-# Node modules & build cache
+# Ignore local dependencies
 node_modules
 npm-debug.log
+yarn-debug.log
 yarn-error.log
 
-# Local build artifacts
-build
-dist
-.tmp
+# Ignore version control
+.git
+.gitignore
 
-# Environment & config files
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor settings
+.vscode
+.idea
+
+# Ignore build caches
+.cache
+dist
+coverage
+
+# Ignore dotenv (should be managed manually or injected)
 .env
 .env.local
 .env.development
 .env.test
 .env.production
 
-# OS / editor files
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-
-# Git
-.git
-.gitignore
-
-# Docker related
-docker-compose*.yml
-Dockerfile*
-
-# Logs
-logs
-*.log
-
-# Tests (optional if you don’t need them in the image)
-__tests__/
-coverage/
+# Ignore lock files (optional: if you don't want them in the Docker context)
+# package-lock.json
+# yarn.lock
