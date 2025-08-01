@@ -26,8 +26,6 @@
     "build:html": "env-cmd -f .env.html react-scripts build",
     "postbuild:html": "node scripts/post-build.js ./build ./public",
 
-    "build:daemon": "rimraf daemon && mkdir daemon && ncp src daemon",
-
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
