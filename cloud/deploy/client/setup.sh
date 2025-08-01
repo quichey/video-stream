@@ -21,10 +21,6 @@ printf "Building React frontend and placing into client/public/ ...\n"
 npm run build
 printf "Completed.\n\n"
 
-# Build daemon code (into daemon/)
-printf "Preparing daemon code into client/daemon/ ...\n"
-npm run build:daemon
-printf "Completed.\n\n"
 
 printf "Setup completed successfully!\n"
 
