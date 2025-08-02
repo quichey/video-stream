@@ -1,24 +1,44 @@
+import abc
 import subprocess
-import os
+from pathlib import Path
+from os.linux import env_setup
 
-class BaseDeployer:
-    def __init__(self, root_dir: str, env: str):
-        self.root_dir = root_dir
-        self.env = env  # "local" or "cloud"
+class BaseDeployer(abc.ABC):
+    """Abstract base class for deployers."""
 
-    def run_cmd(self, cmd, cwd=None):
-        """Run a shell command."""
-        print(f"[RUNNING] {cmd}")
-        subprocess.run(cmd, cwd=cwd, shell=True, check=True)
+    def __init__(self, name: str, base_dir: Path):
+        self.name = name
+        self.base_dir = base_dir
+        self.env = env_setup.detect_environment()
 
-    def setup_env(self):
-        """Base environment setup."""
-        print(f"[INFO] Setting up environment for {self.env}...")
-        # OS detection could be added here
-        # Could source .bashrc.local or .bashrc.cloud if needed
+    def run_cmd(self, cmd: str):
+        print(f"[{self.name}] Running: {cmd}")
+        result = subprocess.run(cmd, shell=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"{self.name} command failed: {cmd}")
 
+    def setup_bashrc(self):
+        """Default bashrc setup – subclasses may override."""
+        print(f"[{self.name}] Detected environment: {self.env}")
+        bashrc_file = f"os/linux/.bashrc.{self.env}.example"
+        print(f"[{self.name}] (Optional) Load config from {bashrc_file}")
+
+    @abc.abstractmethod
+    def setup(self):
+        ...
+
+    @abc.abstractmethod
     def build(self):
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def run(self):
-        raise NotImplementedError
+        ...
+
+    def deploy(self):
+        print(f"=== Deploying {self.name} ===")
+        self.setup_bashrc()
+        self.setup()
+        self.build()
+        self.run()
+        print(f"=== Finished {self.name} ===")

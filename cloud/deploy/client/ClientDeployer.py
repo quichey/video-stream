@@ -1,17 +1,23 @@
-import os
+from pathlib import Path
 from common.base import BaseDeployer
 
 class ClientDeployer(BaseDeployer):
-    def __init__(self, root_dir, env):
-        super().__init__(root_dir, env)
-        self.client_dir = os.path.join(self.root_dir, "client")
+    def __init__(self):
+        super().__init__("Client", Path(__file__).resolve().parents[1] / "client")
+
+    def setup_bashrc(self):
+        super().setup_bashrc()
+        if self.env == "cloud":
+            print("[Client] Cloud shell: ensuring Node.js & npm installed")
+            # e.g., self.run_cmd("sudo apt-get update && sudo apt-get install -y nodejs npm")
+        else:
+            print("[Client] Local: using system Node.js/npm")
+
+    def setup(self):
+        self.run_cmd("npm install")
 
     def build(self):
-        print("[CLIENT] Building React app...")
-        self.run_cmd("npm install", cwd=self.client_dir)
-        self.run_cmd("npm run build", cwd=self.client_dir)
+        self.run_cmd("npm run build")
 
     def run(self):
-        print("[CLIENT] Running Docker container...")
-        dockerfile = os.path.join(self.root_dir, "cloud/Docker/client/client.Dockerfile")
-        self.run_cmd(f"docker build -t client-engine-dev -f {dockerfile} {self.client_dir}")
+        self.run_cmd("docker build -t client-engine-dev -f ../Docker/client/client.Dockerfile .")
