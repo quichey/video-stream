@@ -14,8 +14,8 @@ packages = [
 python = "^3.11"
 
 # CLI and subprocess helpers
-typer = "^0.12.0"          # for CLI commands if you want interactive commands later
-rich = "^13.7.0"           # for pretty console output
+typer = "^0.12.0"
+rich = "^13.7.0"
 
 # System/OS utilities
 python-dotenv = "^1.0.1"
@@ -23,7 +23,7 @@ python-dotenv = "^1.0.1"
 # Optional: For structured logging
 loguru = "^0.7.2"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^24.0.0"
 ruff = "^0.6.0"
 pytest = "^8.0.0"
