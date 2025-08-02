@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 set -eEo pipefail
 
+ENVIRONMENT=${1:-local}  # default to local if not specified
 SYSTEM_PACKAGE="package-name"
 
 CLIENT_DIR="./client"
 SERVER_DIR="./server"
 
 install_system_packages() {
-  echo "Updating package lists and installing system package: $SYSTEM_PACKAGE"
+  echo "Installing system packages (only for cloud)..."
   export DEBIAN_FRONTEND=noninteractive
   sudo apt-get update -q
   sudo apt-get install -y -q "$SYSTEM_PACKAGE"
@@ -50,12 +51,18 @@ deploy_server() {
 }
 
 main() {
-  install_system_packages
+  if [ "$ENVIRONMENT" = "cloud" ]; then
+    install_system_packages
+  else
+    echo "Skipping system package installation (local mode)."
+  fi
+
   install_client_dependencies
   install_server_dependencies
   deploy_client
   deploy_server
-  echo "Deployment completed successfully."
+
+  echo "Deployment completed successfully in $ENVIRONMENT mode."
 }
 
 main
