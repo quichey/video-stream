@@ -1,25 +1,35 @@
-from pathlib import Path
 from common.base import BaseDeployer
+from pathlib import Path
 
 class ServerDeployer(BaseDeployer):
-    def __init__(self):
-        super().__init__("Server", Path(__file__).resolve().parents[1] / "server")
+    def setup_os_env(self):
+        bashrc_file = self.project_root / "deploy" / "os" / "linux" / (
+            ".bashrc.cloud.example" if self.deploy_env == "cloud" else ".bashrc.local.example"
+        )
+        print(f"Appending {bashrc_file} to ~/.bashrc")
+        with open(bashrc_file) as src, open(Path.home() / ".bashrc", "a") as dest:
+            dest.write("\n# ServerDeployer setup\n")
+            dest.write(src.read())
 
-    def setup_bashrc(self):
-        super().setup_bashrc()
-        if self.env == "cloud":
-            print("[Server] Cloud shell: ensuring Python and Poetry installed")
-            # Example:
-            # self.run_cmd("sudo apt-get update && sudo apt-get install -y python3-pip")
-            # self.run_cmd("pip install poetry")
-        else:
-            print("[Server] Local: using system Python/Poetry")
-
-    def setup(self):
+        print("Installing Python dependencies...")
+        self.run_cmd("pip install poetry")
         self.run_cmd("poetry install")
 
-    def build(self):
-        print("Server build step (placeholder)")
+    def build_docker_image(self):
+        print("Building server Docker image...")
+        self.run_cmd(
+            "docker build -t server-engine-dev -f cloud/Docker/server/server.Dockerfile server"
+        )
 
-    def run(self):
-        self.run_cmd("poetry run python main.py")
+    def launch_instance(self):
+        if self.deploy_env == "cloud":
+            print("Deploying server to Cloud Run...")
+            self.run_cmd(
+                "gcloud run deploy server-service "
+                "--source server "
+                "--region us-central1 "
+                "--allow-unauthenticated"
+            )
+        else:
+            print("Running server locally...")
+            self.run_cmd("poetry run python server/main.py")
