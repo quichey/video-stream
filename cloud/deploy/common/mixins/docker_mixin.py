@@ -1,10 +1,10 @@
 import subprocess
 
 class DockerMixin:
-    def build_docker_image_local(self, image_name: str, dockerfile: str, context: str):
+    def build_docker_image_local(self, image_name: str, dockerfile: str, package_path: str):
         print(f"[DockerMixin] Building image locally: {image_name}")
         subprocess.run(
-            ["docker", "build", "-t", image_name, "-f", dockerfile, context],
+            ["docker", "build", "-t", image_name, "-f", dockerfile, package_path],
             check=True,
         )
 

@@ -48,7 +48,7 @@ class BaseDeployer(ABC):
             self.build_docker_image_cloud(
                 image_name=self.IMAGE_NAME,
                 dockerfile=self.DOCKERFILE,
-                context=self.CONTEXT,
+                package_path=self.PACKAGE_PATH,
                 tag=self.TAG,
             )
         else:
@@ -56,7 +56,7 @@ class BaseDeployer(ABC):
             self.build_docker_image_local(
                 image_name=self.IMAGE_NAME,
                 dockerfile=self.DOCKERFILE,
-                context=self.CONTEXT,
+                package_path=self.PACKAGE_PATH,
             )
 
     def launch_instance(self):
