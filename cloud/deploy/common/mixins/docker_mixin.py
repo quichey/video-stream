@@ -11,6 +11,6 @@ class DockerMixin:
     def docker_run(self, image_name: str, port: int = 8080):
         print(f"[DockerMixin] Running image {image_name} locally...")
         subprocess.run(
-            ["docker", "run", "-p", f"{port}:{port}", image_name],
+            ["docker", "run", "-d", "-p", f"{port}:{port}", image_name],
             check=True,
         )
