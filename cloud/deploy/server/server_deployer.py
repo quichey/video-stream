@@ -11,27 +11,3 @@ class ServerDeployer(BaseDeployer, DockerMixin, CloudMixin, BashrcMixin):
 
     def setup_os_env(self):
         self.setup_bashrc(node=False, poetry=True)
-
-    def build_docker_image(self):
-        if self.is_cloud():
-            self.build_docker_image_cloud(
-                image_name=self.IMAGE_NAME,
-                dockerfile=self.DOCKERFILE,
-                context=self.CONTEXT,
-                tag=self.TAG,
-            )
-        else:
-            self.build_docker_image_local(
-                image_name=self.IMAGE_NAME,
-                dockerfile=self.DOCKERFILE,
-                context=self.CONTEXT,
-            )
-
-    def launch_instance(self):
-        if self.is_cloud():
-            self.cloud_deploy(
-                image_name=self.IMAGE_NAME,
-                tag=self.TAG,
-            )
-        else:
-            self.docker_run(image_name=self.IMAGE_NAME, port=8080)
