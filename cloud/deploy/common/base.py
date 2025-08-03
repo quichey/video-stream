@@ -3,6 +3,8 @@ import shutil
 import os
 
 class BaseDeployer(ABC):
+    PATH_PROJECT_ROOT = "../.."
+    PATH_PROJECT_DOCKER = "../Docker"
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
