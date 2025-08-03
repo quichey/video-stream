@@ -1,12 +1,12 @@
 import subprocess
 
 class CloudMixin:
-    def build_docker_image_cloud(self, image_name: str, dockerfile: str, context: str, tag: str):
+    def build_docker_image_cloud(self, image_name: str, dockerfile: str, package_path: str, tag: str):
         print(f"[CloudMixin] Building and submitting cloud image {image_name}")
         # Submit cloud build
         subprocess.run(
             [
-                "gcloud", "builds", "submit", context,
+                "gcloud", "builds", "submit", package_path,
                 "--tag", tag,
                 "--gcs-log-dir", "gs://my-logs"  # optional
             ],

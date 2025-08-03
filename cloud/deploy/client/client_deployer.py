@@ -5,9 +5,9 @@ from common.mixins.cloud_mixin import CloudMixin
 from common.mixins.bashrc_mixin import BashrcMixin
 
 class ClientDeployer(BaseDeployer, PackageManagerMixin, DockerMixin, CloudMixin, BashrcMixin):
-    PACKAGE_MANAGER = "npm"
-    PACKAGE_PATH = f"{BaseDeployer.PATH_PROJECT_ROOT}/client"
-    IMAGE_NAME = "client-engine"
-    DOCKERFILE = f"{BaseDeployer.PATH_PROJECT_DOCKER}/client/client.Dockerfile"
     CONTEXT = "client"
-    TAG = "gcr.io/my-project/client-engine:1.0.0"
+    PACKAGE_MANAGER = "npm"
+    PACKAGE_PATH = f"{BaseDeployer.PATH_PROJECT_ROOT}/{CONTEXT}"
+    IMAGE_NAME = f"{CONTEXT}-engine"
+    DOCKERFILE = f"{BaseDeployer.PATH_PROJECT_DOCKER}/{CONTEXT}/{CONTEXT}.Dockerfile"
+    TAG = f"gcr.io/my-project/{CONTEXT}-engine:1.0.0"
