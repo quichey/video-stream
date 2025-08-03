@@ -4,18 +4,34 @@ from deploy.common.mixins.cloud_mixin import CloudMixin
 from deploy.common.mixins.bashrc_mixin import BashrcMixin
 
 class ClientDeployer(BaseDeployer, DockerMixin, CloudMixin, BashrcMixin):
+    IMAGE_NAME = "client-engine"
+    DOCKERFILE = "cloud/Docker/client/client.Dockerfile"
+    CONTEXT = "client"
+    TAG = "gcr.io/my-project/client-engine:1.0.0"
+
     def setup_os_env(self):
         self.setup_bashrc(node=True, poetry=False)
 
     def build_docker_image(self):
-        self.docker_build(
-            image_name="client-engine",
-            dockerfile="cloud/Docker/client/client.Dockerfile",
-            context="client"
-        )
+        if self.is_cloud():
+            self.build_docker_image_cloud(
+                image_name=self.IMAGE_NAME,
+                dockerfile=self.DOCKERFILE,
+                context=self.CONTEXT,
+                tag=self.TAG,
+            )
+        else:
+            self.build_docker_image_local(
+                image_name=self.IMAGE_NAME,
+                dockerfile=self.DOCKERFILE,
+                context=self.CONTEXT,
+            )
 
     def launch_instance(self):
-        self.cloud_deploy(
-            image_name="client-engine",
-            tag="gcr.io/my-project/client-engine:1.0.0"
-        )
+        if self.is_cloud():
+            self.cloud_deploy(
+                image_name=self.IMAGE_NAME,
+                tag=self.TAG,
+            )
+        else:
+            self.docker_run(image_name=self.IMAGE_NAME, port=8080)
