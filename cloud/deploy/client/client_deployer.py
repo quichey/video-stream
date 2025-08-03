@@ -1,8 +1,8 @@
-from deploy.common.base import BaseDeployer
-from deploy.common.mixins.package_manager_mixin import PackageManagerMixin
-from deploy.common.mixins.docker_mixin import DockerMixin
-from deploy.common.mixins.cloud_mixin import CloudMixin
-from deploy.common.mixins.bashrc_mixin import BashrcMixin
+from common.base import BaseDeployer
+from common.mixins.package_manager_mixin import PackageManagerMixin
+from common.mixins.docker_mixin import DockerMixin
+from common.mixins.cloud_mixin import CloudMixin
+from common.mixins.bashrc_mixin import BashrcMixin
 
 class ClientDeployer(BaseDeployer, PackageManagerMixin, DockerMixin, CloudMixin, BashrcMixin):
     PACKAGE_MANAGER = "npm"

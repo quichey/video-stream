@@ -1,5 +1,5 @@
-from deploy.client.client_deployer import ClientDeployer
-from deploy.server.server_deployer import ServerDeployer
+from client.client_deployer import ClientDeployer
+from server.server_deployer import ServerDeployer
 
 def main():
     ClientDeployer().deploy()
