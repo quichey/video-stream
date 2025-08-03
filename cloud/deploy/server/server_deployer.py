@@ -6,8 +6,8 @@ from common.mixins.bashrc_mixin import BashrcMixin
 
 class ServerDeployer(BaseDeployer, PackageManagerMixin, DockerMixin, CloudMixin, BashrcMixin):
     PACKAGE_MANAGER = "poetry"
-    PACKAGE_PATH = "server"
+    PACKAGE_PATH = f"{BaseDeployer.PATH_PROJECT_ROOT}/server"
     IMAGE_NAME = "server-engine"
-    DOCKERFILE = "cloud/Docker/server/server.Dockerfile"
+    DOCKERFILE = f"{BaseDeployer.PATH_PROJECT_DOCKER}/server/server.Dockerfile"
     CONTEXT = "server"
     TAG = "gcr.io/my-project/server-engine:1.0.0"
