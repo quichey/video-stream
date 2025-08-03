@@ -12,24 +12,24 @@ class BaseDeployer(ABC):
 
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""
-        if self.package_manager == "npm":
+        if self.PACKAGE_MANAGER == "npm":
             for tool in ["node", "npm"]:
                 if shutil.which(tool) is None:
                     raise EnvironmentError(f"{tool} not found. Run deploy/os/linux/env_setup.sh first.")
-        elif self.package_manager == "poetry":
+        elif self.PACKAGE_MANAGER == "poetry":
             if shutil.which("poetry") is None:
                 raise EnvironmentError("poetry not found. Run deploy/os/linux/env_setup.sh first.")
         else:
-            raise ValueError(f"Unknown package manager: {self.package_manager}")
+            raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
     def bundle_packages(self):
         """Shared package installation."""
-        if self.package_manager == "npm":
-            self.install_node_packages(path=self.package_path)
-        elif self.package_manager == "poetry":
-            self.install_poetry_packages(path=self.package_path)
+        if self.PACKAGE_MANAGER == "npm":
+            self.install_node_packages(path=self.PACKAGE_PATH)
+        elif self.PACKAGE_MANAGER == "poetry":
+            self.install_poetry_packages(path=self.PACKAGE_PATH)
         else:
-            raise ValueError(f"Unknown package manager: {self.package_manager}")
+            raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
