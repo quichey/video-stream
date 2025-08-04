@@ -15,4 +15,4 @@ class PackageManagerMixin:
         if not lock_file.exists():
             print(f"[PackageManagerMixin] No poetry.lock found, generating...")
             subprocess.run(["poetry", "lock"], cwd=path, check=True)
-        subprocess.run(["poetry", "install"], cwd=path, check=True)
+        subprocess.run(["poetry", "install",  "--no-root", "--no-interaction", "--no-ansi"], cwd=path, check=True)
