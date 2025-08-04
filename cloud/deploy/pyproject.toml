@@ -22,6 +22,7 @@ python-dotenv = "^1.0.1"
 
 # Optional: For structured logging
 loguru = "^0.7.2"
+argparse = "^1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.0.0"
