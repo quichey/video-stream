@@ -25,3 +25,8 @@ A?: for development of the server/setup.sh, just run from same subdir
 
 # New sub-branch: project/integrate-cloud-runs--deploy-isolated
 Want to be able to deploy client on it's own so as to not mess up the cloud-server-instance
+
+# New sub-branch: project/integrate-cloud-runs--deploy-cloud
+FINALLY gonna work on integrating the Client instance to fetch from the server instance
+OR
+just see if the deploy module works in the cloud shell
