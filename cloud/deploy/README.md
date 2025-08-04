@@ -22,3 +22,6 @@ However, I am building solely the server/setup.sh and
 testing it in isolation to avoid the client-side npm build everytime.
 Q: How can I write these scripts to facilitate this?
 A?: for development of the server/setup.sh, just run from same subdir
+
+# New sub-branch: project/integrate-cloud-runs--deploy-isolated
+Want to be able to deploy client on it's own so as to not mess up the cloud-server-instance
