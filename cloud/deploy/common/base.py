@@ -67,7 +67,9 @@ class BaseDeployer(ABC):
                 tag=self.TAG,
             )
         else:
+            machine_context = self.CONTEXT.upper()
+            port =  os.environ.get(f"PORT_{machine_context}", "local")
             self.docker_run(
                 image_name=self.IMAGE_NAME,
-                port=8080,
+                port=port,
             )

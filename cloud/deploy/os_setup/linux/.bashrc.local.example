@@ -25,10 +25,9 @@ export CLOUD_SHELL='temp_workaround'
 # export MYSQL_PW='your_mysql_password_here'
 # export MYSQL_DB='your_database_name_here'
 
-export DAEMON_PORT=12345
-
-export CLIENT_HOST='127.0.0.1'
-export CLIENT_PORT=3000
-
 # Example placeholder for server PID
 export SERVER_PID="your_server_pid_here"
+
+# Environment variables for deployment
+export PORT_CLIENT=3000
+export PORT_SERVER=5000
