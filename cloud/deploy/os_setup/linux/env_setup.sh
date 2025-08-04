@@ -42,9 +42,9 @@ EXAMPLE_FILE=""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ "$DEPLOY_ENV" == "cloud" ]]; then
-    EXAMPLE_FILE="$SCRIPT_DIR/bashrc.cloud.example"
+    EXAMPLE_FILE="$SCRIPT_DIR/.bashrc.cloud.example"
 else
-    EXAMPLE_FILE="$SCRIPT_DIR/bashrc.local.example"
+    EXAMPLE_FILE="$SCRIPT_DIR/.bashrc.local.example"
 fi
 
 echo "[env_setup] Updating $BASHRC using $EXAMPLE_FILE ..."

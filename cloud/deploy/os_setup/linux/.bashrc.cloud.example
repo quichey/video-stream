@@ -28,3 +28,7 @@ export DEPLOY_ENV='cloud'
 # Add local bin to PATH (customize for your username/environment)
 # Replace YOUR_USERNAME with actual username if you plan to share
 export PATH="$HOME/.local/bin:$PATH"
+
+# Environment variables for deployment
+export PORT_CLIENT=8080
+export PORT_SERVER=8080
