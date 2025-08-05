@@ -62,18 +62,21 @@ fi
 # Append only variables from example file that are not already present
 if [[ -f "$EXAMPLE_FILE" ]]; then
     while IFS= read -r line; do
-        # Ignore blank lines and comments
+        # Skip blank lines and comments
         if [[ -z "$line" || "$line" =~ ^# ]]; then
             continue
         fi
-        # Extract the variable name
-        var_name=$(echo "$line" | cut -d'=' -f1 | awk '{print $NF}' | sed 's/export //')
-        # Check if that variable is already in ~/.bashrc
-        if ! grep -q "$var_name" "$BASHRC"; then
-            echo "$line" >> "$BASHRC"
+        # Extract variable name from lines like: export VAR_NAME=...
+        var_name=$(echo "$line" | sed -E 's/^export ([^=]+)=.*$/\1/')
+        if [[ -n "$var_name" ]]; then
+            # Check if exact export VAR_NAME line exists in bashrc
+            if ! grep -q "^export $var_name=" "$BASHRC"; then
+                echo "$line" >> "$BASHRC"
+            fi
         fi
     done < "$EXAMPLE_FILE"
 fi
+
 
 # Apply immediately for current session
 echo "[env_setup] Applying updated bashrc..."
