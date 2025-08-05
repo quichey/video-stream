@@ -11,6 +11,7 @@ pyyaml = "^6.0"                  # For reading YAML config files
 # Cloud SDKs (add as needed)
 azure-identity = "^1.13.0"
 azure-mgmt-costmanagement = "^1.0.0"   # or other Azure SDK packages you’ll use
+azure-mgmt-resource = "^23.0.0"
 #google-cloud-billingbudgets = "^1.0.0"
 boto3 = "^1.26.0"
 
