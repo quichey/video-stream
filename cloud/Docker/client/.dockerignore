@@ -1,0 +1,33 @@
+# Ignore local dependencies
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Ignore version control
+.git
+.gitignore
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor settings
+.vscode
+.idea
+
+# Ignore build caches
+.cache
+dist
+coverage
+
+# Ignore dotenv (should be managed manually or injected)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Ignore lock files (optional: if you don't want them in the Docker context)
+# package-lock.json
+# yarn.lock

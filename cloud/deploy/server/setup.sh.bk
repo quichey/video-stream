@@ -28,6 +28,7 @@ set -eEo pipefail
 #
 ###########
 source util/util.sh
+source util/env_vars.sh server
 
 # location of where this script is run needs to be tracked
 curr_dir=$relative_subdir

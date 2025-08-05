@@ -42,52 +42,15 @@ if [ -z "$CLOUD_SHELL" ]; then
   printf "Completed.\n\n"
 fi
 
-#printf "Installing monolith dependencies...\n"
-#cd ./monolith
-#npm install
-#printf "Completed.\n\n"
 
-#printf "Installing microservices dependencies...\n"
-#cd ../microservices
-#npm install
-#printf "Completed.\n\n"
+
+############
+# CLIENT SIDE SET-UP
+############
 
 ############
 # SERVER SIDE SET-UP
 ############
-
-##
-## Hoping I can have just one script to run from here
-##
-
-
-printf "Installing React app dependencies...\n"
-cd ../client
-npm install
-printf "Completed.\n\n"
-
-printf "Building React app and placing into client/public/. ...\n"
-npm run build
-printf "Completed.\n\n"
-
-printf "Setup completed successfully!\n"
-
-########
-#
-# want to automate loading cloud/Docker/...Dockerfiles into 
-# correct subdirs such as from cloud/Docker/client/HTML/tutorial.Dockerfile into client/Dockerfile
-#
-########
-cp ../cloud/Docker/client/HTML/tutorial.Dockerfile ./Dockerfile
-
-########
-#
-# want to automate loading cloud/Docker/...Dockerfiles into 
-# correct subdirs such as from cloud/Docker/server/server.Dockerfile into server/Dockerfile
-#
-########
-#cd ../server
-#cp ../cloud/Docker/server/server.Dockerfile ./Dockerfile
 
 if [ -z "$CLOUD_SHELL" ]; then
   printf "\n"
