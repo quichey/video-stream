@@ -5,11 +5,12 @@ import os
 from common.mixins.cloud_mixin import CloudMixin
 
 class BaseDeployer(ABC):
+    PATH_PROJECT_ROOT = "../.."
+    PATH_PROJECT_DOCKER = "../Docker"
+
     def __init__(self, provider_name):
         self.cloud_mixin_instance = CloudMixin(provider_name=provider_name)
 
-    PATH_PROJECT_ROOT = "../.."
-    PATH_PROJECT_DOCKER = "../Docker"
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
