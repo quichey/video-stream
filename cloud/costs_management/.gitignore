@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+dist/
+build/
+.poetry/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.bashrc.cost_management
