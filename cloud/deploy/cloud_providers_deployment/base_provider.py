@@ -1,6 +1,10 @@
-class BaseCloudProvider:
-    def deploy_app(self, *args, **kwargs):
-        raise NotImplementedError
+from abc import ABC, abstractmethod
 
-    def destroy(self, *args, **kwargs):
-        raise NotImplementedError
+class BaseCloudProvider(ABC):
+    @abstractmethod
+    def get_build_cmd(self, dockerfile, package_path, tag):
+        pass
+
+    @abstractmethod
+    def get_run_cmd(self, image_name, tag):
+        pass
