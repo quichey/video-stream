@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "cost-monitor"
+version = "0.1.0"
+description = "Portable multi-cloud cost monitor and auto-shutdown tool"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyyaml = "^6.0"                  # For reading YAML config files
+
+# Cloud SDKs (add as needed)
+azure-identity = "^1.13.0"
+azure-mgmt-costmanagement = "^1.0.0"   # or other Azure SDK packages you’ll use
+#google-cloud-billingbudgets = "^1.0.0"
+boto3 = "^1.26.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
