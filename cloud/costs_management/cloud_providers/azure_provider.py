@@ -8,7 +8,7 @@ from azure.mgmt.costmanagement import CostManagementClient
 from azure.mgmt.costmanagement.models import QueryDefinition, QueryTimePeriod, QueryDataset, QueryAggregation
 from datetime import datetime, timedelta
 
-from costs_management.cloud_providers.base_provider import BaseProvider
+from cloud_providers.base_provider import BaseProvider
 
 class AzureProvider(BaseProvider):
     def __init__(self, config_path="azure_config_example.yaml"):

@@ -53,6 +53,24 @@ msal-extensions = ">=1.2.0"
 typing-extensions = ">=4.0.0"
 
 [[package]]
+name = "azure-mgmt-compute"
+version = "35.0.0"
+description = "Microsoft Azure Compute Management Client Library for Python"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "azure_mgmt_compute-35.0.0-py3-none-any.whl", hash = "sha256:52d18b39da48547a086ba74e418de1bfb1108b8f8c9d6cb002919ece2f3902ed"},
+    {file = "azure_mgmt_compute-35.0.0.tar.gz", hash = "sha256:43196911135507d1ce76f089c4e57d3b225885e5127d023be2ce1c597fd44336"},
+]
+
+[package.dependencies]
+azure-common = ">=1.1"
+azure-mgmt-core = ">=1.5.0"
+isodate = ">=0.6.1"
+typing-extensions = ">=4.6.0"
+
+[[package]]
 name = "azure-mgmt-core"
 version = "1.6.0"
 description = "Microsoft Azure Management Core Library for Python"
@@ -868,4 +886,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "2e2e33450bb375409218b959297923beceecae279504acec943ce6111699e9ca"
+content-hash = "a22d828dcf542867a9651de751293c09864bd10e3296d77ef2b4904895497c29"
