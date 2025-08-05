@@ -85,6 +85,24 @@ azure-mgmt-core = ">=1.2.0,<2.0.0"
 msrest = ">=0.5.0"
 
 [[package]]
+name = "azure-mgmt-resource"
+version = "23.4.0"
+description = "Microsoft Azure Resource Management Client Library for Python"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "azure_mgmt_resource-23.4.0-py3-none-any.whl", hash = "sha256:17282d20dc643fb68a286c2c350a191dc3bf386827f65a7daeeb714367a19316"},
+    {file = "azure_mgmt_resource-23.4.0.tar.gz", hash = "sha256:7cc0909184bd01439e245f5f2e20945a3668d45a6774e1f008227bb33a733d16"},
+]
+
+[package.dependencies]
+azure-common = ">=1.1"
+azure-mgmt-core = ">=1.5.0"
+isodate = ">=0.6.1"
+typing-extensions = ">=4.6.0"
+
+[[package]]
 name = "boto3"
 version = "1.40.2"
 description = "The AWS SDK for Python"
@@ -850,4 +868,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "5318cf3d91d7245599a3c49e52dd1e646edacfacd739b9ad24556b2309efa218"
+content-hash = "2e2e33450bb375409218b959297923beceecae279504acec943ce6111699e9ca"
