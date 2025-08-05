@@ -1,0 +1,33 @@
+# Load nvm (Node Version Manager)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Alias definitions
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Load additional aliases if present
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# Environment variables for local development
+export CLOUD_SHELL='temp_workaround'
+
+# MySQL credentials removed for security; set these in a .env or secrets manager
+# export MYSQL_PW='your_mysql_password_here'
+# export MYSQL_DB='your_database_name_here'
+
+# Example placeholder for server PID
+export SERVER_PID="your_server_pid_here"
+
+# Environment variables for deployment
+export PORT_CLIENT=3000
+export PORT_SERVER=5000

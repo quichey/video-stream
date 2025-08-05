@@ -104,3 +104,8 @@ update records_to_insert during randomization to use Declarative Base Classes/in
 - Research/Remember from ISS how uploading files/file-streams works *** Do this first 
 - Create GUI for user to upload a video
 - Create an API route for client to send video data
+
+
+# Planning out project/integrate-cloud-runs branch
+
+Purpose: Integrate the client-side Cloud Run Instance with the Server-side Cloud-Run instance

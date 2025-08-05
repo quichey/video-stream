@@ -14,7 +14,7 @@ export const ChannelContext = React.createContext(null);
 
 export const VideoContext = React.createContext(null);
 
-const serverURL = "http://127.0.0.1:5000";
+const serverURL = process.env.REACT_APP_API_BASE;
 export const HTTPContext = React.createContext(null);
 
 export default function Pages() {
