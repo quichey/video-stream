@@ -30,3 +30,6 @@ Want to be able to deploy client on it's own so as to not mess up the cloud-serv
 FINALLY gonna work on integrating the Client instance to fetch from the server instance
 OR
 just see if the deploy module works in the cloud shell
+
+# New sub-branch: project/refactor-deploy
+Want to be able to deploy client on it's own so as to not mess up the cloud-server-instance
