@@ -10,3 +10,4 @@ build/
 *.egg-info/
 .mypy_cache/
 .pytest_cache/
+.bashrc.cost_management
