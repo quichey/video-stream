@@ -2,6 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock
 from cloud_providers.azure_provider import AzureProvider
 
+CONFIG_PATH = "configs/azure_config_example.yaml"
+
 class TestAzureProvider(unittest.TestCase):
     def setUp(self):
         # Patch yaml loading to avoid real file dependency
@@ -20,7 +22,7 @@ class TestAzureProvider(unittest.TestCase):
         self.addCleanup(patcher_yaml.stop)
 
         # Create instance with mocked config
-        self.provider = AzureProvider(config_path="fake_path.yaml")
+        self.provider = AzureProvider(config_path=CONFIG_PATH)
 
     @patch("cloud_providers.azure_provider.ComputeManagementClient.virtual_machines.list")
     def test_fetch_services(self, mock_vm_list):
