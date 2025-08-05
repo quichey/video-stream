@@ -1,0 +1,25 @@
+# Azure credentials and settings
+subscription_id: "your-subscription-id"
+tenant_id: "your-tenant-id"
+client_id: "your-client-id"
+client_secret: "your-client-secret"
+
+# Cost monitoring settings
+cost_threshold_usd: 50.0   # Services costing more than this will be flagged/shut down
+
+# Optional: Define specific resource groups or services to monitor
+resource_groups:
+  - "example-resource-group-1"
+  - "example-resource-group-2"
+
+# Optional: Service filters
+service_types:
+  - "Microsoft.Compute/virtualMachines"
+  - "Microsoft.Web/sites"
+
+# Optional: Shutdown settings
+shutdown_enabled: true
+dry_run: true  # Set to false to actually stop instances (good for testing safely first)
+
+# Logging options
+log_level: "INFO"  # Can be DEBUG, INFO, WARNING, ERROR
