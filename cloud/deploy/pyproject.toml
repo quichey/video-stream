@@ -5,6 +5,7 @@ description = "Deployment orchestration tools for client and server"
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 packages = [
+    { include = "cloud_providers_deployment" },
     { include = "common" },
     { include = "client" },
     { include = "server" },
