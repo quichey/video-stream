@@ -1,12 +1,12 @@
 from .base_provider import BaseCloudProvider
 
 class AzureCloudProvider(BaseCloudProvider):
-    def get_build_cmd(self, dockerfile, package_path, tag):
+    def get_build_cmd(self, dockerfile, package_path, tag, **kwargs):
         """
         Build and push the Docker image to Azure Container Registry (ACR).
         Assumes the ACR is already created and user is logged in via az.
         """
-        acr_name = "myacr"  # Change to your actual ACR name
+        acr_name = kwargs["acr_name"]
         full_tag = f"{acr_name}.azurecr.io/{tag}"
 
         return [
@@ -18,16 +18,16 @@ class AzureCloudProvider(BaseCloudProvider):
             ["docker", "push", full_tag],
         ]
 
-    def get_run_cmd(self, image_name, tag):
+    def get_run_cmd(self, image_name, tag, **kwargs):
         """
         Deploys a container to Azure Container Apps (ACA).
         Assumes the container image is already pushed to ACR.
         """
-        acr_name = "myacr"  # Change to your actual ACR name
+        acr_name = kwargs["acr_name"]
         full_tag = f"{acr_name}.azurecr.io/{tag}"
         container_app_name = image_name.lower().replace("_", "-") + "-app"
-        resource_group = "myResourceGroup"  # Change to your actual resource group
-        environment_name = "myacaenv"       # Change to your actual ACA environment
+        resource_group = kwargs["resource_group"]
+        environment_name = kwargs["environment_name"]
 
         return [
             "az", "containerapp", "create",
