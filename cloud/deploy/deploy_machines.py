@@ -9,7 +9,7 @@ If no args given, deploy all machines
 
 def deploy_instances(machines):
     for Deployer in machines:
-        Deployer().deploy()
+        Deployer.deploy()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

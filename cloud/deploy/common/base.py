@@ -60,13 +60,13 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
     def build_docker_image(self):
         """Unified method for building Docker images (cloud or local)."""
         if self.is_cloud():
-            print(f"[BaseDeployer] Cloud build for {self.IMAGE_NAME}")
+            print(f"[BaseDeployer] Cloud build for {self.CONTEXT}")
             self.cloud_mixin_instance.build_docker_image_cloud(
                 dockerfile=self.DOCKERFILE,
                 package_path=self.PACKAGE_PATH,
             )
         else:
-            print(f"[BaseDeployer] Local build for {self.IMAGE_NAME}")
+            print(f"[BaseDeployer] Local build for {self.CONTEXT}")
             self.build_docker_image_local(
                 image_name=self.CONTEXT,
                 dockerfile=self.DOCKERFILE,
@@ -81,6 +81,6 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
             machine_context = self.CONTEXT.upper()
             port =  os.environ.get(f"PORT_{machine_context}", "local")
             self.docker_run(
-                image_name=self.IMAGE_NAME,
+                image_name=self.CONTEXT,
                 port=port,
             )

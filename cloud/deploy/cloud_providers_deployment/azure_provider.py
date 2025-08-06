@@ -5,7 +5,7 @@ from .base_provider import BaseCloudProvider
 
 load_dotenv()
 
-class AzureCloudProvider(BaseCloudProvider):
+class AzureProvider(BaseCloudProvider):
     def __init__(self, context):
         self.acr_name = os.getenv(f"AZURE_{context}_ACR_NAME")
         self.resource_group = os.getenv(f"AZURE_{context}_RESOURCE_GROUP")
