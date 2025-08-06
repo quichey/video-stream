@@ -7,9 +7,9 @@ load_dotenv()
 
 class AzureCloudProvider(BaseCloudProvider):
     def __init__(self, context):
-        self.acr_name = os.getenv(f"AZURE_{context}_acr_name")
-        self.resource_group = os.getenv(f"AZURE_{context}_resource_group")
-        self.environment_name = os.getenv(f"AZURE_{context}_environment_name")
+        self.acr_name = os.getenv(f"AZURE_{context}_ACR_NAME")
+        self.resource_group = os.getenv(f"AZURE_{context}_RESOURCE_GROUP")
+        self.environment_name = os.getenv(f"AZURE_{context}_ENVIRONMENT_NAME")
         return
 
     def get_build_cmd(self, dockerfile, package_path, tag):
