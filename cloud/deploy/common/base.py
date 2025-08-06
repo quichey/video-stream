@@ -1,10 +1,26 @@
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
 import shutil
 import os
 
-class BaseDeployer(ABC):
+from common.mixins.package_manager_mixin import PackageManagerMixin
+from common.mixins.docker_mixin import DockerMixin
+from common.mixins.cloud_mixin import CloudMixin
+from common.mixins.bashrc_mixin import BashrcMixin
+
+load_dotenv()
+
+class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
+
+    def __init__(self, provider_name):
+        if self.is_cloud():
+            self.cloud_mixin_instance = CloudMixin(
+                provider_name=provider_name,
+                context=self.CONTEXT
+            )
+
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
@@ -44,17 +60,15 @@ class BaseDeployer(ABC):
     def build_docker_image(self):
         """Unified method for building Docker images (cloud or local)."""
         if self.is_cloud():
-            print(f"[BaseDeployer] Cloud build for {self.IMAGE_NAME}")
-            self.build_docker_image_cloud(
-                image_name=self.IMAGE_NAME,
+            print(f"[BaseDeployer] Cloud build for {self.CONTEXT}")
+            self.cloud_mixin_instance.build_docker_image_cloud(
                 dockerfile=self.DOCKERFILE,
                 package_path=self.PACKAGE_PATH,
-                tag=self.TAG,
             )
         else:
-            print(f"[BaseDeployer] Local build for {self.IMAGE_NAME}")
+            print(f"[BaseDeployer] Local build for {self.CONTEXT}")
             self.build_docker_image_local(
-                image_name=self.IMAGE_NAME,
+                image_name=self.CONTEXT,
                 dockerfile=self.DOCKERFILE,
                 package_path=self.PACKAGE_PATH,
             )
@@ -62,14 +76,11 @@ class BaseDeployer(ABC):
     def launch_instance(self):
         """Unified method for launching Docker images (cloud or local)."""
         if self.is_cloud():
-            self.cloud_deploy(
-                image_name=self.IMAGE_NAME,
-                tag=self.TAG,
-            )
+            self.cloud_mixin_instance.cloud_deploy()
         else:
             machine_context = self.CONTEXT.upper()
             port =  os.environ.get(f"PORT_{machine_context}", "local")
             self.docker_run(
-                image_name=self.IMAGE_NAME,
+                image_name=self.CONTEXT,
                 port=port,
             )

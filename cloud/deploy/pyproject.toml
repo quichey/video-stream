@@ -5,6 +5,7 @@ description = "Deployment orchestration tools for client and server"
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 packages = [
+    { include = "cloud_providers_deployment" },
     { include = "common" },
     { include = "client" },
     { include = "server" },
@@ -23,6 +24,11 @@ python-dotenv = "^1.0.1"
 # Optional: For structured logging
 loguru = "^0.7.2"
 argparse = "^1.4.0"
+
+# GitHub Secrets / GitHub API
+PyGithub = "^2.3.0"
+httpx = "^0.27.0"
+cryptography = "^42.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.0.0"
