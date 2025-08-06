@@ -20,19 +20,24 @@ class AzureCloudProvider(BaseCloudProvider):
 
     def get_run_cmd(self, image_name, tag):
         """
-        Deploys a container to Azure Container Instances (ACI).
+        Deploys a container to Azure Container Apps (ACA).
         Assumes the container image is already pushed to ACR.
         """
         acr_name = "myacr"  # Change to your actual ACR name
         full_tag = f"{acr_name}.azurecr.io/{tag}"
-        container_group = image_name.lower().replace("_", "-") + "-group"
+        container_app_name = image_name.lower().replace("_", "-") + "-app"
         resource_group = "myResourceGroup"  # Change to your actual resource group
+        environment_name = "myacaenv"       # Change to your actual ACA environment
 
         return [
-            "az", "container", "create",
+            "az", "containerapp", "create",
+            "--name", container_app_name,
             "--resource-group", resource_group,
-            "--name", container_group,
+            "--environment", environment_name,
             "--image", full_tag,
-            "--dns-name-label", container_group,
-            "--ports", "80"
+            "--target-port", "80",
+            "--ingress", "external",
+            "--registry-server", f"{acr_name}.azurecr.io",
+            "--min-replicas", "1",
+            "--max-replicas", "1"
         ]
