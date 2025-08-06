@@ -12,10 +12,11 @@ class BaseDeployer(ABC):
     PATH_PROJECT_DOCKER = "../Docker"
 
     def __init__(self, provider_name):
-        self.cloud_mixin_instance = CloudMixin(
-            provider_name=provider_name,
-            context=self.CONTEXT
-        )
+        if self.is_cloud():
+            self.cloud_mixin_instance = CloudMixin(
+                provider_name=provider_name,
+                context=self.CONTEXT
+            )
 
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
