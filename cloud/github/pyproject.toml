@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "github-tools"
+version = "0.1.0"
+description = "Deployment orchestration tools for client and server"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [
+    { include = "secrets" },
+    { include = "workflows" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+# CLI and subprocess helpers
+typer = "^0.12.0"
+rich = "^13.7.0"
+
+# System/OS utilities
+python-dotenv = "^1.0.1"
+
+# Optional: For structured logging
+loguru = "^0.7.2"
+argparse = "^1.4.0"
+
+# GitHub Secrets / GitHub API
+PyGithub = "^2.3.0"
+httpx = "^0.27.0"
+cryptography = "^42.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.0.0"
+ruff = "^0.6.0"
+pytest = "^8.0.0"
+
+[tool.poetry.scripts]
+deploy = "deploy.deploy:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
