@@ -1,25 +1,28 @@
 import subprocess
 
+from cloud_providers_deployment import get_provider_class
+
 class CloudMixin:
-    def build_docker_image_cloud(self, image_name: str, dockerfile: str, package_path: str, tag: str):
-        print(f"[CloudMixin] Building and submitting cloud image {image_name}")
+    def __init__(self, provider_name, context):
+        self.provider = get_provider_class(provider_name)(context)
+
+    def build_docker_image_cloud(self, dockerfile: str, package_path: str, tag: str):
+        cloud_cmd = self.provider.get_build_cmd(
+            dockerfile,
+            package_path,
+            tag,
+        )
+        print(f"[CloudMixin] Building and submitting cloud image {self.context}")
         # Submit cloud build
         subprocess.run(
-            [
-                "gcloud", "builds", "submit", package_path,
-                "--tag", tag,
-                "--gcs-log-dir", "gs://my-logs"  # optional
-            ],
+            cloud_cmd,
             check=True,
         )
 
-    def cloud_deploy(self, image_name: str, tag: str):
-        print(f"[CloudMixin] Deploying {image_name} to Cloud Run...")
+    def cloud_deploy(self):
+        cloud_cmd = self.provider.get_run_cmd()
+        print(f"[CloudMixin] Deploying {self.context} to Cloud Run...")
         subprocess.run(
-            [
-                "gcloud", "run", "deploy", image_name,
-                "--image", tag,
-                "--platform", "managed",
-            ],
+            cloud_cmd,
             check=True,
         )
