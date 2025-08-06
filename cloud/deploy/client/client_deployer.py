@@ -11,11 +11,3 @@ class ClientDeployer(BaseDeployer, PackageManagerMixin, DockerMixin, CloudMixin,
     IMAGE_NAME = f"{CONTEXT}-engine"
     DOCKERFILE = f"{BaseDeployer.PATH_PROJECT_DOCKER}/{CONTEXT}/{CONTEXT}.Dockerfile"
     TAG = f"gcr.io/my-project/{CONTEXT}-engine:1.0.0"
-
-    # AZURE VARIABLES
-    ACR_NAME = "a"
-    RESOURCE_GROUP = "a"
-    ENVIRONMENT_NAME = "a"
-
-    def __init__(self, provider_name, acr_name, resource_group, environment_name):
-        super().__init__(provider_name, self.ACR_NAME, self.RESOURCE_GROUP, self.ENVIRONMENT_NAME)

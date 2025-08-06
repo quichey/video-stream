@@ -1,19 +1,20 @@
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
 import shutil
 import os
 
 from common.mixins.cloud_mixin import CloudMixin
 
+load_dotenv()
+
 class BaseDeployer(ABC):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
 
-    def __init__(self, provider_name, acr_name, resource_group, environment_name):
+    def __init__(self, provider_name):
         self.cloud_mixin_instance = CloudMixin(
             provider_name=provider_name,
-            acr_name=acr_name,
-            resource_group=resource_group,
-            environment_name=environment_name,
+            context=self.CONTEXT
         )
 
     def deploy(self):

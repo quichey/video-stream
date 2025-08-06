@@ -1,12 +1,23 @@
+from dotenv import load_dotenv
+import os
+
 from .base_provider import BaseCloudProvider
 
+load_dotenv()
+
 class AzureCloudProvider(BaseCloudProvider):
-    def get_build_cmd(self, dockerfile, package_path, tag, **kwargs):
+    def __init__(self, context):
+        self.acr_name = os.getenv(f"AZURE_{context}_acr_name")
+        self.resource_group = os.getenv(f"AZURE_{context}_resource_group")
+        self.environment_name = os.getenv(f"AZURE_{context}_environment_name")
+        return
+
+    def get_build_cmd(self, dockerfile, package_path, tag):
         """
         Build and push the Docker image to Azure Container Registry (ACR).
         Assumes the ACR is already created and user is logged in via az.
         """
-        acr_name = kwargs["acr_name"]
+        acr_name = self.acr_name
         full_tag = f"{acr_name}.azurecr.io/{tag}"
 
         return [
@@ -23,11 +34,11 @@ class AzureCloudProvider(BaseCloudProvider):
         Deploys a container to Azure Container Apps (ACA).
         Assumes the container image is already pushed to ACR.
         """
-        acr_name = kwargs["acr_name"]
+        acr_name = self.acr_name
         full_tag = f"{acr_name}.azurecr.io/{tag}"
         container_app_name = image_name.lower().replace("_", "-") + "-app"
-        resource_group = kwargs["resource_group"]
-        environment_name = kwargs["environment_name"]
+        resource_group = self.resource_group
+        environment_name = self.environment_name
 
         return [
             "az", "containerapp", "create",
