@@ -87,12 +87,13 @@ class AzureCLIHelper:
     Returns:
         bool: True if command succeeded, False otherwise.
     """
-    def enable_mysql_flexible_auto_stop(server_name: str, resource_group: str, auto_stop_delay_minutes: int = 60):
+    def enable_mysql_flexible_auto_stop(self, server_name: str, resource_group: str, auto_stop_delay_minutes: int = 60):
         cmd = [
             "az", "mysql", "flexible-server", "update",
             "--name", server_name,
             "--resource-group", resource_group,
-            "--auto-stop-delay", str(auto_stop_delay_minutes)
+            "--auto-stop-enabled", 'true',
+            #"--auto-stop-delay", str(auto_stop_delay_minutes)
         ]
 
         try:

@@ -16,7 +16,8 @@ azure_cli_helper = azure_cli.AzureCLIHelper(
 
 def enable_auto_stop():
     azure_cli_helper.login()
-    azure_cli_helper.acr_login()
+    #azure_cli_helper.acr_login()
+    print(f"\n\n MYSQL_DB_NAME: {MYSQL_DB_NAME} \n\n")
     azure_cli_helper.enable_mysql_flexible_auto_stop(
         server_name=MYSQL_DB_NAME, 
         resource_group=RESOUCE_GROUP_CENTRAL,

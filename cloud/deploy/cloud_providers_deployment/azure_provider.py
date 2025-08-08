@@ -4,11 +4,12 @@ import os
 from .base_provider import BaseCloudProvider
 
 load_dotenv()
+load_dotenv(dotenv_path="../providers/azure/.env")
 
 class AzureProvider(BaseCloudProvider):
     def __init__(self, context):
-        self.acr_name = os.getenv(f"AZURE_{context}_ACR_NAME")
-        self.resource_group = os.getenv(f"AZURE_{context}_RESOURCE_GROUP")
+        self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
+        self.resource_group = os.environ.get("RESOUCE_GROUP_CENTRAL", 'blah')
         self.environment_name = os.getenv(f"AZURE_{context}_ENVIRONMENT_NAME")
   
         self.image_name = f"{context}-engine"
