@@ -1,7 +1,7 @@
 import subprocess
 
 class AzureCLIHelper:
-    def __init__(self, resource_group: str, acr_name: str, location: str = "eastus"):
+    def __init__(self, resource_group: str, acr_name: str, location: str = "westus"):
         self.resource_group = resource_group
         self.acr_name = acr_name
         self.location = location
