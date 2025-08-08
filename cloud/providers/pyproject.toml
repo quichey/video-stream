@@ -22,7 +22,7 @@ azure-mgmt-rdbms = "^10.0.0"  # for MySQL/PostgreSQL management
 boto3 = "^1.26.0"
 
 # Google Cloud SDK (only add if you plan to manage GCP resources)
-google-cloud-resource-manager = "^2.0.0"
+#google-cloud-resource-manager = "^2.0.0"
 google-api-python-client = "^2.70.0"
 
 # YAML support (if needed for
