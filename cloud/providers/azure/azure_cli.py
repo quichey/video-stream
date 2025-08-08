@@ -1,4 +1,9 @@
 import subprocess
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv(dotenv_path="./azure/.env")
 
 class AzureCLIHelper:
     def __init__(self, resource_group: str, acr_name: str, location: str = "westus"):
@@ -18,7 +23,13 @@ class AzureCLIHelper:
 
     def login(self):
         """Login to Azure CLI."""
-        return self.run_cmd(["az", "login"])
+        return self.run_cmd([
+            "az", "login",
+            "--service-principal",
+            "--username", os.getenv("CLIENT_ID"),
+            "--password", os.getenv("CLIENT_SECRET_VALUE"),
+            "--tenant", os.getenv("TENANT_ID"),
+        ])
 
     def create_resource_group(self):
         """Create resource group if it doesn't exist."""
