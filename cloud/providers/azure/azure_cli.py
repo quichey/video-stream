@@ -64,3 +64,31 @@ class AzureCLIHelper:
             "--min-replicas", "1",
             "--max-replicas", "1"
         ])
+
+    """
+    Enables Auto-Stop on an Azure MySQL Flexible Server instance.
+
+    Args:
+        server_name (str): Name of the MySQL Flexible Server instance.
+        resource_group (str): Azure Resource Group containing the server.
+        auto_stop_delay_minutes (int): Idle time in minutes before auto-stop triggers. Default is 60.
+
+    Returns:
+        bool: True if command succeeded, False otherwise.
+    """
+    def enable_mysql_flexible_auto_stop(server_name: str, resource_group: str, auto_stop_delay_minutes: int = 60):
+        cmd = [
+            "az", "mysql", "flexible-server", "update",
+            "--name", server_name,
+            "--resource-group", resource_group,
+            "--auto-stop-delay", str(auto_stop_delay_minutes)
+        ]
+
+        try:
+            print(f"Running command to enable Auto-Stop: {' '.join(cmd)}")
+            subprocess.run(cmd, check=True)
+            print(f"Auto-Stop enabled on server '{server_name}' with delay {auto_stop_delay_minutes} minutes.")
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to enable Auto-Stop: {e}")
+            return False
