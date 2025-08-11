@@ -1,4 +1,4 @@
-import subprocess
+from util.subprocess_helper import run_cmds
 
 from cloud_providers_deployment import get_provider_class
 
@@ -14,7 +14,7 @@ class CloudMixin:
         )
         print(f"[CloudMixin] Building and submitting cloud image {self.context}")
         # Submit cloud build
-        subprocess.run(
+        run_cmds(
             cloud_cmd,
             check=True,
         )
@@ -22,7 +22,7 @@ class CloudMixin:
     def cloud_deploy(self):
         cloud_cmd = self.provider.get_run_cmd()
         print(f"[CloudMixin] Deploying {self.context} to Cloud Run...")
-        subprocess.run(
+        run_cmds(
             cloud_cmd,
             check=True,
         )
