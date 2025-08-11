@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 
+from providers.azure.azure_cli import AzureCLIHelper
 from .base_provider import BaseCloudProvider
 
 load_dotenv()
@@ -15,6 +16,9 @@ class AzureProvider(BaseCloudProvider):
         self.image_name = f"{context}-engine"
         self.container_app_name = self.image_name.lower().replace("_", "-") + "-app"
         self.tag = f"{self.acr_name}.azurecr.io/{context}-engine:1.0.0"
+
+        cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
+        cli_helper.login()
         return
 
     def get_build_cmd(self, dockerfile, package_path):
