@@ -10,7 +10,7 @@ class AzureProvider(BaseCloudProvider):
     def __init__(self, context):
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
         self.resource_group = os.environ.get("RESOUCE_GROUP_CENTRAL", 'blah')
-        self.environment_name = os.getenv(f"AZURE_{context}_ENVIRONMENT_NAME")
+        self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
   
         self.image_name = f"{context}-engine"
         self.container_app_name = self.image_name.lower().replace("_", "-") + "-app"
