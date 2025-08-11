@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 import os
+import sys
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 from providers.azure.azure_cli import AzureCLIHelper
 from .base_provider import BaseCloudProvider
 
@@ -10,7 +12,7 @@ load_dotenv(dotenv_path="../providers/azure/.env")
 class AzureProvider(BaseCloudProvider):
     def __init__(self, context):
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
-        self.resource_group = os.environ.get("RESOUCE_GROUP_CENTRAL", 'blah')
+        self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
         self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
   
         self.image_name = f"{context}-engine"
