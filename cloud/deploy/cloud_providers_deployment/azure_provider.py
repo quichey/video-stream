@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from providers.azure.azure_cli import AzureCLIHelper
 from .base_provider import BaseCloudProvider
 
