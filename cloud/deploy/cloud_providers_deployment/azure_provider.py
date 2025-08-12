@@ -13,6 +13,8 @@ class AzureProvider(BaseCloudProvider):
     def __init__(self, context):
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
         self.acr_login_server = os.environ.get("CONTAINER_REGISTRY_LOGIN_SERVER", 'blah')
+        self.acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", 'blah')
+        self.acr_user_password = os.environ.get("CONTAINER_REGISTRY_USER_PASSWORD", 'blah')
         self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
         self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
   
@@ -54,6 +56,8 @@ class AzureProvider(BaseCloudProvider):
             "--target-port", "80",
             "--ingress", "external",
             "--registry-server", f"{self.acr_login_server}.azurecr.io",
+            "--registry-username", self.acr_user_name,
+            "--registry-password", self.acr_user_password,
             "--min-replicas", "1",
             "--max-replicas", "1"
         ]
