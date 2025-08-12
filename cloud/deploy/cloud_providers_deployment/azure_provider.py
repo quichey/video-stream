@@ -12,12 +12,13 @@ load_dotenv(dotenv_path="../providers/azure/.env")
 class AzureProvider(BaseCloudProvider):
     def __init__(self, context):
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
+        self.acr_login_server = os.environ.get("CONTAINER_REGISTRY_LOGIN_SERVER", 'blah')
         self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
         self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
   
         self.image_name = f"{context}-engine"
         self.container_app_name = self.image_name.lower().replace("_", "-") + "-app"
-        self.tag = f"{self.acr_name}.azurecr.io/{context}-engine:1.0.0"
+        self.tag = f"{self.acr_login_server}.azurecr.io/{context}-engine:1.0.0"
 
         cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
         cli_helper.login()
