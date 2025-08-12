@@ -53,7 +53,7 @@ class AzureProvider(BaseCloudProvider):
             "--image", self.tag,
             "--target-port", "80",
             "--ingress", "external",
-            "--registry-server", f"{self.acr_name}.azurecr.io",
+            "--registry-server", f"{self.acr_login_server}.azurecr.io",
             "--min-replicas", "1",
             "--max-replicas", "1"
         ]
