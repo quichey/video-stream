@@ -33,3 +33,4 @@ yarn-error.log*
 !public/videos/2/test_video_0.mp4
 
 Dockerfile
+.dockerignore
