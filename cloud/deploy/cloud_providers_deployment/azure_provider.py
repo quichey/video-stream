@@ -30,7 +30,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
     
     def pre_build_image_cloud(self, dockerfile, package_path):
         print(f"[AzureProvider] Pre-building Docker image locally...")
-        self.build_docker_image_local(image_name=self.tag, dockerfile=dockerfile, context_path=package_path)
+        self.build_docker_image_local(image_name=self.tag, dockerfile=dockerfile, package_path=package_path)
 
     def get_build_cmd(self, dockerfile, package_path):
         """
