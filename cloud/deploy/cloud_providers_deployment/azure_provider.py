@@ -53,7 +53,7 @@ class AzureProvider(BaseCloudProvider):
             "--resource-group", self.resource_group,
             "--environment", self.environment_name,
             "--image", self.tag,
-            "--target-port", "80",
+            "--target-port", "8080",
             "--ingress", "external",
             "--registry-server", f"{self.acr_login_server}.azurecr.io",
             "--registry-username", self.acr_user_name,
