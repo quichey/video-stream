@@ -1,4 +1,4 @@
-from util.subprocess_helper import run_cmds
+from util.subprocess_helper import run_cmds, run_cmd_with_retries
 
 from cloud_providers_deployment import get_provider_class
 
@@ -22,7 +22,7 @@ class CloudMixin:
     def cloud_deploy(self):
         cloud_cmd = self.provider.get_run_cmd()
         print(f"[CloudMixin] Deploying {self.context} to Cloud Run...")
-        run_cmds(
+        run_cmd_with_retries(
             cloud_cmd,
             check=True,
         )
