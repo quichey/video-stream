@@ -21,8 +21,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Copy the built React app from builder
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/build ./public/build
-COPY --from=builder /app/public/index.html ./public/index.html
 
 # Copy daemon server code
 COPY daemon ./daemon
