@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import os
 import sys
 
+from common.mixins.docker_mixin import DockerMixin
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from providers.azure.azure_cli import AzureCLIHelper
 from .base_provider import BaseCloudProvider
@@ -9,7 +11,7 @@ from .base_provider import BaseCloudProvider
 load_dotenv()
 load_dotenv(dotenv_path="../providers/azure/.env")
 
-class AzureProvider(BaseCloudProvider):
+class AzureProvider(BaseCloudProvider, DockerMixin):
     def __init__(self, context):
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
         self.acr_login_server = os.environ.get("CONTAINER_REGISTRY_LOGIN_SERVER", 'blah')
@@ -25,6 +27,10 @@ class AzureProvider(BaseCloudProvider):
         cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
         cli_helper.login()
         return
+    
+    def pre_build_image_cloud(self, dockerfile, package_path):
+        print(f"[AzureProvider] Pre-building Docker image locally...")
+        self.build_docker_image_local(image_name=self.tag, dockerfile=dockerfile, context_path=package_path)
 
     def get_build_cmd(self, dockerfile, package_path):
         """
@@ -34,7 +40,7 @@ class AzureProvider(BaseCloudProvider):
 
         return [
             # Step 1: Build the image locally
-            ["docker", "build", "-f", dockerfile, "-t", self.tag, package_path],
+            #["docker", "build", "-f", dockerfile, "-t", self.tag, package_path],
             # Step 2: Login to ACR
             ["az", "acr", "login", "--name", self.acr_name],
             # Step 3: Push the image to ACR
