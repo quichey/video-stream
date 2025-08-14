@@ -33,3 +33,9 @@ just see if the deploy module works in the cloud shell
 
 # New sub-branch: project/refactor-deploy
 Want to be able to deploy client on it's own so as to not mess up the cloud-server-instance
+
+# New sub-sub-branch: centralize-cloud-providers--deploy-azure--versioning
+Deploying to azure has issue where pushing same-named tags to ACR seems to cause
+cached older versions to be used
+Attempt to build into current deploy module an automatic versioning incrementing 
+func or hook thing
