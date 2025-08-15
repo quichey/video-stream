@@ -11,10 +11,10 @@ class GoogleCloudProvider(BaseCloudProvider):
         self.tag = f"gcr.io/my-project/{context}-engine:1.0.0"
         return
 
-    def get_build_cmd(self, dockerfile, package_path):
+    def get_build_cmd(self, dockerfile, package_path, tag):
         return [
             "gcloud", "builds", "submit", package_path,
-            "--tag", self.tag,
+            "--tag", tag,
             "--gcs-log-dir", "gs://my-logs"  # optional
         ]
 
