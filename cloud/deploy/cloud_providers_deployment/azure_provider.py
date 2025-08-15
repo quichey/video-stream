@@ -24,17 +24,18 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
   
         self.container_app_name = self.image_name.lower().replace("_", "-") + "-app"
         self.image.base_tag = f"{self.acr_login_server}.azurecr.io/{context}-engine"
+        self.image.repo_name = self.image.name
 
         cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
         cli_helper.login()
         return
 
     @override
-    def get_latest_image(self, image_tag_base, repo_name):
+    def get_latest_image(self):
         return [
             "az", "acr", "repository", "show-tags",
-            "--name", image_tag_base,
-            "--repository", repo_name,
+            "--name", self.image.base_tag,
+            "--repository", self.image.repo_name,
             "--orderby", "time_desc",
             "--output", "tsv"
         ]
