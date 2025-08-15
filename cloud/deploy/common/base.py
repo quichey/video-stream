@@ -22,6 +22,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
                 context=self.CONTEXT
             )
             self.provider = self.cloud_mixin_instance.provider
+            self.image = self.provider.image
 
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
@@ -59,9 +60,9 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         if self.is_cloud():
             print(f"[BaseDeployer] Generating Latest Image Tag {self.CONTEXT}")
             repo_name = self.provider.repo_name
-            image_tag_base = self.provider.image_tag_base
+            image_tag_base = self.image.base_tag
             new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
-            self.provider.tag = new_tag
+            self.image.full_tag = new_tag
         else:
             pass
         return
@@ -78,7 +79,6 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             self.cloud_mixin_instance.build_docker_image_cloud(
                 dockerfile=self.DOCKERFILE,
                 package_path=self.PACKAGE_PATH,
-                tag=self.provider.tag,
             )
         else:
             print(f"[BaseDeployer] Local build for {self.CONTEXT}")
