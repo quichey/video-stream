@@ -62,8 +62,8 @@ class CloudMixin:
 
     @pre_build_hook
     def build_docker_image_cloud(self, dockerfile: str, package_path: str):
-        repo_name = self.provider.get_repo_name()
-        image_tag_base = self.provider.get_image_tag_base(repo_name)
+        repo_name = self.provider.repo_name
+        image_tag_base = self.provider.image_tag_base
         new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
         cloud_cmd = self.provider.get_build_cmd(
             dockerfile,

@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from typing_extensions import override
 import os
 import sys
 
@@ -13,6 +14,7 @@ load_dotenv(dotenv_path="../providers/azure/.env")
 
 class AzureProvider(BaseCloudProvider, DockerMixin):
     def __init__(self, context):
+        super().__init__(context=context)
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
         self.acr_login_server = os.environ.get("CONTAINER_REGISTRY_LOGIN_SERVER", 'blah')
         self.acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", 'blah')
@@ -28,12 +30,22 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         cli_helper.login()
         return
 
-    def get_repo_name(self):
+    @property
+    @override
+    def repo_name(self):
         pass
 
-    def get_image_tag_base(self, repo_name):
-        pass
+    @property
+    @override
+    def image_tag_base(self):
+        return f"{self.acr_login_server}.azurecr.io/{self.context}-engine"
 
+    @property
+    @override
+    def tag(self):
+        return f"{self.acr_login_server}.azurecr.io/{self.context}-engine:1.0.0"
+
+    @override
     def get_latest_image(self, image_tag_base, repo_name):
         return [
             "az", "acr", "repository", "show-tags",
@@ -47,6 +59,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         print(f"[AzureProvider] Pre-building Docker image locally...")
         self.build_docker_image_local(image_name=self.tag, dockerfile=dockerfile, package_path=package_path)
 
+    @override
     def get_build_cmd(self, dockerfile, package_path):
         """
         Build and push the Docker image to Azure Container Registry (ACR).
@@ -62,6 +75,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
             ["docker", "push", self.tag],
         ]
 
+    @override
     def get_run_cmd(self):
         """
         Deploys a container to Azure Container Apps (ACA).

@@ -1,12 +1,26 @@
 from abc import ABC, abstractmethod
 
 class BaseCloudProvider(ABC):
+    def __init__(self, context):
+        self._context = context
+
+    @property
+    def context(self):
+        return self._context
+
+    @property
     @abstractmethod
-    def get_repo_name(self):
+    def repo_name(self):
         pass
 
+    @property
     @abstractmethod
-    def get_image_tag_base(self, repo_name):
+    def image_tag_base(self):
+        pass
+
+    @property
+    @abstractmethod
+    def repo_name(self):
         pass
 
     @abstractmethod
