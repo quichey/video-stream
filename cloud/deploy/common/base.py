@@ -26,6 +26,11 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             self.provider = self.cloud_mixin_instance.provider
             self.image = self.provider.image
         else:
+            class LocalProvider():
+                def get_latest_image(self):
+                    # TODO: fillin -- add things in DockerMixin?
+                    pass
+            self.provider = LocalProvider()
             local_image_name = f"{self.CONTEXT}-engine"
             self.image = Image(name=local_image_name, base_tag=f"local-{provider_name}-{local_image_name}")
 
@@ -64,14 +69,10 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
     def generate_new_image_tag(self):
         if self.is_cloud():
             print(f"[BaseDeployer] Generating Latest Image Tag {self.CONTEXT}")
-            repo_name = self.provider.repo_name
-            image_tag_base = self.image.base_tag
-            new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
+            new_tag = self.generate_timestamped_tag(self.provider)
             self.image.full_tag = new_tag
         else:
-            repo_name = pass
-            image_tag_base = self.image.base_tag
-            new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
+            new_tag = self.generate_timestamped_tag(self.provider)
             self.image.full_tag = new_tag
         return
 

@@ -6,12 +6,12 @@ from util.subprocess_helper import run_cmds
 
 class VersionMixin:
     
-    def get_latest_version(self, image_tag_base: str, repo_name: str):
+    def get_latest_version(self, provider):
         """
         Fetch the latest semantic version tag from ACR.
         Returns "0.0.0" if no valid tags are found.
         """
-        latest_image_cmd = self.provider.get_latest_image(image_tag_base=image_tag_base, repo_name=repo_name)
+        latest_image_cmd = provider.get_latest_image()
         result = run_cmds(
             latest_image_cmd,
             capture_output=True, text=True
@@ -21,13 +21,13 @@ class VersionMixin:
         return tags[0] if tags else "0.0.0"
 
 
-    def generate_timestamped_tag(self, image_tag_base: str, repo_name: str, bump='patch'):
+    def generate_timestamped_tag(self, provider, bump='patch'):
         """
         Generates a new Docker tag in the format:
         [MAJOR].[MINOR].[PATCH]-dev-YYYY-MM-DD--HH-MM-SS
         """
         #TODO: think about how to connect the providers classes into this
-        latest = self.get_latest_version(image_tag_base, repo_name)
+        latest = self.get_latest_version(provider)
         major, minor, patch = map(int, latest.split("."))
 
         if bump == 'patch':

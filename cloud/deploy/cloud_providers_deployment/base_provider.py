@@ -13,15 +13,6 @@ class BaseCloudProvider(ABC):
 
     @property
     @abstractmethod
-    def repo_name(self):
-        return self._repo_name
-
-    @repo_name.setter
-    def repo_name(self, new_value):
-        self._repo_name = new_value
-
-    @property
-    @abstractmethod
     def image(self) -> Image:
         return self._image
 
