@@ -27,6 +27,21 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
         cli_helper.login()
         return
+
+    def get_repo_name(self):
+        pass
+
+    def get_image_tag_base(self, repo_name):
+        pass
+
+    def get_latest_image(self, image_tag_base, repo_name):
+        return [
+            "az", "acr", "repository", "show-tags",
+            "--name", image_tag_base,
+            "--repository", repo_name,
+            "--orderby", "time_desc",
+            "--output", "tsv"
+        ]
     
     def pre_build_image_cloud(self, dockerfile, package_path):
         print(f"[AzureProvider] Pre-building Docker image locally...")

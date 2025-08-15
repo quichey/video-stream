@@ -21,19 +21,14 @@ class CloudMixin:
         self.context = context
         self.provider = get_provider_class(provider_name)(context)
     
-    def get_latest_version(self, image_tag: str, repo_name: str):
+    def get_latest_version(self, image_tag_base: str, repo_name: str):
         """
         Fetch the latest semantic version tag from ACR.
         Returns "0.0.0" if no valid tags are found.
         """
+        latest_image_cmd = self.provider.get_latest_image(image_tag_base=image_tag_base, repo_name=repo_name)
         result = run_cmds(
-            [
-                "az", "acr", "repository", "show-tags",
-                "--name", image_tag,
-                "--repository", repo_name,
-                "--orderby", "time_desc",
-                "--output", "tsv"
-            ],
+            latest_image_cmd,
             capture_output=True, text=True
         )
 
@@ -41,13 +36,13 @@ class CloudMixin:
         return tags[0] if tags else "0.0.0"
 
 
-    def generate_timestamped_tag(self, image_tag: str, repo_name: str, bump='patch'):
+    def generate_timestamped_tag(self, image_tag_base: str, repo_name: str, bump='patch'):
         """
         Generates a new Docker tag in the format:
         [MAJOR].[MINOR].[PATCH]-dev-YYYY-MM-DD--HH-MM-SS
         """
         #TODO: think about how to connect the providers classes into this
-        latest = self.get_latest_version(image_tag, repo_name)
+        latest = self.get_latest_version(image_tag_base, repo_name)
         major, minor, patch = map(int, latest.split("."))
 
         if bump == 'patch':
@@ -67,8 +62,9 @@ class CloudMixin:
 
     @pre_build_hook
     def build_docker_image_cloud(self, dockerfile: str, package_path: str):
-        latest_tag = self.get_latest_version(image_tag=, repo_name=)
-        new_tag = self.generate_timestamped_tag(image_tag=latest_tag, repo_name=,bump=)
+        repo_name = self.provider.get_repo_name()
+        image_tag_base = self.provider.get_image_tag_base(repo_name)
+        new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
         cloud_cmd = self.provider.get_build_cmd(
             dockerfile,
             package_path,
