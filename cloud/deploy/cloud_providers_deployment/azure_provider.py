@@ -56,7 +56,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
             # Step 2: Login to ACR
             ["az", "acr", "login", "--name", self.acr_name],
             # Step 3: Push the image to ACR
-            ["docker", "push", self.tag],
+            ["docker", "push", self.image.full_tag],
         ]
 
     @override
@@ -71,7 +71,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
             "--name", self.container_app_name,
             "--resource-group", self.resource_group,
             "--environment", self.environment_name,
-            "--image", self.tag,
+            "--image", self.image.full_tag,
             "--target-port", "8080",
             "--ingress", "external",
             "--registry-server", f"{self.acr_login_server}.azurecr.io",

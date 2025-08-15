@@ -9,6 +9,8 @@ from common.mixins.cloud_mixin import CloudMixin
 from common.mixins.bashrc_mixin import BashrcMixin
 from common.mixins.version_mixin import VersionMixin
 
+from common.dataclass_models.image import Image
+
 load_dotenv()
 
 class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
@@ -23,6 +25,9 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             )
             self.provider = self.cloud_mixin_instance.provider
             self.image = self.provider.image
+        else:
+            local_image_name = f"{self.CONTEXT}-engine"
+            self.image = Image(name=local_image_name, base_tag=f"local-{provider_name}-{local_image_name}")
 
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
@@ -64,7 +69,10 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
             self.image.full_tag = new_tag
         else:
-            pass
+            repo_name = pass
+            image_tag_base = self.image.base_tag
+            new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
+            self.image.full_tag = new_tag
         return
 
     #
