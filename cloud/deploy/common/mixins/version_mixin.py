@@ -1,38 +1,10 @@
 from datetime import datetime
 import re
 
-from util.subprocess_helper import run_cmds, run_cmd_with_retries
-
-from cloud_providers_deployment import get_provider_class
+from util.subprocess_helper import run_cmds
 
 
 class VersionMixin:
-    def __init__(self, provider_name, context):
-        self.context = context
-        self.provider = get_provider_class(provider_name)(context)
-
-    @property
-    def context(self):
-        return self._context
-
-    @property
-    @abstractmethod
-    def repo_name(self):
-        pass
-
-    @property
-    @abstractmethod
-    def image_tag_base(self):
-        pass
-
-    @property
-    @abstractmethod
-    def tag(self):
-        pass
-
-    @abstractmethod
-    def get_latest_image(self, image_tag_base, repo_name):
-        pass
     
     def get_latest_version(self, image_tag_base: str, repo_name: str):
         """

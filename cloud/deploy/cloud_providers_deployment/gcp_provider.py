@@ -10,23 +10,9 @@ class GoogleCloudProvider(BaseCloudProvider):
     def __init__(self, context):
         super().__init__(context=context)
         self.image_name = f"{context}-engine"
-        self.tag = f"gcr.io/my-project/{context}-engine:1.0.0"
+        self.image_tag_base = f"gcr.io/my-project/{context}-engine"
         return
 
-    @property
-    @override
-    def repo_name(self):
-        pass
-
-    @property
-    @override
-    def image_tag_base(self):
-        pass
-
-    @property
-    @override
-    def tag(self):
-        return f"gcr.io/my-project/{self.context}-engine:1.0.0"
 
     @override
     def get_latest_image(self, image_tag_base, repo_name):
