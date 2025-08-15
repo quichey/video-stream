@@ -7,10 +7,11 @@ from common.mixins.package_manager_mixin import PackageManagerMixin
 from common.mixins.docker_mixin import DockerMixin
 from common.mixins.cloud_mixin import CloudMixin
 from common.mixins.bashrc_mixin import BashrcMixin
+from common.mixins.version_mixin import VersionMixin
 
 load_dotenv()
 
-class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
+class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
 
@@ -20,11 +21,13 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
                 provider_name=provider_name,
                 context=self.CONTEXT
             )
+            self.provider = self.cloud_mixin_instance.provider
 
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
         self.bundle_packages()
+        self.generate_new_image_tag()
         self.build_docker_image()
         self.launch_instance()
 
@@ -52,6 +55,17 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
 
+    def generate_new_image_tag(self):
+        if self.is_cloud():
+            print(f"[BaseDeployer] Generating Latest Image Tag {self.CONTEXT}")
+            repo_name = self.provider.repo_name
+            image_tag_base = self.provider.image_tag_base
+            new_tag = self.generate_timestamped_tag(image_tag_base=image_tag_base, repo_name=repo_name)
+            self.provider.tag = new_tag
+        else:
+            pass
+        return
+
     #
     # Subclasses must provide these as class attributes:
     # IMAGE_NAME, DOCKERFILE, CONTEXT, TAG
@@ -64,6 +78,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
             self.cloud_mixin_instance.build_docker_image_cloud(
                 dockerfile=self.DOCKERFILE,
                 package_path=self.PACKAGE_PATH,
+                tag=self.provider.tag,
             )
         else:
             print(f"[BaseDeployer] Local build for {self.CONTEXT}")

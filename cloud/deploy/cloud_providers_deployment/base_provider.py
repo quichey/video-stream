@@ -11,17 +11,29 @@ class BaseCloudProvider(ABC):
     @property
     @abstractmethod
     def repo_name(self):
-        pass
+        return self._repo_name
+
+    @repo_name.setter
+    def repo_name(self, new_value):
+        self._repo_name = new_value
 
     @property
     @abstractmethod
     def image_tag_base(self):
-        pass
+        return self._image_tag_base
+
+    @image_tag_base.setter
+    def image_tag_base(self, new_value):
+        self._image_tag_base = new_value
 
     @property
     @abstractmethod
     def tag(self):
-        pass
+        return self._tag
+
+    @tag.setter
+    def tag(self, new_value):
+        self._tag = new_value
 
     @abstractmethod
     def get_latest_image(self, image_tag_base, repo_name):
