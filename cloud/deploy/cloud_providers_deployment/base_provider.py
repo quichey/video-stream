@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
 
+from common.dataclass_models.image import Image
+
 class BaseCloudProvider(ABC):
     def __init__(self, context):
         self._context = context
+        self._image = Image(name=f"{context}-engine")
 
     @property
     def context(self):
@@ -19,21 +22,8 @@ class BaseCloudProvider(ABC):
 
     @property
     @abstractmethod
-    def image_tag_base(self):
-        return self._image_tag_base
-
-    @image_tag_base.setter
-    def image_tag_base(self, new_value):
-        self._image_tag_base = new_value
-
-    @property
-    @abstractmethod
-    def tag(self):
-        return self._tag
-
-    @tag.setter
-    def tag(self, new_value):
-        self._tag = new_value
+    def image(self) -> Image:
+        return self._image
 
     @abstractmethod
     def get_latest_image(self, image_tag_base, repo_name):

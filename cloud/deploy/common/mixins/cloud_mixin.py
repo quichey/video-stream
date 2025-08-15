@@ -22,11 +22,10 @@ class CloudMixin:
         self.provider = get_provider_class(provider_name)(context)
 
     @pre_build_hook
-    def build_docker_image_cloud(self, dockerfile: str, package_path: str, tag: str):
+    def build_docker_image_cloud(self, dockerfile: str, package_path: str):
         cloud_cmd = self.provider.get_build_cmd(
             dockerfile,
             package_path,
-            tag=tag
         )
         print(f"[CloudMixin] Building and submitting cloud image {self.context}")
         # Submit cloud build

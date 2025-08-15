@@ -9,8 +9,7 @@ load_dotenv()
 class GoogleCloudProvider(BaseCloudProvider):
     def __init__(self, context):
         super().__init__(context=context)
-        self.image_name = f"{context}-engine"
-        self.image_tag_base = f"gcr.io/my-project/{context}-engine"
+        self.image.base_tag = f"gcr.io/my-project/{context}-engine"
         return
 
 
@@ -19,18 +18,18 @@ class GoogleCloudProvider(BaseCloudProvider):
         pass
 
     @override
-    def get_build_cmd(self, dockerfile, package_path, tag):
+    def get_build_cmd(self, dockerfile, package_path):
         return [
             "gcloud", "builds", "submit", package_path,
-            "--tag", tag,
+            "--tag", self.image.full_tag,
             "--gcs-log-dir", "gs://my-logs"  # optional
         ]
 
     @override
     def get_run_cmd(self):
         return [
-            "gcloud", "run", "deploy", self.image_name,
-            "--image", self.tag,
+            "gcloud", "run", "deploy", self.image.name,
+            "--image", self.image.full_tag,
             "--platform", "managed",
         ]
 
