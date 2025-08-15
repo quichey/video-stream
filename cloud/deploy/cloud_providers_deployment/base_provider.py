@@ -20,7 +20,7 @@ class BaseCloudProvider(ABC):
 
     @property
     @abstractmethod
-    def repo_name(self):
+    def tag(self):
         pass
 
     @abstractmethod
