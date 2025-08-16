@@ -2,6 +2,7 @@
   "name": "video-stream",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://client-engine-app.blacksand-ab0d98b9.westus2.azurecontainerapps.io",
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",

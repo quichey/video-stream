@@ -7,10 +7,13 @@ from common.mixins.package_manager_mixin import PackageManagerMixin
 from common.mixins.docker_mixin import DockerMixin
 from common.mixins.cloud_mixin import CloudMixin
 from common.mixins.bashrc_mixin import BashrcMixin
+from common.mixins.version_mixin import VersionMixin
+
+from common.dataclasses_models.image import Image
 
 load_dotenv()
 
-class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
+class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
 
@@ -25,6 +28,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
         self.bundle_packages()
+        self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
 
@@ -52,6 +56,19 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
 
+    def generate_image_name(self):
+        if self.is_cloud():
+            print(f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}")
+            images_archives = self.cloud_mixin_instance.get_images_archives()
+            self.cloud_mixin_instance.provider.image.tag = self.generate_timestamped_tag(images_archives)
+        else:
+            print(f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}")
+            repository = f"{self.CONTEXT}-engine"
+            self.image = Image(registry='local', repository=repository, tag="1.0.0")
+            images_archives = self.get_images_archives()
+            self.image.tag = self.generate_timestamped_tag(images_archives)
+        return
+
     #
     # Subclasses must provide these as class attributes:
     # IMAGE_NAME, DOCKERFILE, CONTEXT, TAG
@@ -68,7 +85,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
         else:
             print(f"[BaseDeployer] Local build for {self.CONTEXT}")
             self.build_docker_image_local(
-                image_name=self.CONTEXT,
+                image_name=self.image.full_name,
                 dockerfile=self.DOCKERFILE,
                 package_path=self.PACKAGE_PATH,
             )
@@ -81,6 +98,6 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin):
             machine_context = self.CONTEXT.upper()
             port =  os.environ.get(f"PORT_{machine_context}", "local")
             self.docker_run(
-                image_name=self.CONTEXT,
+                image_name=self.image.full_name,
                 port=port,
             )
