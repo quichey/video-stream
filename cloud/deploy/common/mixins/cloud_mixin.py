@@ -31,7 +31,10 @@ class CloudMixin:
             latest_image_cmd,
             capture_output=True, text=True
         )
-        return [t for t in result.strip().split("\n") if re.match(r"^\d+\.\d+\.\d+$", t)]
+        if not result:
+            return []
+        else:
+            return [t for t in result.strip().split("\n") if re.match(r"^\d+\.\d+\.\d+$", t)]
 
     @pre_build_hook
     def build_docker_image_cloud(self, dockerfile: str, package_path: str):

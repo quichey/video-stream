@@ -22,7 +22,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
         self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
   
-        self.container_app_name = self.image_name.lower().replace("_", "-") + "-app"
+        self.container_app_name = self.image.repository.lower().replace("_", "-") + "-app"
         self.image.registry = f"{self.acr_login_server}.azurecr.io"
 
         cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
@@ -41,7 +41,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
     
     def pre_build_image_cloud(self, dockerfile, package_path):
         print(f"[AzureProvider] Pre-building Docker image locally...")
-        self.build_docker_image_local(image_name=self.tag, dockerfile=dockerfile, package_path=package_path)
+        self.build_docker_image_local(image_name=self.image.full_name, dockerfile=dockerfile, package_path=package_path)
 
     @override
     def get_build_cmd(self, dockerfile, package_path):
