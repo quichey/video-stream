@@ -1,9 +1,15 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 @dataclass
 class Image:
-    name: str
-    repo_name: str = field(init="")
-    base_tag: str = field(init="")
-    full_tag: str = field(init="")
+    registry: str
+    repository: str
+    tag: str
 
+    @property
+    def path(self):
+        return f"{self.registry}/{self.repository}"
+
+    @property
+    def full_name(self):
+        return f"{self.path}:{self.tag}"

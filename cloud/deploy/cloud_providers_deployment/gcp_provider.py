@@ -9,7 +9,7 @@ load_dotenv()
 class GoogleCloudProvider(BaseCloudProvider):
     def __init__(self, context):
         super().__init__(context=context)
-        self.image.base_tag = f"gcr.io/my-project/{context}-engine"
+        self.image.registry = f"gcr.io/my-project"
         return
 
 
