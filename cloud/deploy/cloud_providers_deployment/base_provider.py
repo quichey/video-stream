@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.dataclass_models.image import Image
+from common.dataclasses_models.image import Image
 
 class BaseCloudProvider(ABC):
     def __init__(self, context):

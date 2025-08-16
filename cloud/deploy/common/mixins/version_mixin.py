@@ -9,7 +9,7 @@ class VersionMixin:
     
     def get_latest_version(self, images_archives):
 
-        tags = [t for t in images_archives.stdout.strip().split("\n") if re.match(r"^\d+\.\d+\.\d+$", t)]
+        tags = images_archives
         if not tags:
             print("No tags found... generating initial tag")
             return self.initial_tag
