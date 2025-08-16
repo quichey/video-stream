@@ -1,12 +1,12 @@
 import subprocess
 import time
 
-def run_cmds(cmd_array, check=True):
+def run_cmds(cmd_array, **kwargs):
     if type(cmd_array[0]) == str:
-        subprocess.run(cmd_array, check=check)
+        subprocess.run(cmd_array, **kwargs)
     else:
         for cmd in cmd_array:
-            subprocess.run(cmd, check=check)
+            subprocess.run(cmd, **kwargs)
 
 
 def run_cmd_with_retries(cmd, retries=5, delay=5, check=True):
