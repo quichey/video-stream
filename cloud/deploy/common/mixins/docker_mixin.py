@@ -3,6 +3,16 @@ from pathlib import Path
 import shutil
 
 class DockerMixin:
+    def get_latest_image(self):
+        prefix = "my-prefix"
+        result = subprocess.run(
+            ["docker", "images", "--format", "{{.Repository}}"],
+            capture_output=True,
+            text=True
+        )
+        images = [name for name in result.stdout.splitlines() if name.startswith(prefix)]
+        return images[0]
+
     def build_docker_image_local(self, image_name: str, dockerfile: str, package_path: str):
         """
         Builds a Docker image using the specified Dockerfile and context.

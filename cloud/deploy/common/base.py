@@ -26,11 +26,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             self.provider = self.cloud_mixin_instance.provider
             self.image = self.provider.image
         else:
-            class LocalProvider():
-                def get_latest_image(self):
-                    # TODO: fillin -- add things in DockerMixin?
-                    pass
-            self.provider = LocalProvider()
+            self.provider = self
             local_image_name = f"{self.CONTEXT}-engine"
             self.image = Image(name=local_image_name, base_tag=f"local-{provider_name}-{local_image_name}")
 
