@@ -27,14 +27,14 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             self.image = self.provider.image
         else:
             self.provider = self
-            local_image_name = f"{self.CONTEXT}-engine"
-            self.image = Image(name=local_image_name, base_tag=f"local-{provider_name}-{local_image_name}")
+            repository = f"{self.CONTEXT}-engine"
+            self.image = Image(registry='local', repository=repository, tag="1.0.0")
 
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
         self.bundle_packages()
-        self.generate_new_image_tag()
+        self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
 
@@ -62,15 +62,15 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
 
-    def generate_new_image_tag(self):
+    def generate_image_name(self):
         if self.is_cloud():
             print(f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}")
-            new_tag = self.generate_timestamped_tag(self.provider)
-            self.image.full_tag = new_tag
+            version_suffix = self.generate_timestamped_tag(self.provider)
+            self.image.full_tag = self.image.base_tag + version_suffix
         else:
             print(f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}")
-            new_tag = self.generate_timestamped_tag(self.provider)
-            self.image.full_tag = new_tag
+            version_suffix = self.generate_timestamped_tag(self.provider)
+            self.image.full_tag = self.image.base_tag + version_suffix
         return
 
     #

@@ -5,19 +5,18 @@ from common.dataclass_models.image import Image
 class BaseCloudProvider(ABC):
     def __init__(self, context):
         self._context = context
-        self._image = Image(name=f"{context}-engine")
+        self._image = Image(registry="unkown", repository=f"{context}-engine", tag='1.0.0')
 
     @property
     def context(self):
         return self._context
 
     @property
-    @abstractmethod
     def image(self) -> Image:
         return self._image
 
     @abstractmethod
-    def get_latest_image(self, image_tag_base, repo_name):
+    def get_latest_image(self):
         pass
 
     @abstractmethod

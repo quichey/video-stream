@@ -23,8 +23,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
   
         self.container_app_name = self.image_name.lower().replace("_", "-") + "-app"
-        self.image.base_tag = f"{self.acr_login_server}.azurecr.io/{context}-engine"
-        self.image.repo_name = self.image.name
+        self.image.registry = f"{self.acr_login_server}.azurecr.io"
 
         cli_helper = AzureCLIHelper(resource_group=self.resource_group, acr_name=self.acr_name)
         cli_helper.login()
