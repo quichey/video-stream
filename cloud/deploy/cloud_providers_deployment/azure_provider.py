@@ -30,7 +30,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         return
 
     @override
-    def get_latest_image(self):
+    def get_latest_image_cmd(self):
         return [
             "az", "acr", "repository", "show-tags",
             "--name", self.image.full_name,

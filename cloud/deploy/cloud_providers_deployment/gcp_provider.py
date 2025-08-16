@@ -14,7 +14,7 @@ class GoogleCloudProvider(BaseCloudProvider):
 
 
     @override
-    def get_latest_image(self):
+    def get_latest_image_cmd(self):
         pass
 
     @override
