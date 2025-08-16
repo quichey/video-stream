@@ -5,6 +5,7 @@ from util.subprocess_helper import run_cmds
 
 
 class VersionMixin:
+    initial_tag = '0.0.0'
     
     def get_latest_version(self, provider):
         """
@@ -18,7 +19,11 @@ class VersionMixin:
         )
 
         tags = [t for t in result.stdout.strip().split("\n") if re.match(r"^\d+\.\d+\.\d+$", t)]
-        return tags[0] if tags else "0.0.0"
+        if not tags:
+            print("No tags found... generating initial tag")
+            return self.initial_tag
+        else:
+            return tags[0]
 
 
     def generate_timestamped_tag(self, provider, bump='patch'):
