@@ -20,9 +20,9 @@ class BaseCloudProvider(ABC):
         pass
 
     @abstractmethod
-    def get_build_cmd(self, dockerfile, package_path, tag):
+    def get_build_cmd(self, dockerfile, package_path):
         pass
 
     @abstractmethod
-    def get_run_cmd(self, image_name, tag):
+    def get_run_cmd(self):
         pass
