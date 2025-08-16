@@ -33,7 +33,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
     def get_latest_image_cmd(self):
         return [
             "az", "acr", "repository", "show-tags",
-            "--name", self.image.full_name,
+            "--name", self.acr_name,
             "--repository", self.image.repository,
             "--orderby", "time_desc",
             "--output", "tsv"
