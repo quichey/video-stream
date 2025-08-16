@@ -9,7 +9,7 @@ from common.mixins.cloud_mixin import CloudMixin
 from common.mixins.bashrc_mixin import BashrcMixin
 from common.mixins.version_mixin import VersionMixin
 
-from common.dataclass_models.image import Image
+from common.dataclasses_models.image import Image
 
 load_dotenv()
 
