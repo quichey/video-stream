@@ -64,10 +64,11 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
 
     def generate_new_image_tag(self):
         if self.is_cloud():
-            print(f"[BaseDeployer] Generating Latest Image Tag {self.CONTEXT}")
+            print(f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}")
             new_tag = self.generate_timestamped_tag(self.provider)
             self.image.full_tag = new_tag
         else:
+            print(f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}")
             new_tag = self.generate_timestamped_tag(self.provider)
             self.image.full_tag = new_tag
         return
