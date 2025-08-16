@@ -21,15 +21,15 @@ class GoogleCloudProvider(BaseCloudProvider):
     def get_build_cmd(self, dockerfile, package_path):
         return [
             "gcloud", "builds", "submit", package_path,
-            "--tag", self.image.full_tag,
+            "--tag", self.image.full_name,
             "--gcs-log-dir", "gs://my-logs"  # optional
         ]
 
     @override
     def get_run_cmd(self):
         return [
-            "gcloud", "run", "deploy", self.image.name,
-            "--image", self.image.full_tag,
+            "gcloud", "run", "deploy", self.image.repository,
+            "--image", self.image.full_name,
             "--platform", "managed",
         ]
 
