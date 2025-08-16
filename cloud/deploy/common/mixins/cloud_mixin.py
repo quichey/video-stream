@@ -21,6 +21,18 @@ class CloudMixin:
         self.context = context
         self.provider = get_provider_class(provider_name)(context)
 
+    def get_images_archives(self):
+        """
+        Fetch the latest semantic version tag from ACR.
+        Returns "0.0.0" if no valid tags are found.
+        """
+        latest_image_cmd = self.provider.get_latest_image_cmd()
+        result = run_cmds(
+            latest_image_cmd,
+            capture_output=True, text=True
+        )
+        return result
+
     @pre_build_hook
     def build_docker_image_cloud(self, dockerfile: str, package_path: str):
         cloud_cmd = self.provider.get_build_cmd(

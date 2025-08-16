@@ -16,7 +16,7 @@ class BaseCloudProvider(ABC):
         return self._image
 
     @abstractmethod
-    def get_latest_image(self):
+    def get_latest_image_cmd(self):
         pass
 
     @abstractmethod
