@@ -27,17 +27,13 @@ class CloudMixin:
         Returns "0.0.0" if no valid tags are found.
         """
         latest_image_cmd = self.provider.get_latest_image_cmd()
-        print(f"\n\n latest_image_cmd: {latest_image_cmd} \n\n")
         result = run_cmds(
             latest_image_cmd,
             capture_output=True, text=True
         )
-        print(f"\n\n result: {result} \n\n")
         if not result:
-            print(f"\n\n got in 'not result' \n\n")
             return []
         else:
-            print(f"\n\n got in else \n\n")
             #print(f"\n\n result: {result} \n\n")
             #for r in result:
             #    print(f"\n\n r: {r} \n\n")
