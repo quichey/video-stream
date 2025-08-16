@@ -10,6 +10,7 @@ class VersionMixin:
     def get_latest_version(self, images_archives):
 
         tags = images_archives
+        print(f"\n\n tags: {tags} \n\n")
         if not tags:
             print("No tags found... generating initial tag")
             return self.initial_tag
@@ -24,6 +25,7 @@ class VersionMixin:
         """
         #TODO: think about how to connect the providers classes into this
         latest = self.get_latest_version(images_archives)
+        latest = latest.split("-")[0]
         major, minor, patch = map(int, latest.split("."))
 
         if bump == 'patch':

@@ -3,9 +3,10 @@ import time
 
 def run_cmds(cmd_array, **kwargs):
     if type(cmd_array[0]) == str:
-        subprocess.run(cmd_array, **kwargs)
+        return subprocess.run(cmd_array, **kwargs)
     else:
         for cmd in cmd_array:
+            # TODO: what do return for this case?
             subprocess.run(cmd, **kwargs)
 
 

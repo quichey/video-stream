@@ -27,14 +27,21 @@ class CloudMixin:
         Returns "0.0.0" if no valid tags are found.
         """
         latest_image_cmd = self.provider.get_latest_image_cmd()
+        print(f"\n\n latest_image_cmd: {latest_image_cmd} \n\n")
         result = run_cmds(
             latest_image_cmd,
             capture_output=True, text=True
         )
+        print(f"\n\n result: {result} \n\n")
         if not result:
+            print(f"\n\n got in 'not result' \n\n")
             return []
         else:
-            return [t for t in result.strip().split("\n") if re.match(r"^\d+\.\d+\.\d+$", t)]
+            print(f"\n\n got in else \n\n")
+            #print(f"\n\n result: {result} \n\n")
+            #for r in result:
+            #    print(f"\n\n r: {r} \n\n")
+            return [t for t in result.stdout.strip().split("\n") if re.match(r"^\d+\.\d+\.\d+(-dev-\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2})?$", t)]
 
     @pre_build_hook
     def build_docker_image_cloud(self, dockerfile: str, package_path: str):
