@@ -17,6 +17,7 @@ class Base(DeclarativeBase):
 metadata_obj = MetaData()
 
 load_dotenv()
+load_dotenv(dotenv_path="../cloud/providers/azure/.env")
 admin_specs = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
@@ -35,15 +36,26 @@ database_specs = {
 }
 
 """
-create _specs but for g-cloud sql
+create _specs but for azure-cloud sql
 """
 admin_specs_cloud_sql = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
-    "user": "mysql-db-on-g-cloud-sql",
-    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
-    "hostname": "35.226.88.211:3306"
+    "user": os.getenv("MYSQL_ADMIN_NAME"),
+    "pw": os.getenv("MYSQL_ADMIN_PW"),
+    "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
 }
+
+"""
+create _specs but for g-cloud sql
+"""
+#admin_specs_cloud_sql = {
+#    "dialect": "mysql",
+#    "db_api": "mysqlconnector",
+#    "user": "mysql-db-on-g-cloud-sql",
+#    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
+#    "hostname": "35.226.88.211:3306"
+#}
 
 database_specs_cloud_sql = {
     "dialect": "mysql",
