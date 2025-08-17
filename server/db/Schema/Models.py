@@ -44,6 +44,7 @@ admin_specs_cloud_sql = {
     "user": os.getenv("MYSQL_ADMIN_NAME"),
     "pw": os.getenv("MYSQL_ADMIN_PW"),
     "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
+    "provider": "azure",
 }
 
 #TODO: make non-admin mysql user on azure
@@ -54,6 +55,7 @@ database_specs_cloud_sql = {
     "pw": os.getenv("MYSQL_ADMIN_PW"),
     "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
     "dbname": "video_stream",
+    "provider": "azure",
     #"CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
 }
 
