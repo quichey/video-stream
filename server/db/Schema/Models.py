@@ -46,6 +46,17 @@ admin_specs_cloud_sql = {
     "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
 }
 
+#TODO: make non-admin mysql user on azure
+database_specs_cloud_sql = {
+    "dialect": "mysql",
+    "db_api": "mysqlconnector",
+    "user": os.getenv("MYSQL_ADMIN_NAME"),
+    "pw": os.getenv("MYSQL_ADMIN_PW"),
+    "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
+    "dbname": "video_stream",
+    #"CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
+}
+
 """
 create _specs but for g-cloud sql
 """
@@ -57,15 +68,15 @@ create _specs but for g-cloud sql
 #    "hostname": "35.226.88.211:3306"
 #}
 
-database_specs_cloud_sql = {
-    "dialect": "mysql",
-    "db_api": "mysqlconnector",
-    "user": "mysql-db-on-g-cloud-sql",
-    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
-    "hostname": "35.226.88.211:3306",
-    "dbname": "video_stream",
-    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
-}
+#database_specs_cloud_sql = {
+#    "dialect": "mysql",
+#    "db_api": "mysqlconnector",
+#    "user": "mysql-db-on-g-cloud-sql",
+#    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
+#    "hostname": "35.226.88.211:3306",
+#    "dbname": "video_stream",
+#    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
+#}
 
 users_table = Table(
     "users",
