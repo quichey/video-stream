@@ -20,6 +20,10 @@ class CloudMixin:
     def __init__(self, provider_name, context):
         self.context = context
         self.provider = get_provider_class(provider_name)(context)
+    
+    def set_up_cloud_env(self):
+        self.provider.set_up_env()
+        return
 
     def get_images_archives(self):
         """
