@@ -21,7 +21,7 @@ class CloudMixin:
         self.context = context
         self.provider = get_provider_class(provider_name)(context)
     
-    def set_up_cloud_env(self):
+    def set_up_provider_env(self):
         self.provider.set_up_env()
         return
 
