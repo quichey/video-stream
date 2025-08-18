@@ -28,6 +28,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
         self.bundle_packages()
+        self.set_up_cloud_env()
         self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
@@ -55,6 +56,16 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
 
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
+    
+    def set_up_cloud_env(self):
+        if self.is_cloud():
+            print(f"[BaseDeployer] Setting Up Cloud Provider env for {self.CONTEXT}")
+            self.cloud_mixin_instance.set_up_provider_env()
+        else:
+            print(f"[BaseDeployer] Local Deploy: Skipping Cloud env setup for {self.CONTEXT}")
+        
+        return
+
 
     def generate_image_name(self):
         if self.is_cloud():
