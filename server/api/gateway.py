@@ -38,6 +38,8 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 """
 
 load_dotenv()
+load_dotenv(dotenv_path="../cloud/providers/azure/.env")
+load_dotenv(dotenv_path="env/azure/.env")
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
