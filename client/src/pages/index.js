@@ -14,7 +14,7 @@ export const ChannelContext = React.createContext(null);
 
 export const VideoContext = React.createContext(null);
 
-const serverURL = process.env.REACT_APP_API_BASE;
+const serverURL = process.env.REACT_APP_SERVER_APP_URL || process.env.REACT_APP_API_BASE;
 export const HTTPContext = React.createContext(null);
 
 export default function Pages() {

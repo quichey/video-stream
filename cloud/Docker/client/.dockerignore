@@ -22,11 +22,11 @@ dist
 coverage
 
 # Ignore dotenv (should be managed manually or injected)
-.env
-.env.local
-.env.development
-.env.test
-.env.production
+#.env
+#.env.local
+#.env.development
+#.env.test
+#.env.production
 
 # Ignore lock files (optional: if you don't want them in the Docker context)
 # package-lock.json
