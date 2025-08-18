@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "prebuild": "node load-env.js",
+    "prebuild": "node src/load-env.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
