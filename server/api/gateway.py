@@ -48,7 +48,8 @@ def create_app(test_config=None):
     )
 
     # TODO: maybe need to update this host for cloud build
-    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+    client_url = os.environ.get("CLIENT_APP_URL")
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", client_url]}})
 
     # different optional start-up configs
     # to alter the genetic inheritance if the
