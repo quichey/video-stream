@@ -17,6 +17,9 @@ class Base(DeclarativeBase):
 metadata_obj = MetaData()
 
 load_dotenv()
+load_dotenv(dotenv_path="../cloud/providers/azure/.env")
+load_dotenv(dotenv_path="env/azure/.env")
+
 admin_specs = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
@@ -35,25 +38,49 @@ database_specs = {
 }
 
 """
-create _specs but for g-cloud sql
+create _specs but for azure-cloud sql
 """
 admin_specs_cloud_sql = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
-    "user": "mysql-db-on-g-cloud-sql",
-    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
-    "hostname": "35.226.88.211:3306"
+    "user": os.getenv("MYSQL_ADMIN_NAME"),
+    "pw": os.getenv("MYSQL_ADMIN_PW"),
+    "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
+    "provider": "azure",
 }
 
+#TODO: make non-admin mysql user on azure
 database_specs_cloud_sql = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
-    "user": "mysql-db-on-g-cloud-sql",
-    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
-    "hostname": "35.226.88.211:3306",
+    "user": os.getenv("MYSQL_ADMIN_NAME"),
+    "pw": os.getenv("MYSQL_ADMIN_PW"),
+    "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
     "dbname": "video_stream",
-    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
+    "provider": "azure",
+    #"CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
 }
+
+"""
+create _specs but for g-cloud sql
+"""
+#admin_specs_cloud_sql = {
+#    "dialect": "mysql",
+#    "db_api": "mysqlconnector",
+#    "user": "mysql-db-on-g-cloud-sql",
+#    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
+#    "hostname": "35.226.88.211:3306"
+#}
+
+#database_specs_cloud_sql = {
+#    "dialect": "mysql",
+#    "db_api": "mysqlconnector",
+#    "user": "mysql-db-on-g-cloud-sql",
+#    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
+#    "hostname": "35.226.88.211:3306",
+#    "dbname": "video_stream",
+#    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
+#}
 
 users_table = Table(
     "users",

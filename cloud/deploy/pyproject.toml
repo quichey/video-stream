@@ -9,6 +9,7 @@ packages = [
     { include = "common" },
     { include = "client" },
     { include = "server" },
+    { include = "util" },
 ]
 
 [tool.poetry.dependencies]

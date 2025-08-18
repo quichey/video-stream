@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "cloud-providers"
+version = "0.1.0"
+description = "Multi-cloud provider utilities for deployment and cost management"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [
+    { include = "azure" },
+    { include = "aws" },
+    { include = "gcp" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+# System/OS utilities
+python-dotenv = "^1.0.1"
+
+# Azure SDKs
+azure-identity = "^1.13.0"
+azure-mgmt-resource = "^21.0.0"
+azure-mgmt-rdbms = "^10.0.0"  # for MySQL/PostgreSQL management
+
+# AWS SDK
+boto3 = "^1.26.0"
+
+# Google Cloud SDK (only add if you plan to manage GCP resources)
+#google-cloud-resource-manager = "^2.0.0"
+google-api-python-client = "^2.70.0"
+
+# YAML support (if needed for
