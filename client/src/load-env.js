@@ -31,7 +31,7 @@ Object.keys(mergedEnv).forEach(key => {
 });
 
 // Write merged env to project root as .env.generated
-const outputFile = path.resolve(__dirname, '../.env.generated');
+const outputFile = path.resolve(__dirname, '../.env.production');
 const outputContent = Object.entries(mergedEnv)
   .map(([k, v]) => `${k}=${v}`)
   .join('\n');
