@@ -9,6 +9,8 @@ RUN npm ci
 
 # Copy everything and build
 COPY . .
+# Generate the merged .env inside the container
+RUN node src/load-env.js
 RUN npm run build
 
 # Stage 2: Runtime image
