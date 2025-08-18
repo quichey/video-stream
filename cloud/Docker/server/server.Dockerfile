@@ -25,7 +25,7 @@ ARG APP_DIR=../../server
 # copy over .env file?
 # 
 ########
-COPY env ./.env
+COPY .env ./.env
 
 ########
 #
