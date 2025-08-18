@@ -26,7 +26,8 @@ if __name__ == "__main__":
 
     print(f"Client: {args.client}")
     print(f"Server: {args.server}")
-    print("No Machines specified -- Deploying All")
+    if args.client is None and args.server is None:
+        print("No Machines specified -- Deploying All")
 
     client_deployer = ClientDeployer(provider_name=args.cloud_provider)
     server_deployer = ServerDeployer(provider_name=args.cloud_provider)

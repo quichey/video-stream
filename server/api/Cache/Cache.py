@@ -61,6 +61,18 @@ class Cache():
             url = f"{user}:{pw}@{hostname}/{dbname}"
 
             engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+        elif database_specs["provider"] == "azure":
+            dialect = database_specs["dialect"]
+            db_api = database_specs["db_api"]
+
+            user = database_specs["user"]
+            pw = database_specs["pw"]
+            hostname = database_specs["hostname"]
+            dbname = database_specs["dbname"]
+            url = f"{user}:{pw}@{hostname}/{dbname}"
+
+            engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+
         #Google cloud run deployment
         else:
             DB_USER = database_specs["user"]

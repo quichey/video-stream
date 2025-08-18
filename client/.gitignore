@@ -19,6 +19,7 @@
 .env.production.local
 .env
 env
+env/
 
 npm-debug.log*
 yarn-debug.log*
@@ -28,8 +29,10 @@ yarn-error.log*
 /public/*
 
 # Whitelist specific files
+!public/index.html
 !public/images/1/sanji.png
 !public/images/2/shadow_gundam.png
 !public/videos/2/test_video_0.mp4
 
 Dockerfile
+.dockerignore
