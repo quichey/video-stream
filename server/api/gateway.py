@@ -38,6 +38,8 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 """
 
 load_dotenv()
+load_dotenv(dotenv_path="../cloud/providers/azure/.env")
+load_dotenv(dotenv_path="env/azure/.env")
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -48,7 +50,8 @@ def create_app(test_config=None):
     )
 
     # TODO: maybe need to update this host for cloud build
-    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+    client_url = os.environ.get("CLIENT_APP_URL")
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", client_url]}})
 
     # different optional start-up configs
     # to alter the genetic inheritance if the
