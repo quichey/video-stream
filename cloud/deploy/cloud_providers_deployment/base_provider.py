@@ -14,6 +14,12 @@ class BaseCloudProvider(ABC):
     @property
     def image(self) -> Image:
         return self._image
+    
+    """
+    Copy over cloud/providers/<name>/.env to <service>/.<name>.env?
+    """
+    def set_up_env(self):
+        pass
 
     @abstractmethod
     def get_latest_image_cmd(self):
