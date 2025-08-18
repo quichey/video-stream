@@ -27,6 +27,9 @@ ARG APP_DIR=../../server
 ########
 COPY .env ./.env
 
+#TODO: make this variable on cloud
+COPY env/azure/.env ./env/azure/.env
+
 ########
 #
 # Stage
