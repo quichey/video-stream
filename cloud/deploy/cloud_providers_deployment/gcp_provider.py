@@ -7,6 +7,8 @@ from .base_provider import BaseCloudProvider
 load_dotenv()
 
 class GoogleCloudProvider(BaseCloudProvider):
+    PROVIDER_NAME = "gcp"
+
     def __init__(self, context):
         super().__init__(context=context)
         self.image.registry = f"gcr.io/my-project"
