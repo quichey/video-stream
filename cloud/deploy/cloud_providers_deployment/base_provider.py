@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from common.dataclasses_models.image import Image
 
 class BaseCloudProvider(ABC):
+    PROVIDER_NAME = ""
     def __init__(self, context):
         self._context = context
         self._image = Image(registry="unkown", repository=f"{context}-engine", tag='1.0.0')
@@ -16,7 +17,7 @@ class BaseCloudProvider(ABC):
         return self._image
     
     """
-    Copy over cloud/providers/<name>/.env to <service>/.<name>.env?
+    Copy over cloud/providers/<name>/.env to <service>/env/<name>/.env?
     """
     def set_up_env(self):
         pass
