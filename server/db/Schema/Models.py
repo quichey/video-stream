@@ -18,6 +18,8 @@ metadata_obj = MetaData()
 
 load_dotenv()
 load_dotenv(dotenv_path="../cloud/providers/azure/.env")
+load_dotenv(dotenv_path="../env/azure/.env")
+
 admin_specs = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
