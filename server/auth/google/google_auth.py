@@ -26,3 +26,7 @@ class GoogleAuth(Auth):
             "token": token,
             user_info: user_info,
         }
+
+    def get_authorize_url(self, redirect_uri):
+        # Returns the URL to redirect the user for Google OAuth
+        return self.oauth_client.authorize_redirect(redirect_uri)

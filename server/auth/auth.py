@@ -50,6 +50,11 @@ class Auth(ABC):
     def oauth_client(self, new_value):
         self._oauth_client = new_value
 
+    @abstractmethod
+    def get_authorize_url(self, redirect_uri: str) -> str:
+        """Return URL to redirect user for login"""
+        pass
+
     def needs_authorization(self, func):
         @wraps(func)
         def wrapper(*args, **kwargs):
