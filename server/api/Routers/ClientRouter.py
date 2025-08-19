@@ -1,9 +1,13 @@
 # Example using Flask and SQLite
 from flask import make_response
 import json
+from flask import jsonify, json, url_for
 
 from .Router import Router
 from auth.native.native import NativeAuth
+
+#TODO: fix import
+from auth import get_auth
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -55,6 +59,13 @@ class ClientRouter(Router):
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
             return response
+
+        
+        @app.route("/login/<provider>")
+        def login(provider):
+            auth_instance = get_auth(provider)
+            redirect_uri = url_for("auth_callback", provider=provider, _external=True)
+            return auth_instance.get_authorize_url(redirect_uri)
 
         """
         curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
