@@ -41,6 +41,14 @@ class Auth(ABC):
         print(f"\n\n self.database_specs: {self.database_specs} \n\n")
         self.metadata_obj = Base.metadata
         self.construct_engine(self.database_specs)
+    
+    @property
+    def oauth_client(self):
+        return self._oauth_client
+    
+    @oauth_client.setter
+    def oauth_client(self, new_value):
+        self._oauth_client = new_value
 
     def needs_authorization(self, func):
         @wraps(func)

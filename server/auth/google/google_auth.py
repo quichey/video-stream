@@ -7,7 +7,7 @@ class GoogleAuth(Auth):
     GOOGLE_CLIENT_SECRET = ""
     def __init__(self, app):
         self.oauth = OAuth(app)
-        self.google = self.oauth.register(
+        self.oauth_client = self.oauth.register(
             name='google',
             client_id=self.GOOGLE_CLIENT_ID,
             client_secret=self.GOOGLE_CLIENT_SECRET,
@@ -19,8 +19,8 @@ class GoogleAuth(Auth):
         return
     
     def authorize(self):
-        token = self.google.authorize_access_token()
-        resp = self.google.get('userinfo')
+        token = self.oauth_client.authorize_access_token()
+        resp = self.oauth_client.get('userinfo')
         user_info = resp.json()
         return {
             "token": token,
