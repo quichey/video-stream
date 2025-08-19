@@ -89,6 +89,25 @@ class SessionManagement():
         ]
         """
     
+    def add_session(self, request):
+        pass
+
+    def end_session(self, request):
+        pass
+
+    def get_session(self, request):
+        pass
+    
+    def on_request(self, request):
+        current_session = self.get_session(request)
+
+        authenticated = current_session.authenticate(request)
+
+        if not authenticated:
+            raise SecurityError()
+        return current_session.handle_request(request)
+
+    
     def generate_token(self, user_info):
         # TODO: fill in later with actual token generation
         token = user_info["id"]

@@ -40,12 +40,12 @@ self.state = {
 
 class SessionBase(ABC):
     TOKEN = None
-    VIDEO: Video = None
-    VIDEO_UPLOAD: VideoUpload = None
-    COMMENTS: Comments = None
+    VIDEO = Video()
+    VIDEO_UPLOAD = VideoUpload()
+    COMMENTS = Comments()
 
     def __init__(self):
-        self.current_state = {}
+        #TODO: IDK how to handle_request?
         """
         current_state = [
             {
@@ -60,20 +60,20 @@ class SessionBase(ABC):
             },
         ]
         """
+
+    @abstractmethod
+    def authenticate(self, request):
+        pass
+
+    def handle_request(self, request):
+        pass
+
     @property
     def key(self):
         pass
 
     @abstractmethod
     def get_token(self) -> str:
-        pass
-
-    @abstractmethod
-    def get_state(self) -> dict:
-        pass
-
-    @abstractmethod
-    def update_state(self, key: str, value):
         pass
 
     @abstractmethod
