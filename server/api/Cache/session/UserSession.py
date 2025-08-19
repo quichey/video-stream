@@ -1,3 +1,7 @@
+
+class SecurityError(Exception):
+    pass
+
 class UserSession(SessionBase):
     def __init__(self, user_id: int):
         self.token = f"user-{user_id}"
