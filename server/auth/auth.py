@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from functools import wraps
+
 from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -40,13 +42,36 @@ class Auth(ABC):
         self.metadata_obj = Base.metadata
         self.construct_engine(self.database_specs)
 
+    def needs_authorization(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Step 1: call child-specific authorization (expected to be defined in child)
+            if hasattr(self, 'authorize'):
+                self.authorize()
+
+            # Step 2: base-class predefined steps
+            print("Base class step: logging or validation")
+
+            # Step 3: run the original function
+            return func(*args, **kwargs)
+        return wrapper
+
     @abstractmethod
-    def register(self, user_info):
+    def authorize(self, user_info):
         pass
-    @abstractmethod
-    def login(self, user_info):
-        pass
-    @abstractmethod
+
+    @needs_authorization
+    def register(self, user_info) -> User:
+        user = self.create_user(user_info=user_info)
+
+        return user
+
+    @needs_authorization
+    def login(self, user_info) -> User:
+        user = self.get_user_info(user_info["id"])
+        return user
+
+    @needs_authorization
     def logout(self, user_info):
         pass
     
