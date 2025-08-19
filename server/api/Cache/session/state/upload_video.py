@@ -1,10 +1,25 @@
 
+VIDEO_UPLOAD_PAGE_SIZE = 6400000
 
 @dataclass
 class VideoUpload:
     name: str
     byte_stream: bytes
     is_done: bool
+
+    def __init__(self):
+        token = existing_session_info
+        user_state = self.current_state[token]
+        is_done=False
+        if len(video_upload_info.bytes) < VIDEO_UPLOAD_PAGE_SIZE:
+            is_done = True
+        user_state.video_upload = VideoUpload(
+            name=video_upload_info.name,
+            byte_stream=video_upload_info.bytes,
+            is_done=is_done
+        )
+        self.current_state[token] = user_state
+        return user_state.video_upload
 
 
     """

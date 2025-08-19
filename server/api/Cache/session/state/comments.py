@@ -1,12 +1,17 @@
 from dataclasses import dataclass
 from typing import Optional
 
+COMMENTS_FIRST_PAGE_SIZE = 15
+COMMENTS_NEXT_PAGE_SIZE = 10
 
 @dataclass
 class Comments:
-    offset: int
-    limit: int
-    next_page: bool
+    offset: int = 0
+    limit: int = COMMENTS_FIRST_PAGE_SIZE
+    next_page: bool = False
+
+    def __init__(self):
+        pass
 
     def get_state(self):
         return self.state
