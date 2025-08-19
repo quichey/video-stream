@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from db.Schema import database_specs, database_specs_cloud_sql, Base, Video
+from db.Schema import database_specs, database_specs_cloud_sql, Base, User
 
 """
 What is a reasonalbe Interface for this base class?
@@ -50,11 +50,22 @@ class Auth(ABC):
     def logout(self, user_info):
         pass
     
-    def create_user(self, user_info):
-        pass
+    def create_user(self, user_info) -> User:
+        user = User(
+            name=user_info.name,
+            email=user_info.email,
+        )
+        # also save to mysql db
+        with Session(self.engine) as session:
+            session.add(user)
+            session.commit()
 
-    def get_user_info(self, user_id):
-        pass
+        return user
+
+    def get_user_info(self, user_id) -> User:
+        with Session(self.engine) as session:
+            user = session.get(User, user_id)
+        return user
     
     def construct_engine(self, database_specs):
         if self.deployment == "local": 
