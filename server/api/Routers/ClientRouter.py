@@ -15,7 +15,7 @@ prob just update current comments route since why on
 Earth would someone want just a scan of all comments
 soo.. either get video_id from payload or query_str
 --- would rather just do payload
-- Also update cache/session_manager maybe?
+- Also update orchestrator/session_manager maybe?
 - yes, cause if user swaps videos, need to set page_num to 0
 ---- think about state_management for this
 """
@@ -38,7 +38,7 @@ class ClientRouter(Router):
     TODO: do re-usable token authentication through HTTP headers instead of payload
     """
     def auth_user(self, request):
-        cache = self.cache
+        orchestrator = self.orchestrator
 
         form_data = json.loads(request.data)
         # TODO: change later to something like request.form['username']
@@ -46,7 +46,7 @@ class ClientRouter(Router):
         existing_session_info = form_data["token"] if "token" in form_data.keys() else None
         try:
             #print(f"\n\n ClientRouter auth_user existing_session_info: {existing_session_info} \n\n")
-            session_info = cache.get_user_session(user_info, existing_session_info)
+            session_info = orchestrator.get_user_session(user_info, existing_session_info)
         except SecurityError as security_alarm:
             data = {
                 "status": "error",
@@ -62,7 +62,7 @@ class ClientRouter(Router):
     TODO: do re-usable token authentication through HTTP headers instead of payload
     """
     def get_session_info(self, request):
-        cache = self.cache
+        orchestrator = self.orchestrator
 
         form_data = json.loads(request.data)
         video_info = self.extract_video_info()
@@ -70,7 +70,7 @@ class ClientRouter(Router):
         user_info = self.extract_user_info()
         existing_session_info = form_data["token"] if "token" in form_data.keys() else None
         try:
-            session_info = cache.get_session(user_info, existing_session_info, video_info)
+            session_info = orchestrator.get_session(user_info, existing_session_info, video_info)
         except SecurityError as security_alarm:
             data = {
                 "status": "error",
@@ -96,13 +96,13 @@ class ClientRouter(Router):
             # the above is an example of getting data from the POST request
 
             # temp instantiation of Cache object
-            cache = self.cache
+            orchestrator = self.orchestrator
 
             session_info = self.auth_user(request)
             video_info = self.extract_video_info()
-            session_info = cache.start_video_session(session_info, video_info)
+            session_info = orchestrator.start_video_session(session_info, video_info)
 
-            video_data = cache.get_video(session_info)
+            video_data = orchestrator.get_video(session_info)
             data = {
                 "session_info": session_info,
                 "video_data": video_data,
@@ -138,12 +138,12 @@ class ClientRouter(Router):
             # the above is an example of getting data from the POST request
 
             # temp instantiation of Cache object
-            cache = self.cache
+            orchestrator = self.orchestrator
 
             session_info = self.auth_user(request)
             video_file_info = self.extract_video_file_info()
-            #session_info = cache.start_video_session(session_info, video_info)
-            cache.store_video(video_file_info, session_info)
+            #session_info = orchestrator.start_video_session(session_info, video_info)
+            orchestrator.store_video(video_file_info, session_info)
 
             data = {
                 "session_info": session_info,
@@ -160,11 +160,11 @@ class ClientRouter(Router):
         # and moving session auth to HTTP HEADERS
         @app.route('/video-list', methods=["POST"])
         def get_video_list():
-            cache = self.cache
+            orchestrator = self.orchestrator
 
             session_info = self.auth_user(request)
 
-            video_data = cache.get_video_list(session_info)
+            video_data = orchestrator.get_video_list(session_info)
             data = {
                 "session_info": session_info,
                 "video_data": video_data,
@@ -194,7 +194,7 @@ class ClientRouter(Router):
             # the above is an example of getting data from the POST request
 
             # temp instantiation of Cache object
-            cache = self.cache
+            orchestrator = self.orchestrator
 
             session_info = self.auth_user(request)
             """
@@ -206,7 +206,7 @@ class ClientRouter(Router):
             then: return error code as most likely spoofing attempt
             """
 
-            comment_data = cache.get_comments(session_info)
+            comment_data = orchestrator.get_comments(session_info)
             data = {
                 "session_info": session_info,
                 "comment_data": comment_data,
