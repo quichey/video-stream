@@ -8,8 +8,6 @@ class VideoUpload:
     is_done: bool
 
     def __init__(self):
-        token = existing_session_info
-        user_state = self.current_state[token]
         is_done=False
         if len(video_upload_info.bytes) < VIDEO_UPLOAD_PAGE_SIZE:
             is_done = True
@@ -19,7 +17,7 @@ class VideoUpload:
             is_done=is_done
         )
         self.current_state[token] = user_state
-        return user_state.video_upload
+        return
 
 
     """
