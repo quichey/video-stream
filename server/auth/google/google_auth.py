@@ -26,13 +26,3 @@ class GoogleAuth(Auth):
             "token": token,
             user_info: user_info,
         }
-    
-    def register(self, user_info):
-        self.authorize()
-        pass
-    def login(self, user_info):
-        self.authorize()
-        pass
-    def logout(self, user_info):
-        self.authorize()
-        pass
