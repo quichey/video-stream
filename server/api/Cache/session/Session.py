@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from mixins.comments import Comments
-from mixins.upload_video import VideoUpload
-from mixins.watch_video import Video
+from state.comments import Comments
+from state.upload_video import VideoUpload
+from state.watch_video import Video
 
 """
 NOTE: possible datastructure involving the dataclasses above
