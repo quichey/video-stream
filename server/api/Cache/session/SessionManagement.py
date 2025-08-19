@@ -12,30 +12,6 @@ VIDEO_UPLOAD_PAGE_SIZE = 6400000
 class SecurityError(Exception):
     pass
 
-@dataclass
-class Comments:
-    offset: int
-    limit: int
-    next_page: bool
-
-@dataclass
-class Video:
-    id: int
-    timestamp: str
-    comments: Comments
-
-@dataclass
-class VideoUpload:
-    name: str
-    byte_stream: bytes
-    is_done: bool
-
-@dataclass
-class User:
-    id: int
-    token: int
-    video: Optional[Video] = None
-    video_upload: Optional[VideoUpload] = None
 
 """
 NOTE: possible datastructure involving the dataclasses above
@@ -92,6 +68,7 @@ class SessionManagement():
     for cybersecurity reasons
     token_hashes = None ?
     """
+    SESSIONS = {}
 
     def __init__(self):
         self.current_users = set()
