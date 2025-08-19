@@ -1,8 +1,10 @@
+from state.state_module import StateModule
+
 
 VIDEO_UPLOAD_PAGE_SIZE = 6400000
 
-@dataclass
-class VideoUpload:
+
+class VideoUpload(StateModule):
     name: str
     byte_stream: bytes
     is_done: bool

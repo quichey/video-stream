@@ -1,24 +1,24 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from state.state_module import StateModule
+
+
 COMMENTS_FIRST_PAGE_SIZE = 15
 COMMENTS_NEXT_PAGE_SIZE = 10
 
-@dataclass
-class Comments:
+
+class Comments(StateModule):
     offset: int = 0
     limit: int = COMMENTS_FIRST_PAGE_SIZE
     next_page: bool = False
+    video_id: int = None
 
-    def __init__(self):
-        pass
+    def __init__(self, video_id):
+        self.on_event("load_first_page_of_comments", self.load_first_page)
+        self.video_id = video_id
 
-    def get_state(self):
-        return self.state
-
-    def update_state(self, key, value):
-        self.state[key] = value
-
+    """
     def update_state(self, session_info, domain, key, value, subdomain=None):
         state_of_session = self.get_state(session_info, domain, subdomain)
         
@@ -30,19 +30,17 @@ class Comments:
         #TODO: consider changing session_info into self.extract_id(session_info)
         setattr(state_of_session, key, value)
         return
+    """
+    def load_next_page(self):
+        pass
 
         # regression test
-    def start_video_session(self, existing_session_info, video_info):
-        token = existing_session_info
-        user_state = self.current_state[token]
-        user_state.video = Video(
-            id=video_info["id"],
-            timestamp=0,
-            comments=Comments(
-                limit=COMMENTS_FIRST_PAGE_SIZE,
-                offset=0,
-                next_page=False
-            )
-        )
-        self.current_state[token] = user_state
-        return existing_session_info
+    def load_first_page(self):
+
+        # TODO: fetch comments?
+        # update self.offset
+        self.limit = COMMENTS_NEXT_PAGE_SIZE
+        self.next_page = True
+        return {
+            "next_page"
+        }
