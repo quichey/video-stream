@@ -33,54 +33,6 @@ class ClientRouter(Router):
     """
     def set_up(self):
         return
-    
-    """
-    TODO: do re-usable token authentication through HTTP headers instead of payload
-    """
-    def auth_user(self, request):
-        orchestrator = self.orchestrator
-
-        form_data = json.loads(request.data)
-        # TODO: change later to something like request.form['username']
-        user_info = self.extract_user_info()
-        existing_session_info = form_data["token"] if "token" in form_data.keys() else None
-        try:
-            #print(f"\n\n ClientRouter auth_user existing_session_info: {existing_session_info} \n\n")
-            session_info = orchestrator.get_user_session(user_info, existing_session_info)
-        except SecurityError as security_alarm:
-            data = {
-                "status": "error",
-                "msg": security_alarm.msg()
-            }
-            # later, check Flask docs
-            # update with flask framework
-            return data
-        
-        return session_info
-    
-    """
-    TODO: do re-usable token authentication through HTTP headers instead of payload
-    """
-    def get_session_info(self, request):
-        orchestrator = self.orchestrator
-
-        form_data = json.loads(request.data)
-        video_info = self.extract_video_info()
-        # TODO: change later to something like request.form['username']
-        user_info = self.extract_user_info()
-        existing_session_info = form_data["token"] if "token" in form_data.keys() else None
-        try:
-            session_info = orchestrator.get_session(user_info, existing_session_info, video_info)
-        except SecurityError as security_alarm:
-            data = {
-                "status": "error",
-                "msg": security_alarm.msg()
-            }
-            # later, check Flask docs
-            # update with flask framework
-            return data
-        
-        return session_info
 
 
     def construct_routes(self, app, request):
@@ -93,22 +45,8 @@ class ClientRouter(Router):
         # and moving session auth to HTTP HEADERS
         @app.route('/video', methods=["POST"])
         def get_video():
-            # the above is an example of getting data from the POST request
-
-            # temp instantiation of Cache object
-            orchestrator = self.orchestrator
-
-            session_info = self.auth_user(request)
-            video_info = self.extract_video_info()
-            session_info = orchestrator.start_video_session(session_info, video_info)
-
-            video_data = orchestrator.get_video(session_info)
-            data = {
-                "session_info": session_info,
-                "video_data": video_data,
-            }
-            data = jsonify(data)
-            return data
+            response = self.orchestrator.handle_request(request)
+            return response
 
         """
         curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
@@ -120,37 +58,8 @@ class ClientRouter(Router):
         # handle extra request or get rid of it somehow
         @app.route('/video-upload', methods=["POST"])
         def upload_video():
-            """
-            analyze what the client is sending
-            -- i remember taht the file JSON.stringify
-            -- was returning empty object
-            -- discover how to correctly send file info in request
-
-            gather all the different parts
-            of the video file
-            stitch em all together
-
-            and then place in the client-side videos public folder
-            """
-
-
-
-            # the above is an example of getting data from the POST request
-
-            # temp instantiation of Cache object
-            orchestrator = self.orchestrator
-
-            session_info = self.auth_user(request)
-            video_file_info = self.extract_video_file_info()
-            #session_info = orchestrator.start_video_session(session_info, video_info)
-            orchestrator.store_video(video_file_info, session_info)
-
-            data = {
-                "session_info": session_info,
-                "status": "OK",
-            }
-            data = jsonify(data)
-            return data
+            response = self.orchestrator.handle_request(request)
+            return response
 
         """
         curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
@@ -160,17 +69,8 @@ class ClientRouter(Router):
         # and moving session auth to HTTP HEADERS
         @app.route('/video-list', methods=["POST"])
         def get_video_list():
-            orchestrator = self.orchestrator
-
-            session_info = self.auth_user(request)
-
-            video_data = orchestrator.get_video_list(session_info)
-            data = {
-                "session_info": session_info,
-                "video_data": video_data,
-            }
-            data = jsonify(data)
-            return data
+            response = self.orchestrator.handle_request(request)
+            return response
 
 
       
@@ -191,28 +91,8 @@ class ClientRouter(Router):
         """
         @app.route('/getcomments', methods=["POST"])
         def read_comments():
-            # the above is an example of getting data from the POST request
-
-            # temp instantiation of Cache object
-            orchestrator = self.orchestrator
-
-            session_info = self.auth_user(request)
-            """
-            Handle different cases of different combinations
-            of User_id with session_id
-            null case: session_id is empty
-            then: generate new session --- do i need extra code for this? i don't think so
-            case 1: user_id does not match value of session_id
-            then: return error code as most likely spoofing attempt
-            """
-
-            comment_data = orchestrator.get_comments(session_info)
-            data = {
-                "session_info": session_info,
-                "comment_data": comment_data,
-            }
-            data = jsonify(data)
-            return data
+            response = self.orchestrator.handle_request(request)
+            return response
 
 
         # Route to create a new item
