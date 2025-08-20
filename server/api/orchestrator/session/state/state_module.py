@@ -1,11 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-from datetime import datetime
 
-from db.Schema import database_specs, database_specs_cloud_sql, Base, Video
-from db.Schema.Video import VideoFileManager
-from api.Routers import VideoUpload
+from db.Schema import database_specs, database_specs_cloud_sql, Base
 #from api.Cache.SessionManagement import SessionManagement
 
 class StateModule:
