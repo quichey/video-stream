@@ -20,33 +20,40 @@ class SessionManagement():
 
     def get_session(self, request):
         pass
+
+    def needs_new_session(self, request):
+        pass
     
     def on_request(self, request):
-        current_session = self.get_session(request)
+        # check the request for existing cookie
+        # if no cookie present, and no User Id passed in, then...
+        # generate a new Session Object and generate cookies
+        # Otherwise, if cookie present and no User Id passed in...
+        # just get the data
+        # If cookie present and User Id is passed in, authenticate user and cookies?
 
-        authenticated = current_session.authenticate(request)
+        # 4 cases:
+        # 1. No cookies and no User Info passed
+        # 2. Cookies and no User Info passed
+        # 3. Cookies and User Info passed in
+        # 4. No Cookie and User Info passed
+
+        # ideally want all User Info things to go in UserSession
+        # both UserSession and AnonymousSession need cookies
+
+        # I think I want most of this logic handled in SessionBase
+
+        # I just want SessionManagement to create a new session if needed
+        if self.needs_new_session(request=request):
+            current_session = self.add_session(request=request)
+        else:
+            current_session = self.get_session(request=request)
+
+        authenticated = current_session.authenticate_cookies(request)
 
         if not authenticated:
             raise SecurityError()
         return current_session.handle_request(request)
-
-    """
-    Do i actually need this?
-    Wording/concecpt is obviously different from
-    register_user. I think I was planning
-    on having register_user call this one
-    """
-    def authenticate_user(self, user_info, existing_session_info):
-        user_id = user_info["id"]
-        # TODO: Check if user_info matches existing_session_info,
-        # otherwise throw a security error
-        #print(f"user_id: {user_id}")
-        #print(f"existing_session_info: {existing_session_info}")
-        #print(f"type(user_id): {type(user_id)}")
-        #print(f"type(existing_session_info): {type(existing_session_info)}")
-        if int(user_id) != int(existing_session_info):
-            raise SecurityError("Hijacked Session Token")
-        return existing_session_info
 
    
     def exit_session(self, user_info, session_info):
