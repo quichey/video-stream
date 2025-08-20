@@ -1,5 +1,4 @@
-
-
+from api.orchestrator.session.Session import SessionBase
 
 class SecurityError(Exception):
     pass
@@ -13,16 +12,23 @@ class SessionManagement():
         pass
     
     def add_session(self, request):
-        pass
+        new_session = SessionBase()
+        session_uuid = new_session.LONG_TERM_COOKIE_ID
+        self.SESSIONS[session_uuid] = new_session
+        return new_session
 
     def end_session(self, request):
         pass
 
     def get_session(self, request):
-        pass
+        long_term_cookie_id = request.cookies.get("long_term_session")
+        return self.SESSIONS.get(long_term_cookie_id)
 
     def needs_new_session(self, request):
-        pass
+        no_long_term_cookie = not request.cookies.get("long_term_session")
+        no_temp_cookie = not request.cookies.get("temp_session")
+        no_user_info = pass
+        return no_long_term_cookie and no_temp_cookie and no_user_info
     
     def on_request(self, request):
         # check the request for existing cookie
