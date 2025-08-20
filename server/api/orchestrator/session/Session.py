@@ -17,9 +17,9 @@ class SessionBase(ABC):
     VIDEO_UPLOAD = None
     HOME = None
 
-    def __init__(self, request):
-        self.generate_long_term_cookie(request)
-        self.generate_temp_cookie(request)
+    def __init__(self, request, response):
+        self.generate_long_term_cookie(request, response)
+        self.generate_temp_cookie(request, response)
 
 
     def authenticate_cookies(self, request):
@@ -91,7 +91,7 @@ class SessionBase(ABC):
         _uuid = str(uuid.uuid4())
         return _uuid
 
-    def generate_long_term_cookie(self, response):
+    def generate_long_term_cookie(self, request, response):
         long_term_cookie_id = self.generate_uuid()
         self.TEMP_COOKIE_ID = long_term_cookie_id
         response.set_cookie(
@@ -103,7 +103,7 @@ class SessionBase(ABC):
         )
         return response
 
-    def generate_temp_cookie(self, response):
+    def generate_temp_cookie(self, request, response):
         temp_cookie_id = self.generate_uuid()
         self.TEMP_COOKIE_ID = temp_cookie_id
         response.set_cookie(
