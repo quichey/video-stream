@@ -12,7 +12,7 @@ class Video(StateModule):
     comments: Comments
 
     def __init__(self, request):
-        video_info = self.extract_video_info(request=request)
+        video_info = extract_video_info(request=request)
         self.id=video_info["id"]
         self.timestamp=0,
         self.comments=Comments()

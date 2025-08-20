@@ -11,6 +11,10 @@ def extract_user_info(request):
         "name": form_data['user_name']
     }
     return user_info
+
+def has_user_info(request):
+    user_info = extract_user_info(request)
+    return user_info and (user_info.get("id") >= 0)
     
 def extract_video_info(request):
     form_data = json.loads(request.data)
