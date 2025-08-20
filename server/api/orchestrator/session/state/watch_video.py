@@ -11,11 +11,12 @@ class Video(StateModule):
     timestamp: str
     comments: Comments
 
-    def __init__(self, request):
+    def __init__(self, request, response, deployment):
+        super().__init(request, response, deployment)
         video_info = extract_video_info(request=request)
         self.id=video_info["id"]
         self.timestamp=0,
-        self.comments=Comments()
+        self.comments=Comments(request, response, deployment, self.id)
         return
     
     def get_video_data(self, request):

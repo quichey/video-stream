@@ -10,7 +10,8 @@ class Home(StateModule):
     id: int
     timestamp: str
 
-    def __init__(self, request):
+    def __init__(self, request, response, deployment):
+        super().__init(request, response, deployment)
         return
     
     def get_video_list(self, request):

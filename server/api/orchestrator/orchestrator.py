@@ -3,10 +3,13 @@ from api.orchestrator.Cache.Cache import Cache
 
 
 class Orchestrator():
-    SESSION_MANAGEMENT = SessionManagement()
-    CACHE = Cache()
-    def __init__(self):
-        pass
+    SESSION_MANAGEMENT = None
+    CACHE = None
+    DEPLOYMENT = None
+    def __init__(self, deployment):
+        self.DEPLOYMENT = deployment
+        self.SESSION_MANAGEMENT = SessionManagement(deployment)
+        self.CACHE = Cache()
 
     def handle_request(self, request, response):
         use_cache = False
