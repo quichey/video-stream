@@ -1,3 +1,4 @@
+from flask import json
 from api.orchestrator.session.Session import SessionBase
 
 class SecurityError(Exception):
@@ -10,6 +11,16 @@ class SessionManagement():
 
     def __init__(self):
         pass
+
+    
+    def extract_user_info(self, request):
+        form_data = json.loads(request.data)
+        # TODO: change later to something like request.form['username']
+        user_info = {
+            "id": form_data['user_id'],
+            "name": form_data['user_name']
+        }
+        return user_info
     
     def add_session(self, request):
         new_session = SessionBase()

@@ -1,3 +1,4 @@
+from flask import json
 from sqlalchemy import select
 
 from state.comments import Comments
@@ -9,7 +10,8 @@ class Video(StateModule):
     timestamp: str
     comments: Comments
 
-    def __init__(self, video_info):
+    def __init__(self, request):
+        video_info = self.extract_video_info(request=request)
         self.id=video_info["id"]
         self.timestamp=0,
         self.comments=Comments()
@@ -60,3 +62,11 @@ class Video(StateModule):
         #results["comments_data"] = comments_data
 
         return results
+
+    
+    def extract_video_info(self, request):
+        form_data = json.loads(request.data)
+        video_info = {}
+        if "video_id" in form_data:
+            video_info["id"] = form_data['video_id']
+        return video_info
