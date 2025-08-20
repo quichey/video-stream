@@ -34,11 +34,10 @@ class SessionBase(ABC):
                 video_id = request["video_id"]
                 self.VIDEO = Video(id=video_id)
                 response = self.VIDEO.open_video(request)
-                results["video_data"] = response["video_data"]
-                results["comments_data"] = response["comments_data"]
-            case "scroll_comments":
-                comments_data = self.VIDEO.comments.load_next_page(request)
-                results["comments_data"] = comments_data
+                results["video_data"] = response
+            case "get_comments":
+                comments_data = self.VIDEO.comments.get_comments(request)
+                results["comments_data"] = response
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload()
             
