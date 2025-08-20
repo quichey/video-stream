@@ -1,5 +1,4 @@
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from state.comments import Comments
 from state.state_module import StateModule
@@ -22,14 +21,13 @@ class Video(StateModule):
             videos_table = self.metadata_obj.tables["videos"]
             users_table = self.metadata_obj.tables["users"]
 
-            current_video_state = self.session_manager.get_state(session_info, "video")
             subquery_select_cols = [videos_table.c.file_name, videos_table.c.file_dir, videos_table.c.user_id]
             subquery = select(
                 *subquery_select_cols
             ).select_from(
                 videos_table
             ).where(
-                videos_table.c.id == current_video_state.id
+                videos_table.c.id == self.id
             ).cte("one_video")
 
             select_cols = [subquery.c.file_name, subquery.c.file_dir, users_table.c.name]
