@@ -55,10 +55,7 @@ class SessionManagement():
         else:
             current_session = self.get_session(request=request)
 
-        authenticated = current_session.authenticate_cookies(request)
 
-        if not authenticated:
-            raise SecurityError()
         return current_session.handle_request(request)
 
    

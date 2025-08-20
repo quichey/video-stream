@@ -16,7 +16,7 @@ class SessionBase(ABC):
         self.generate_long_term_cookie()
         self.generate_temp_cookie()
 
-    @abstractmethod
+
     def authenticate_cookies(self, request):
         # TODO: Verify LONG_TERM_COOKIE_ID matches from request
         # Verify TEMP_COOKIE_ID matches from request
@@ -29,6 +29,7 @@ class SessionBase(ABC):
         return "ok"
 
     def handle_request(self, request):
+        self.authenticate_cookies(request=request)
         event = pass
         results = {}
         match event:
