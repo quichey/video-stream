@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from flask import make_response
 import uuid
+import json
 
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
-from state.home import Home
+from api.orchestrator.session.state.home import Home
 from api.util.request_data import extract_temp_cookie, has_temp_cookie
 from api.util.error_handling import SecurityError
 
@@ -16,9 +17,9 @@ class SessionBase(ABC):
     VIDEO_UPLOAD = None
     HOME = None
 
-    def __init__(self):
-        self.generate_long_term_cookie()
-        self.generate_temp_cookie()
+    def __init__(self, request):
+        self.generate_long_term_cookie(request)
+        self.generate_temp_cookie(request)
 
 
     def authenticate_cookies(self, request):
@@ -50,25 +51,27 @@ class SessionBase(ABC):
         elif url_route == "/video-list":
             return "home"
 
-    def handle_request(self, request):
+    def handle_request(self, request, response):
         self.authenticate_cookies(request=request)
         event = self.determine_event(request)
         results = {}
         match event:
             case "watch_video":
-                self.VIDEO = Video(request=request)
-                response = self.VIDEO.open_video(request)
+                self.VIDEO = Video(request, response)
+                response = self.VIDEO.open_video(request, response)
                 results["video_data"] = response
             case "get_comments":
-                response = self.VIDEO.comments.get_comments(request)
+                response = self.VIDEO.comments.get_comments(request, response)
                 results["comments_data"] = response
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload()
             case "home":
-                self.HOME = Home(request=request)
-                results["video_list"] = self.HOME.get_video_list(request)
+                self.HOME = Home(request, response)
+                results["video_list"] = self.HOME.get_video_list(request, response)
             
-        return results
+        response.data = json.dumps(results)
+        response.content_type = "application/json"
+        return response
 
     @property
     def key(self):
@@ -85,27 +88,25 @@ class SessionBase(ABC):
         pass
 
     def generate_uuid(self):
-        uuid = str(uuid.uuid4())
-        return uuid
+        _uuid = str(uuid.uuid4())
+        return _uuid
 
-    def generate_long_term_cookie(self):
-        resp = make_response("Cookie is set")
+    def generate_long_term_cookie(self, response):
         long_term_cookie_id = self.generate_uuid()
         self.TEMP_COOKIE_ID = long_term_cookie_id
-        resp.set_cookie(
+        response.set_cookie(
             "long_term_session",
             long_term_cookie_id,
             max_age=30*24*60*60,  # 30 days in seconds
             httponly=True,
             secure=True  # only over HTTPS
         )
-        return resp
+        return response
 
-    def generate_temp_cookie(self):
-        resp = make_response("Cookie is set")
+    def generate_temp_cookie(self, response):
         temp_cookie_id = self.generate_uuid()
         self.TEMP_COOKIE_ID = temp_cookie_id
-        resp.set_cookie(
+        response.set_cookie(
             "temp_session",
             temp_cookie_id,
             max_age=60*60,  # 1 hour in seconds
@@ -113,7 +114,7 @@ class SessionBase(ABC):
             secure=True
         )
         self.refresh_state()
-        return resp
+        return response
     
     def refresh_state(self):
         # use case: user reloads webpage
