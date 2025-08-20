@@ -13,7 +13,8 @@ class SessionBase(ABC):
     VIDEO_UPLOAD = None
 
     def __init__(self):
-        self.generate_token()
+        self.generate_long_term_cookie()
+        self.generate_temp_cookie()
 
     @abstractmethod
     def authenticate_cookies(self, request):
