@@ -36,7 +36,7 @@ class SessionBase(ABC):
                 response = self.VIDEO.open_video(request)
                 results["video_data"] = response
             case "get_comments":
-                comments_data = self.VIDEO.comments.get_comments(request)
+                response = self.VIDEO.comments.get_comments(request)
                 results["comments_data"] = response
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload()
@@ -49,9 +49,11 @@ class SessionBase(ABC):
         pass
 
     @property
-    @abstractmethod
     def token(self) -> str:
-        pass
+        return self.TOKEN
+    @token.setter
+    def token(self, new_value) -> str:
+        self.TOKEN = new_value
 
     def generate_token(self):
         pass
