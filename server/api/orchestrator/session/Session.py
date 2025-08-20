@@ -66,7 +66,21 @@ class SessionBase(ABC):
         pass
 
     def handle_request(self, request):
-        pass
+        event = pass
+        results = {}
+        match event:
+            case "watch_video":
+                video_id = request["video_id"]
+                self.VIDEO = Video(id=video_id)
+                response = self.VIDEO.open_video(request)
+                results["video_data"] = response["video_data"]
+                results["comments_data"] = response["comments_data"]
+            case "scroll_comments":
+                comments_data = self.VIDEO.comments.load_next_page(request)
+                results["comments_data"] = comments_data
+            
+            
+        return results
 
     @property
     def key(self):

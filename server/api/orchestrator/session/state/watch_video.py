@@ -13,5 +13,12 @@ class Video(StateModule):
         self.comments=Comments()
         return
     
-    def open_video(self):
-        self.emit("load_first_page_of_comments", {"video_id": self.id})
+    def get_video_data(self, request):
+        pass
+    def open_video(self, request):
+        results = {}
+        results["video_data"] = self.get_video_data(request)
+        comments_data = self.emit("load_first_page_of_comments", {"video_id": self.id})
+        results["comments_data"] = comments_data
+
+        return results
