@@ -1,7 +1,7 @@
 from flask import json
 
 from api.orchestrator.session.Session import SessionBase
-from api.util.request_data import extract_user_info
+from api.util.request_data import has_user_info
 
 class SecurityError(Exception):
     pass
@@ -30,7 +30,7 @@ class SessionManagement():
 
     def needs_new_session(self, request):
         no_long_term_cookie = not request.cookies.get("long_term_session")
-        no_user_info = pass
+        no_user_info = not has_user_info(request)
         return no_long_term_cookie and no_user_info
     
     def on_request(self, request):
