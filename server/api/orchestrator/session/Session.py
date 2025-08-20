@@ -24,8 +24,11 @@ class SessionBase(ABC):
         if long_term_cookie_id != self.LONG_TERM_COOKIE_ID:
             raise SecurityError("Hijacked Session Token")
         temp_cookie_id = request.cookies.get("temp_session")
-        if temp_cookie_id != self.TEMP_COOKIE_ID:
+        temp_cookie_id_exists = pass
+        if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
+        if not temp_cookie_id_exists:
+            self.generate_temp_cookie()
         return "ok"
 
     def handle_request(self, request):
@@ -89,4 +92,9 @@ class SessionBase(ABC):
             httponly=True,
             secure=True
         )
+        self.refresh_state()
         return resp
+    
+    def refresh_state(self):
+        # use case: user reloads webpage
+        pass

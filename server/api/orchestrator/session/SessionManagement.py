@@ -26,9 +26,8 @@ class SessionManagement():
 
     def needs_new_session(self, request):
         no_long_term_cookie = not request.cookies.get("long_term_session")
-        no_temp_cookie = not request.cookies.get("temp_session")
         no_user_info = pass
-        return no_long_term_cookie and no_temp_cookie and no_user_info
+        return no_long_term_cookie and no_user_info
     
     def on_request(self, request):
         # check the request for existing cookie
