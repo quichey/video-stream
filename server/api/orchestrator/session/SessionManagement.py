@@ -15,8 +15,8 @@ class SessionManagement():
         pass
 
     
-    def add_session(self, request):
-        new_session = SessionBase()
+    def add_session(self, request, response):
+        new_session = SessionBase(request, response)
         session_uuid = new_session.LONG_TERM_COOKIE_ID
         self.SESSIONS[session_uuid] = new_session
         return new_session
@@ -54,7 +54,7 @@ class SessionManagement():
 
         # I just want SessionManagement to create a new session if needed
         if self.needs_new_session(request=request):
-            current_session = self.add_session(request=request)
+            current_session = self.add_session(request, response)
         else:
             current_session = self.get_session(request=request)
 
