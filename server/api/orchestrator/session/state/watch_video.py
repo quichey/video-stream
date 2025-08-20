@@ -3,6 +3,7 @@ from sqlalchemy import select
 
 from state.comments import Comments
 from state.state_module import StateModule
+from api.util.request_data import extract_video_info
 
 
 class Video(StateModule):
@@ -62,11 +63,3 @@ class Video(StateModule):
         #results["comments_data"] = comments_data
 
         return results
-
-    
-    def extract_video_info(self, request):
-        form_data = json.loads(request.data)
-        video_info = {}
-        if "video_id" in form_data:
-            video_info["id"] = form_data['video_id']
-        return video_info
