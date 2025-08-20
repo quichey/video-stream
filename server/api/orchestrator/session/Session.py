@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
+from flask import make_response
+import uuid
 
 from state.upload_video import VideoUpload
 from state.watch_video import Video
 
 
 class SessionBase(ABC):
-    TOKEN = None
+    LONG_TERM_COOKIE_ID = None
+    TEMP_COOKIE_ID = None
     VIDEO = None
     VIDEO_UPLOAD = None
 
@@ -13,17 +16,16 @@ class SessionBase(ABC):
         self.generate_token()
 
     @abstractmethod
-    def authenticate(self, request):
-        user_id = user_info["id"]
-        # TODO: Check if user_info matches existing_session_info,
-        # otherwise throw a security error
-        #print(f"user_id: {user_id}")
-        #print(f"existing_session_info: {existing_session_info}")
-        #print(f"type(user_id): {type(user_id)}")
-        #print(f"type(existing_session_info): {type(existing_session_info)}")
-        if int(user_id) != int(existing_session_info):
+    def authenticate_cookies(self, request):
+        # TODO: Verify LONG_TERM_COOKIE_ID matches from request
+        # Verify TEMP_COOKIE_ID matches from request
+        long_term_cookie_id = request.cookies.get("long_term_session")
+        if long_term_cookie_id != self.LONG_TERM_COOKIE_ID:
             raise SecurityError("Hijacked Session Token")
-        return existing_session_info
+        temp_cookie_id = request.cookies.get("temp_session")
+        if temp_cookie_id != self.TEMP_COOKIE_ID:
+            raise SecurityError("Hijacked Session Token")
+        return "ok"
 
     def handle_request(self, request):
         event = pass
@@ -56,3 +58,33 @@ class SessionBase(ABC):
 
     def generate_token(self):
         pass
+
+    def generate_uuid(self):
+        uuid = str(uuid.uuid4())
+        return uuid
+
+    def generate_long_term_cookie(self):
+        resp = make_response("Cookie is set")
+        long_term_cookie_id = self.generate_uuid()
+        self.TEMP_COOKIE_ID = long_term_cookie_id
+        resp.set_cookie(
+            "long_term_session",
+            long_term_cookie_id,
+            max_age=30*24*60*60,  # 30 days in seconds
+            httponly=True,
+            secure=True  # only over HTTPS
+        )
+        return resp
+
+    def generate_temp_cookie(self):
+        resp = make_response("Cookie is set")
+        temp_cookie_id = self.generate_uuid()
+        self.TEMP_COOKIE_ID = temp_cookie_id
+        resp.set_cookie(
+            "temp_session",
+            temp_cookie_id,
+            max_age=60*60,  # 1 hour in seconds
+            httponly=True,
+            secure=True
+        )
+        return resp
