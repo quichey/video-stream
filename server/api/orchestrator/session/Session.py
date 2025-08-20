@@ -31,9 +31,16 @@ class SessionBase(ABC):
             self.generate_temp_cookie()
         return "ok"
 
+    def determine_event(self, request):
+        url_route = request.path
+        if url_route == "/video":
+            return "watch_video"
+        elif url_route == "/getcomments":
+            return "get_comments"
+
     def handle_request(self, request):
         self.authenticate_cookies(request=request)
-        event = pass
+        event = self.determine_event(request)
         results = {}
         match event:
             case "watch_video":
