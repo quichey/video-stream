@@ -15,8 +15,12 @@ class Comments(StateModule):
     video_id: int = None
 
     def __init__(self, video_id):
-        self.on_event("load_first_page_of_comments", self.load_first_page)
+        #self.on_event("load_first_page_of_comments", self.load_first_page)
         self.video_id = video_id
+
+    def get_comments(self):
+        # TODO: determine when to do comments_first_page or not
+        pass
 
     """
     def update_state(self, session_info, domain, key, value, subdomain=None):
