@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Optional
 
 from state.upload_video import VideoUpload
 from state.watch_video import Video
