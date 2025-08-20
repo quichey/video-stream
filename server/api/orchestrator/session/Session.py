@@ -4,6 +4,7 @@ import uuid
 
 from state.upload_video import VideoUpload
 from state.watch_video import Video
+from state.home import Home
 
 
 class SessionBase(ABC):
@@ -11,6 +12,7 @@ class SessionBase(ABC):
     TEMP_COOKIE_ID = None
     VIDEO = None
     VIDEO_UPLOAD = None
+    HOME = None
 
     def __init__(self):
         self.generate_long_term_cookie()
@@ -37,6 +39,8 @@ class SessionBase(ABC):
             return "watch_video"
         elif url_route == "/getcomments":
             return "get_comments"
+        elif url_route == "/video-list":
+            return "home"
 
     def handle_request(self, request):
         self.authenticate_cookies(request=request)
@@ -52,7 +56,9 @@ class SessionBase(ABC):
                 results["comments_data"] = response
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload()
-            
+            case "home":
+                self.HOME = Home(request=request)
+                results["video_list"] = self.HOME.get_video_list(request)
             
         return results
 
