@@ -1,7 +1,6 @@
 # Example using Flask and SQLite
-from flask import jsonify, json
+from flask import make_response
 
-from api.Cache import SecurityError
 from .Router import Router
 
 """
@@ -45,7 +44,8 @@ class ClientRouter(Router):
         # and moving session auth to HTTP HEADERS
         @app.route('/video', methods=["POST"])
         def get_video():
-            response = self.orchestrator.handle_request(request)
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
             return response
 
         """
@@ -69,7 +69,8 @@ class ClientRouter(Router):
         # and moving session auth to HTTP HEADERS
         @app.route('/video-list', methods=["POST"])
         def get_video_list():
-            response = self.orchestrator.handle_request(request)
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
             return response
 
 
@@ -91,7 +92,8 @@ class ClientRouter(Router):
         """
         @app.route('/getcomments', methods=["POST"])
         def read_comments():
-            response = self.orchestrator.handle_request(request)
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
             return response
 
 

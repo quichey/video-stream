@@ -33,7 +33,7 @@ class SessionManagement():
         no_user_info = not has_user_info(request)
         return no_long_term_cookie and no_user_info
     
-    def on_request(self, request):
+    def on_request(self, request, response):
         # check the request for existing cookie
         # if no cookie present, and no User Id passed in, then...
         # generate a new Session Object and generate cookies
@@ -59,7 +59,7 @@ class SessionManagement():
             current_session = self.get_session(request=request)
 
 
-        return current_session.handle_request(request)
+        return current_session.handle_request(request, response)
 
    
     def exit_session(self, user_info, session_info):

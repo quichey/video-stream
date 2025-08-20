@@ -8,12 +8,12 @@ class Orchestrator():
     def __init__(self):
         pass
 
-    def handle_request(self, request):
+    def handle_request(self, request, response):
         use_cache = False
         if use_cache:
-            result = self.CACHE.get_data(request)
+            result = self.CACHE.get_data(request, response)
         else:
-            result = self.SESSION_MANAGEMENT.on_request(request)
+            result = self.SESSION_MANAGEMENT.on_request(request, response)
         
         cache_result = False
         if cache_result:
@@ -21,4 +21,4 @@ class Orchestrator():
 
         #TODO: have ways for AdminRoutes.py to interact?
 
-        return result
+        return response
