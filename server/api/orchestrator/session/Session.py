@@ -37,8 +37,7 @@ class SessionBase(ABC):
         results = {}
         match event:
             case "watch_video":
-                video_id = request["video_id"]
-                self.VIDEO = Video(id=video_id)
+                self.VIDEO = Video(request=request)
                 response = self.VIDEO.open_video(request)
                 results["video_data"] = response
             case "get_comments":
