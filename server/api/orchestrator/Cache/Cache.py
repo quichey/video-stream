@@ -1,13 +1,10 @@
-from sqlalchemy import create_engine
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from db.Schema import database_specs, database_specs_cloud_sql, Base, Video
+from db.Schema import Video
 from db.Schema.Video import VideoFileManager
 from api.Routers import VideoUpload
 #from api.Cache.SessionManagement import SessionManagement
-from .SessionManagement import SessionManagement, VideoUpload as VideoUploadSession
 
 """
 In my experience working at CliniComp,
@@ -91,68 +88,6 @@ class Cache():
         session_info = self.session_manager.start_video_session(existing_session_info, video_info)
         return session_info
     
-
-    def get_video_list(self, session_info):
-        data = []
-        with self.engine.connect() as conn:
-            videos_table = self.metadata_obj.tables["videos"]
-            users_table = self.metadata_obj.tables["users"]
-
-            subquery_select_cols = [
-                videos_table.c.id,
-                videos_table.c.file_name,
-                videos_table.c.file_dir,
-                videos_table.c.user_id,
-                videos_table.c.date_created,
-                videos_table.c.date_updated,
-            ]
-            subquery = select(
-                *subquery_select_cols
-            ).select_from(
-                videos_table
-            ).limit(
-                10
-            ).cte("one_page_videos")
-
-            select_cols = [
-                subquery.c.id,
-                subquery.c.file_name,
-                subquery.c.file_dir,
-                users_table.c.name,
-                users_table.c.profile_icon,
-                users_table.c.id,
-                subquery.c.date_created,
-                subquery.c.date_updated,
-            ]
-            stmt = select(
-                *select_cols
-            ).select_from(
-                subquery
-            ).join(
-                users_table,
-                subquery.c.user_id == users_table.c.id
-            )
-
-            records = conn.execute(stmt)
-            #TODO: consider how to actually have
-            # client show the correct video
-            # maybe could just point to
-            # api's address and move assets from
-            # db/ to api/ 
-            for row in records:
-                video_data_point = {
-                    "id": row[0],
-                    "file_name": row[1],
-                    "file_dir": row[2],
-                    "user_name": row[3],
-                    "user_icon": row[4],
-                    "user_id": row[5],
-                    "date_created": row[6],
-                    "date_updated": row[7],
-                }
-                data.append(video_data_point)
-
-        return data
 
     """
     Should I have session_info here if i intend this for admin stuff?
