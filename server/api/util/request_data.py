@@ -22,3 +22,13 @@ def extract_video_info(request):
     if "video_id" in form_data:
         video_info["id"] = form_data['video_id']
     return video_info
+
+
+def extract_temp_cookie(request):
+    cookie = request.cookies.get("temp_session")
+    return cookie
+
+
+def has_temp_cookie(request):
+    cookie = extract_temp_cookie(request=request)
+    return cookie is not None

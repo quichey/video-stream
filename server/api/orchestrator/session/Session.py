@@ -2,9 +2,11 @@ from abc import ABC, abstractmethod
 from flask import make_response
 import uuid
 
-from state.upload_video import VideoUpload
-from state.watch_video import Video
+from api.orchestrator.session.state.upload_video import VideoUpload
+from api.orchestrator.session.state.watch_video import Video
 from state.home import Home
+from api.util.request_data import extract_temp_cookie, has_temp_cookie
+from api.util.error_handling import SecurityError
 
 
 class SessionBase(ABC):
@@ -22,15 +24,21 @@ class SessionBase(ABC):
     def authenticate_cookies(self, request):
         # TODO: Verify LONG_TERM_COOKIE_ID matches from request
         # Verify TEMP_COOKIE_ID matches from request
+
+        # Handle long term cookie
         long_term_cookie_id = request.cookies.get("long_term_session")
         if long_term_cookie_id != self.LONG_TERM_COOKIE_ID:
-            raise SecurityError("Hijacked Session Token")
-        temp_cookie_id = request.cookies.get("temp_session")
-        temp_cookie_id_exists = pass
+            raise SecurityError("Hijacked Long Term Cookie")
+        
+        # Handle temp cookie
+        temp_cookie_id = extract_temp_cookie(request)
+        temp_cookie_id_exists = has_temp_cookie(request)
         if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
         if not temp_cookie_id_exists:
             self.generate_temp_cookie()
+
+
         return "ok"
 
     def determine_event(self, request):
