@@ -9,13 +9,13 @@ class Orchestrator():
         pass
 
     def handle_request(self, request):
-        use_cache = pass
+        use_cache = False
         if use_cache:
             result = self.CACHE.get_data(request)
         else:
             result = self.SESSION_MANAGEMENT.on_request(request)
         
-        cache_result = pass
+        cache_result = False
         if cache_result:
             self.Cache.cache_data(request, result)
 
