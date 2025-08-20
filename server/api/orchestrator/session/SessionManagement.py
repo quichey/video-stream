@@ -10,13 +10,14 @@ class SecurityError(Exception):
 
 class SessionManagement():
     SESSIONS = {}
+    DEPLOYMENT = None
 
-    def __init__(self):
-        pass
+    def __init__(self, deployment):
+        self.DEPLOYMENT = deployment
 
     
     def add_session(self, request, response):
-        new_session = SessionBase(request, response)
+        new_session = SessionBase(request, response, self.DEPLOYMENT)
         session_uuid = new_session.LONG_TERM_COOKIE_ID
         self.SESSIONS[session_uuid] = new_session
         return new_session

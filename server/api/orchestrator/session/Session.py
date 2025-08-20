@@ -11,13 +11,16 @@ from api.util.error_handling import SecurityError
 
 
 class SessionBase(ABC):
+    DEPLOYMENT = None
+
     LONG_TERM_COOKIE_ID = None
     TEMP_COOKIE_ID = None
     VIDEO = None
     VIDEO_UPLOAD = None
     HOME = None
 
-    def __init__(self, request, response):
+    def __init__(self, request, response, deployment):
+        self.DEPLOYMENT = deployment
         self.generate_long_term_cookie(request, response)
         self.generate_temp_cookie(request, response)
 
@@ -57,16 +60,16 @@ class SessionBase(ABC):
         results = {}
         match event:
             case "watch_video":
-                self.VIDEO = Video(request, response)
+                self.VIDEO = Video(request, response, self.DEPLOYMENT)
                 response = self.VIDEO.open_video(request, response)
                 results["video_data"] = response
             case "get_comments":
                 response = self.VIDEO.comments.get_comments(request, response)
                 results["comments_data"] = response
             case "video_upload":
-                self.VIDEO_UPLOAD = VideoUpload()
+                self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT)
             case "home":
-                self.HOME = Home(request, response)
+                self.HOME = Home(request, response, self.DEPLOYMENT)
                 results["video_list"] = self.HOME.get_video_list(request, response)
             
         response.data = json.dumps(results)
