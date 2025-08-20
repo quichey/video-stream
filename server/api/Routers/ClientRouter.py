@@ -58,7 +58,8 @@ class ClientRouter(Router):
         # handle extra request or get rid of it somehow
         @app.route('/video-upload', methods=["POST"])
         def upload_video():
-            response = self.orchestrator.handle_request(request)
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
             return response
 
         """
