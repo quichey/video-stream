@@ -27,6 +27,7 @@ class SessionManagement():
 
     def get_session(self, request):
         long_term_cookie_id = request.cookies.get("long_term_session")
+        print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         return self.SESSIONS.get(long_term_cookie_id)
 
     def needs_new_session(self, request):
