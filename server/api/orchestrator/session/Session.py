@@ -40,7 +40,8 @@ class SessionBase(ABC):
         temp_cookie_id_exists = has_temp_cookie(request)
         if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
-        if not temp_cookie_id_exists:
+        need_temp_cookie = (not temp_cookie_id_exists) and (self.TEMP_COOKIE_ID is None)
+        if need_temp_cookie:
             self.generate_temp_cookie(request, response)
 
 
