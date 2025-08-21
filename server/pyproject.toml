@@ -6,6 +6,10 @@ authors = [
     {name = "Your Name",email = "you@example.com"}
 ]
 readme = "README.md"
+packages = [
+    { include = "api" },
+    { include = "db" },
+]
 requires-python = ">=3.10,<4.0"
 dependencies = [
     "flask (>=3.1.0,<4.0.0)",

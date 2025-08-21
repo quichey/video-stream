@@ -1,4 +1,4 @@
-from state.state_module import StateModule
+from api.orchestrator.session.state.state_module import StateModule
 
 from api.util.request_data import extract_video_file_info
 

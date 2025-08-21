@@ -1,7 +1,7 @@
 
 from sqlalchemy import select
 
-from state.state_module import StateModule
+from api.orchestrator.session.state.state_module import StateModule
 
 
 COMMENTS_FIRST_PAGE_SIZE = 15
