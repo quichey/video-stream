@@ -11,10 +11,10 @@ class Home(StateModule):
     timestamp: str
 
     def __init__(self, request, response, deployment):
-        super().__init(request, response, deployment)
+        super().__init__(request, response, deployment)
         return
     
-    def get_video_list(self, request):
+    def get_video_list(self, request, response):
         data = []
         with self.engine.connect() as conn:
             videos_table = self.metadata_obj.tables["videos"]

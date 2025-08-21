@@ -25,7 +25,7 @@ class SessionBase(ABC):
         self.generate_temp_cookie(request, response)
 
 
-    def authenticate_cookies(self, request):
+    def authenticate_cookies(self, request, response):
         # TODO: Verify LONG_TERM_COOKIE_ID matches from request
         # Verify TEMP_COOKIE_ID matches from request
 
@@ -40,7 +40,7 @@ class SessionBase(ABC):
         if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
         if not temp_cookie_id_exists:
-            self.generate_temp_cookie()
+            self.generate_temp_cookie(request, response)
 
 
         return "ok"
@@ -55,22 +55,23 @@ class SessionBase(ABC):
             return "home"
 
     def handle_request(self, request, response):
-        self.authenticate_cookies(request=request)
+        self.authenticate_cookies(request, response)
         event = self.determine_event(request)
         results = {}
         match event:
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT)
-                response = self.VIDEO.open_video(request, response)
-                results["video_data"] = response
+                video_data = self.VIDEO.open_video(request, response)
+                results["video_data"] = video_data
             case "get_comments":
-                response = self.VIDEO.comments.get_comments(request, response)
-                results["comments_data"] = response
+                comments_data = self.VIDEO.comments.get_comments(request, response)
+                results["comments_data"] = comments_data
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT)
             case "home":
                 self.HOME = Home(request, response, self.DEPLOYMENT)
-                results["video_list"] = self.HOME.get_video_list(request, response)
+                video_list_data = self.HOME.get_video_list(request, response)
+                results["video_list"] = video_list_data
             
         response.data = json.dumps(results)
         response.content_type = "application/json"
