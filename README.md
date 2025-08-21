@@ -114,3 +114,5 @@ Purpose: Integrate the client-side Cloud Run Instance with the Server-side Cloud
 Purpose: Handle sessions for non-logged-in-users better.
 As of now, I have to run the AdminRouter to delete the sessionmanager token
 Figure out way to where I do not have to do this
+
+# Branch: session-non-logged-in-user--client
