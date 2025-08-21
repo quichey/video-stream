@@ -7,14 +7,14 @@ def extract_user_info(request):
     form_data = json.loads(request.data)
     # TODO: change later to something like request.form['username']
     user_info = {
-        "id": form_data['user_id'],
-        "name": form_data['user_name']
+        "id": form_data.get('user_id'),
+        "name": form_data.get('user_name')
     }
     return user_info
 
 def has_user_info(request):
     user_info = extract_user_info(request)
-    return user_info and (user_info.get("id") >= 0)
+    return user_info and (user_info.get("id") is not None) and (user_info.get("id") >= 0)
     
 def extract_video_info(request):
     form_data = json.loads(request.data)
