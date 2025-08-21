@@ -24,6 +24,16 @@ def extract_video_info(request):
     return video_info
 
 
+
+def extract_long_term_cookie(request):
+    cookie = request.cookies.get("long_term_session")
+    return cookie
+
+
+def has_long_term_cookie(request):
+    cookie = extract_long_term_cookie(request=request)
+    return cookie is not None
+
 def extract_temp_cookie(request):
     cookie = request.cookies.get("temp_session")
     return cookie

@@ -7,7 +7,7 @@ import json
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
 from api.orchestrator.session.state.home import Home
-from api.util.request_data import extract_temp_cookie, has_temp_cookie
+from api.util.request_data import extract_temp_cookie, has_temp_cookie, has_long_term_cookie, extract_long_term_cookie
 from api.util.error_handling import SecurityError
 
 
@@ -31,8 +31,9 @@ class SessionBase(ABC):
         # Verify TEMP_COOKIE_ID matches from request
 
         # Handle long term cookie
-        long_term_cookie_id = request.cookies.get("long_term_session")
-        if long_term_cookie_id != self.LONG_TERM_COOKIE_ID:
+        long_term_cookie_id = extract_long_term_cookie(request)
+        long_term_cookie_id_exists = has_long_term_cookie(request)
+        if long_term_cookie_id_exists and (long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
             raise SecurityError("Hijacked Long Term Cookie")
         
         # Handle temp cookie
@@ -103,7 +104,7 @@ class SessionBase(ABC):
 
     def generate_long_term_cookie(self, request, response):
         long_term_cookie_id = self.generate_uuid()
-        self.TEMP_COOKIE_ID = long_term_cookie_id
+        self.LONG_TERM_COOKIE_ID = long_term_cookie_id
         response.set_cookie(
             "long_term_session",
             long_term_cookie_id,
