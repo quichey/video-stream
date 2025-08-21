@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from flask import make_response
+from datetime import datetime
 import uuid
 import json
 
@@ -72,8 +73,12 @@ class SessionBase(ABC):
                 self.HOME = Home(request, response, self.DEPLOYMENT)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
-            
-        response.data = json.dumps(results)
+        print(f"\n\n resultsL {results} \n\n")
+        def datetime_handler(obj):
+            if isinstance(obj, datetime):
+                return obj.isoformat()  # or str(obj)
+            raise TypeError("Type not serializable")
+        response.data = json.dumps(results, default=datetime_handler)
         response.content_type = "application/json"
         return response
 
