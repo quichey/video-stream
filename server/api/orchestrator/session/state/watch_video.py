@@ -19,7 +19,7 @@ class Video(StateModule):
         self.comments=Comments(request, response, deployment, self.id)
         return
     
-    def get_video_data(self, request):
+    def get_video_data(self, request, response):
         data = {}
         with self.engine.connect() as conn:
             videos_table = self.metadata_obj.tables["videos"]
@@ -57,9 +57,9 @@ class Video(StateModule):
 
         return data
 
-    def open_video(self, request):
+    def open_video(self, request, response):
         results = {}
-        results["video_data"] = self.get_video_data(request)
+        results["video_data"] = self.get_video_data(request, response)
         #comments_data = self.emit("load_first_page_of_comments", {"video_id": self.id})
         #results["comments_data"] = comments_data
 
