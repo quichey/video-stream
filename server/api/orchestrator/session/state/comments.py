@@ -34,7 +34,7 @@ class Comments(StateModule):
         using large OFFSET values can lead to slower queries, especially on large tables,
         as the database needs to scan through a large number of rows before applying the LIMIT. 
     """
-    def get_comments(self, request):
+    def get_comments(self, request, response):
         limit = self.limit
         offset = self.offset
 
