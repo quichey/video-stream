@@ -43,9 +43,12 @@ class SessionBase(ABC):
         if request_temp_cookie_id_exists and (request_temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
 
+        # Handle User refresh web-page
+        self.handle_new_temp_session(request, response)
+
         return "ok"
     
-    def handle_load_session(self, request, response):
+    def handle_new_temp_session(self, request, response):
         # needed  and (self.TEMP_COOKIE_ID is None)
         # so that first request did not generate 2 temp_cookies
         # but also want to generate new temp_cookie of no temp_cookie from request
@@ -79,7 +82,7 @@ class SessionBase(ABC):
         results = {}
         match event:
             case "load_session":
-                self.handle_load_session(request, response)
+                self.handle_new_temp_session(request, response)
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT)
                 video_data = self.VIDEO.open_video(request, response)
