@@ -35,7 +35,7 @@ class ClientRouter(Router):
 
 
     def construct_routes(self, app, request):
-        @app.route('/load_session', methods=["POST"])
+        @app.route('/load-session', methods=["POST"])
         def load_session():
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
