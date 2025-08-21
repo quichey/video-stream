@@ -12,7 +12,7 @@ class Video(StateModule):
     comments: Comments
 
     def __init__(self, request, response, deployment):
-        super().__init(request, response, deployment)
+        super().__init__(request, response, deployment)
         video_info = extract_video_info(request=request)
         self.id=video_info["id"]
         self.timestamp=0,
@@ -63,4 +63,4 @@ class Video(StateModule):
         #comments_data = self.emit("load_first_page_of_comments", {"video_id": self.id})
         #results["comments_data"] = comments_data
 
-        return results
+        return results["video_data"]

@@ -14,7 +14,7 @@ class Comments(StateModule):
     video_id: int = None
 
     def __init__(self, request, response, deployment, video_id):
-        super().__init(request, response, deployment)
+        super().__init__(request, response, deployment)
         #self.on_event("load_first_page_of_comments", self.load_first_page)
         self.video_id = video_id
 

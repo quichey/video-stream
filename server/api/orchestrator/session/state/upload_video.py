@@ -11,7 +11,7 @@ class VideoUpload(StateModule):
     is_done: bool
 
     def __init__(self, request, response, deployment):
-        super().__init(request, response, deployment)
+        super().__init__(request, response, deployment)
         video_file_info = extract_video_file_info(request=request)
         self.name = video_file_info["name"]
         self.byte_stream = video_file_info["byte_stream"]
