@@ -35,6 +35,11 @@ class ClientRouter(Router):
 
 
     def construct_routes(self, app, request):
+        @app.route('/load_session', methods=["POST"])
+        def load_session():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
 
         """
         curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video

@@ -16,6 +16,7 @@ class SessionBase(ABC):
 
     LONG_TERM_COOKIE_ID = None
     TEMP_COOKIE_ID = None
+
     VIDEO = None
     VIDEO_UPLOAD = None
     HOME = None
@@ -31,17 +32,20 @@ class SessionBase(ABC):
         # Verify TEMP_COOKIE_ID matches from request
 
         # Handle long term cookie
-        long_term_cookie_id = extract_long_term_cookie(request)
-        long_term_cookie_id_exists = has_long_term_cookie(request)
-        if long_term_cookie_id_exists and (long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
+        request_long_term_cookie_id = extract_long_term_cookie(request)
+        request_long_term_cookie_id_exists = has_long_term_cookie(request)
+        if request_long_term_cookie_id_exists and (request_long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
             raise SecurityError("Hijacked Long Term Cookie")
         
         # Handle temp cookie
-        temp_cookie_id = extract_temp_cookie(request)
-        temp_cookie_id_exists = has_temp_cookie(request)
-        if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
+        request_temp_cookie_id = extract_temp_cookie(request)
+        request_temp_cookie_id_exists = has_temp_cookie(request)
+        if request_temp_cookie_id_exists and (request_temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
-        need_temp_cookie = (not temp_cookie_id_exists) and (long_term_cookie_id_exists)
+
+        return "ok"
+    
+    def handle_load_session(self, request, response):
         # needed  and (self.TEMP_COOKIE_ID is None)
         # so that first request did not generate 2 temp_cookies
         # but also want to generate new temp_cookie of no temp_cookie from request
@@ -51,14 +55,17 @@ class SessionBase(ABC):
         # for first instance of session, long_term_cookie and temp_cookie do not exist in request
         # So to handle case of refreshing page, long_term_cookie should be present but short_term_cookie
         # should not be present
+        request_long_term_cookie_id_exists = has_long_term_cookie(request)
+        request_temp_cookie_id_exists = has_temp_cookie(request)
+        need_temp_cookie = (not request_temp_cookie_id_exists) and (request_long_term_cookie_id_exists)
         if need_temp_cookie:
             self.generate_temp_cookie(request, response)
 
 
-        return "ok"
-
     def determine_event(self, request):
         url_route = request.path
+        if url_route == "/load-session":
+            return "load_session"
         if url_route == "/video":
             return "watch_video"
         elif url_route == "/getcomments":
@@ -71,6 +78,8 @@ class SessionBase(ABC):
         event = self.determine_event(request)
         results = {}
         match event:
+            case "load_session":
+                self.handle_load_session(request, response)
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT)
                 video_data = self.VIDEO.open_video(request, response)
