@@ -41,7 +41,16 @@ class SessionBase(ABC):
         temp_cookie_id_exists = has_temp_cookie(request)
         if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
             raise SecurityError("Hijacked Session Token")
-        need_temp_cookie = (not temp_cookie_id_exists) and (self.TEMP_COOKIE_ID is None)
+        need_temp_cookie = (not temp_cookie_id_exists) and (long_term_cookie_id_exists)
+        # needed  and (self.TEMP_COOKIE_ID is None)
+        # so that first request did not generate 2 temp_cookies
+        # but also want to generate new temp_cookie of no temp_cookie from request
+        # for case where user reloads the page
+        #
+        # Assume for now that long_term_cookie lasts forever
+        # for first instance of session, long_term_cookie and temp_cookie do not exist in request
+        # So to handle case of refreshing page, long_term_cookie should be present but short_term_cookie
+        # should not be present
         if need_temp_cookie:
             self.generate_temp_cookie(request, response)
 
