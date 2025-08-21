@@ -1,5 +1,7 @@
+import React from "react";
 import { Container } from "@mui/material";
 
+import { useLoadSession } from "./customHooks/useLoadSession";
 import useWindowDimensions from "./customHooks/useWindowDimensions";
 import Pages from "./pages";
 
@@ -7,6 +9,16 @@ import "./App.css";
 
 function App() {
   const { width: windowWidth } = useWindowDimensions();
+  // This will handle fetching session from the server and saving temp-session from cookie
+  useLoadSession();
+
+  React.useEffect(() => {
+    // Cleanup function: remove temp-session token from sessionStorage on unmount
+    return () => {
+      sessionStorage.removeItem("tempSessionToken");
+    };
+  }, []); // empty dependency array → cleanup on unmount
+
   return (
     <Container
       style={{
