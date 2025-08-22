@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { serverURL } from "../pages/index"
 
 export function useLoadSession() {
+  const [loaded, setLoaded] = useState(false); // initially false
   useEffect(() => {
     async function initSession() {
       try {
@@ -14,6 +15,9 @@ export function useLoadSession() {
 
         if (tempToken) {
           sessionStorage.setItem("tempSessionToken", tempToken);
+          setLoaded(true); // token retrieved
+        } else{
+            setLoaded(false)
         }
       } catch (err) {
         console.error("Failed to load session", err);
@@ -22,4 +26,5 @@ export function useLoadSession() {
 
     initSession();
   }, []);
+  return loaded;
 }
