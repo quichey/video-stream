@@ -20,7 +20,6 @@ export const HTTPContext = React.createContext(null);
 export default function Pages() {
   const [userID, setUserID] = React.useState(0);
   const [userName, setUserName] = React.useState("users_name_0");
-  const [sessionToken, setSessionToken] = React.useState(undefined);
 
   const [channelID, setChannelID] = React.useState(0);
   const [channelName, setChannelName] = React.useState("users_name_0");
@@ -36,17 +35,11 @@ export default function Pages() {
       user_id: userID,
       user_name: userName,
       video_id: videoID,
+      session_token: sessionStorage.getItem("tempSessionToken")
     };
-    if (sessionToken !== undefined) {
-      payloadObject.token = sessionToken;
-    }
     var payloadJSON = JSON.stringify(payloadObject);
     setPostRequestPayload(payloadJSON);
-  }, [userID, userName, sessionToken, videoID]);
-
-  const refreshSessionToken = React.useCallback((responseJSON) => {
-    setSessionToken(responseJSON.session_info);
-  }, []);
+  }, [userID, userName, videoID]);
 
   return (
     <UserContext.Provider
@@ -55,7 +48,6 @@ export default function Pages() {
         setID: setUserID,
         uName: userName,
         setName: setUserName,
-        sessionToken: sessionToken,
       }}
     >
     <ChannelContext.Provider
@@ -78,7 +70,6 @@ export default function Pages() {
       >
         <HTTPContext.Provider
           value={{
-            refreshSessionToken: refreshSessionToken,
             serverURL: serverURL,
             postRequestPayload: postRequestPayload,
           }}
@@ -109,7 +100,7 @@ export default function Pages() {
                 <Route
                   index
                   path="upload"
-                  element={<VideoUpload token={sessionToken} />}
+                  element={<VideoUpload />}
                 />
               </Routes>
             </Box>
