@@ -40,7 +40,7 @@ class SessionBase(ABC):
         # Handle temp cookie
         request_session_token = extract_session_token(request)
         request_session_token_exists = has_session_token(request)
-        if request_session_token_exists and (request_session_token != self.TEMP_COOKIE_ID):
+        if request_session_token_exists and (request_session_token != self.TOKEN):
             raise SecurityError("Hijacked Session Token")
 
         # Handle User refresh web-page
@@ -88,8 +88,8 @@ class SessionBase(ABC):
                 video_data = self.VIDEO.open_video(request, response)
                 results["video_data"] = video_data
             case "get_comments":
-                comments_data = self.VIDEO.comments.get_comments(request, response)
-                results["comments_data"] = comments_data
+                comment_data = self.VIDEO.comments.get_comments(request, response)
+                results["comment_data"] = comment_data
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT)
             case "home":
@@ -127,12 +127,15 @@ class SessionBase(ABC):
     def generate_long_term_cookie(self, request, response):
         long_term_cookie_id = self.generate_uuid()
         self.LONG_TERM_COOKIE_ID = long_term_cookie_id
+        IS_PRODUCTION = self.DEPLOYMENT is 'cloud'
         response.set_cookie(
             "long_term_session",
             long_term_cookie_id,
-            max_age=30*24*60*60,  # 30 days in seconds
+            max_age=30*24*60*60,  # 30 days
             httponly=True,
-            secure=True  # only over HTTPS
+            secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
+            samesite='None' if IS_PRODUCTION else 'Lax',  # None for cross-site in prod, Lax for local
+            path='/'
         )
         return response
 

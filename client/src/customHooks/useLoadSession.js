@@ -7,7 +7,7 @@ export function useLoadSession() {
   useEffect(() => {
     async function initSession() {
       try {
-        const res = await fetch(`${serverURL}/load-session`, {method: "POST"});
+        const res = await fetch(`${serverURL}/load-session`, {method: "POST", credentials: "include"});
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
         const data = await res.json();
