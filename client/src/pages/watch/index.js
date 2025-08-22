@@ -1,14 +1,17 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
+import { VideoContext } from "..";
 
 import Comments from "./comments/index";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
 export default function Watch() {
-  // TODO: do logic for determining video data has been retrieved
-  const  haveVideoData = false;
+  const { fileDir, fileName } =
+    React.useContext(VideoContext);
+
+  const loadedVideo = (fileDir !== undefined) && (fileName !== undefined)
   return (
     <Box
       component="form"
@@ -50,7 +53,7 @@ export default function Watch() {
           }}
         >
           <Video />
-          {haveVideoData && <Comments />}
+          {loadedVideo && <Comments />}
         </Box>
         <Recommendations />
       </Box>
