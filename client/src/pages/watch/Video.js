@@ -1,14 +1,14 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 
-import { VideoContext } from "..";
+import { VideoContext, HTTPContext } from "..";
 
 import { useServerCall } from "../../customHooks/useServerCall";
 
 export default function Video() {
   const { videoID } = useParams();
-  const { id, setID } = React.useContext(VideoContext);
-  const { setFileDir, setFileName, fileDir, fileName } =
+  const { postRequestPayload } = React.useContext(HTTPContext);
+  const { id, setID, setFileDir, setFileName, fileDir, fileName } =
     React.useContext(VideoContext);
   const fetchData = useServerCall();
 
@@ -24,10 +24,10 @@ export default function Video() {
   }, [videoID, setID]); //pretty sure this will cause inf loop
 
   React.useEffect(() => {
-    if (id !== "none")  {
+    if (id !== "none" && postRequestPayload && JSON.parse(postRequestPayload).video_id !== "none") {
       fetchData("video", handleServer);
     }
-  }, [fetchData, handleServer, id]);
+  }, [fetchData, handleServer, id, postRequestPayload]);
 
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
