@@ -62,7 +62,7 @@ class SessionBase(ABC):
         request_session_token_exists = has_session_token(request)
         need_temp_cookie = (not request_session_token_exists) and (request_long_term_cookie_id_exists)
         if need_temp_cookie:
-            return self.generate_temp_cookie(request, response)
+            return self.generate_token(request, response)
 
 
     def determine_event(self, request):
@@ -82,7 +82,7 @@ class SessionBase(ABC):
         results = {}
         match event:
             case "load_session":
-                results["session_token"] = self.handle_new_temp_session(request, response)
+                results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT)
                 video_data = self.VIDEO.open_video(request, response)
