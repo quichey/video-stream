@@ -1,19 +1,23 @@
 import { useEffect } from "react";
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
-  return null;
-}
-
 export function useLoadSession() {
   useEffect(() => {
-    fetch("/api/load-session")
-      .then(() => {
-        const tempToken = getCookie("temp_session");
-        if (tempToken) sessionStorage.setItem("tempSessionToken", tempToken);
-      })
-      .catch(err => console.error("Failed to load session", err));
+    async function initSession() {
+      try {
+        const res = await fetch("/api/load-session");
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+        const data = await res.json();
+        const tempToken = data.session_token; // use token from response body
+
+        if (tempToken) {
+          sessionStorage.setItem("tempSessionToken", tempToken);
+        }
+      } catch (err) {
+        console.error("Failed to load session", err);
+      }
+    }
+
+    initSession();
   }, []);
 }
