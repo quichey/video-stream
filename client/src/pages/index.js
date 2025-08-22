@@ -24,7 +24,7 @@ export default function Pages() {
   const [channelID, setChannelID] = React.useState(0);
   const [channelName, setChannelName] = React.useState("users_name_0");
 
-  const [videoID, setVideoID] = React.useState(0);
+  const [videoID, setVideoID] = React.useState("none");
   const [videoFileName, setVideoFileName] = React.useState();
   const [videoFileDir, setVideoFileDir] = React.useState();
 
