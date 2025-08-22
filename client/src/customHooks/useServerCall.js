@@ -9,6 +9,7 @@ export const useServerCall = () => {
         `${serverURL}/${route}`,
         {
           method: method,
+          credentials: "include",
           // may need to use POST later for adding params
           // i think don't have to, could use query string
           // POST is probably more secure cause body is probably encrypted
