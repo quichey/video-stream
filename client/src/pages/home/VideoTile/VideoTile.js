@@ -17,12 +17,15 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
     setTotalViews("test total views");
   }, []);
 
+  /*
   const handleVideoClick = React.useCallback(() => {
     setID(id);
   }, [id, setID]); //pretty sure this will cause inf loop
+  */
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 360 }} onClick={handleVideoClick}>
+    //<Card variant="outlined" sx={{ maxWidth: 360 }} onClick={handleVideoClick}>
+    <Card variant="outlined" sx={{ maxWidth: 360 }}>
       <NavLink to={`/watch/${id}`} end>
         <video controls width="100%" height="100%">
           <source src="/media/cc0-videos/flower.webm" type="video/webm" />
