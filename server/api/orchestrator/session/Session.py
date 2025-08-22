@@ -7,7 +7,7 @@ import json
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
 from api.orchestrator.session.state.home import Home
-from api.util.request_data import extract_temp_cookie, has_temp_cookie, has_long_term_cookie, extract_long_term_cookie
+from api.util.request_data import extract_session_token, has_session_token, has_long_term_cookie, extract_long_term_cookie
 from api.util.error_handling import SecurityError
 
 
@@ -15,7 +15,8 @@ class SessionBase(ABC):
     DEPLOYMENT = None
 
     LONG_TERM_COOKIE_ID = None
-    TEMP_COOKIE_ID = None
+    TOKEN = None
+
     VIDEO = None
     VIDEO_UPLOAD = None
     HOME = None
@@ -23,7 +24,7 @@ class SessionBase(ABC):
     def __init__(self, request, response, deployment):
         self.DEPLOYMENT = deployment
         self.generate_long_term_cookie(request, response)
-        self.generate_temp_cookie(request, response)
+        self.generate_token(request, response)
 
 
     def authenticate_cookies(self, request, response):
@@ -31,17 +32,23 @@ class SessionBase(ABC):
         # Verify TEMP_COOKIE_ID matches from request
 
         # Handle long term cookie
-        long_term_cookie_id = extract_long_term_cookie(request)
-        long_term_cookie_id_exists = has_long_term_cookie(request)
-        if long_term_cookie_id_exists and (long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
+        request_long_term_cookie_id = extract_long_term_cookie(request)
+        request_long_term_cookie_id_exists = has_long_term_cookie(request)
+        if request_long_term_cookie_id_exists and (request_long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
             raise SecurityError("Hijacked Long Term Cookie")
         
         # Handle temp cookie
-        temp_cookie_id = extract_temp_cookie(request)
-        temp_cookie_id_exists = has_temp_cookie(request)
-        if temp_cookie_id_exists and (temp_cookie_id != self.TEMP_COOKIE_ID):
+        request_session_token = extract_session_token(request)
+        request_session_token_exists = has_session_token(request)
+        if request_session_token_exists and (request_session_token != self.TOKEN):
             raise SecurityError("Hijacked Session Token")
-        need_temp_cookie = (not temp_cookie_id_exists) and (long_term_cookie_id_exists)
+
+        # Handle User refresh web-page
+        self.handle_new_temp_session(request, response)
+
+        return "ok"
+    
+    def handle_new_temp_session(self, request, response):
         # needed  and (self.TEMP_COOKIE_ID is None)
         # so that first request did not generate 2 temp_cookies
         # but also want to generate new temp_cookie of no temp_cookie from request
@@ -51,14 +58,17 @@ class SessionBase(ABC):
         # for first instance of session, long_term_cookie and temp_cookie do not exist in request
         # So to handle case of refreshing page, long_term_cookie should be present but short_term_cookie
         # should not be present
+        request_long_term_cookie_id_exists = has_long_term_cookie(request)
+        request_session_token_exists = has_session_token(request)
+        need_temp_cookie = (not request_session_token_exists) and (request_long_term_cookie_id_exists)
         if need_temp_cookie:
-            self.generate_temp_cookie(request, response)
+            return self.generate_token(request, response)
 
-
-        return "ok"
 
     def determine_event(self, request):
         url_route = request.path
+        if url_route == "/load-session":
+            return "load_session"
         if url_route == "/video":
             return "watch_video"
         elif url_route == "/getcomments":
@@ -71,13 +81,15 @@ class SessionBase(ABC):
         event = self.determine_event(request)
         results = {}
         match event:
+            case "load_session":
+                results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT)
                 video_data = self.VIDEO.open_video(request, response)
                 results["video_data"] = video_data
             case "get_comments":
-                comments_data = self.VIDEO.comments.get_comments(request, response)
-                results["comments_data"] = comments_data
+                comment_data = self.VIDEO.comments.get_comments(request, response)
+                results["comment_data"] = comment_data
             case "video_upload":
                 self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT)
             case "home":
@@ -89,6 +101,7 @@ class SessionBase(ABC):
             if isinstance(obj, datetime):
                 return obj.isoformat()  # or str(obj)
             raise TypeError("Type not serializable")
+        
         response.data = json.dumps(results, default=datetime_handler)
         response.content_type = "application/json"
         return response
@@ -114,27 +127,23 @@ class SessionBase(ABC):
     def generate_long_term_cookie(self, request, response):
         long_term_cookie_id = self.generate_uuid()
         self.LONG_TERM_COOKIE_ID = long_term_cookie_id
+        IS_PRODUCTION = self.DEPLOYMENT is 'cloud'
         response.set_cookie(
             "long_term_session",
             long_term_cookie_id,
-            max_age=30*24*60*60,  # 30 days in seconds
+            max_age=30*24*60*60,  # 30 days
             httponly=True,
-            secure=True  # only over HTTPS
+            secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
+            samesite='None' if IS_PRODUCTION else 'Lax',  # None for cross-site in prod, Lax for local
+            path='/'
         )
         return response
 
-    def generate_temp_cookie(self, request, response):
-        temp_cookie_id = self.generate_uuid()
-        self.TEMP_COOKIE_ID = temp_cookie_id
-        response.set_cookie(
-            "temp_session",
-            temp_cookie_id,
-            max_age=60*60,  # 1 hour in seconds
-            httponly=True,
-            secure=True
-        )
+    def generate_token(self, request, response):
+        token = self.generate_uuid()
+        self.TOKEN = token
         self.refresh_state()
-        return response
+        return token
     
     def refresh_state(self):
         # use case: user reloads webpage

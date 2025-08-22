@@ -4,6 +4,8 @@ from flask import json
 
     
 def extract_user_info(request):
+    if not request.data:
+        return None
     form_data = json.loads(request.data)
     # TODO: change later to something like request.form['username']
     user_info = {
@@ -14,6 +16,8 @@ def extract_user_info(request):
 
 def has_user_info(request):
     user_info = extract_user_info(request)
+    if not user_info:
+        return False
     return user_info and (user_info.get("id") is not None) and (user_info.get("id") >= 0)
     
 def extract_video_info(request):
@@ -34,14 +38,19 @@ def has_long_term_cookie(request):
     cookie = extract_long_term_cookie(request=request)
     return cookie is not None
 
-def extract_temp_cookie(request):
-    cookie = request.cookies.get("temp_session")
-    return cookie
+def extract_session_token(request):
+    if not request.data:
+        return None
+    form_data = json.loads(request.data)
+    token = form_data.get('session_token')
+    return token
 
 
-def has_temp_cookie(request):
-    cookie = extract_temp_cookie(request=request)
-    return cookie is not None
+def has_session_token(request):
+    token = extract_session_token(request=request)
+    if not token:
+        return False
+    return token is not None
 
 
 
