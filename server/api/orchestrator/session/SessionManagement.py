@@ -32,6 +32,8 @@ class SessionManagement():
 
     def needs_new_session(self, request):
         no_long_term_cookie = not request.cookies.get("long_term_session")
+        print(f"\n\n request.cookies.get: {request.cookies.get('long_term_session')}")
+        print(f"\n\n no_long_term_cookie: {no_long_term_cookie}")
         no_user_info = not has_user_info(request)
         return no_long_term_cookie and no_user_info
     
@@ -55,12 +57,14 @@ class SessionManagement():
         # I think I want most of this logic handled in SessionBase
 
         # I just want SessionManagement to create a new session if needed
+        print(f"\n\n self.SESSIONS -- on_request start: {self.SESSIONS}")
         if self.needs_new_session(request=request):
             current_session = self.add_session(request, response)
         else:
             current_session = self.get_session(request=request)
 
 
+        print(f"\n\n self.SESSIONS -- on_request end: {self.SESSIONS}")
         return current_session.handle_request(request, response)
 
    
