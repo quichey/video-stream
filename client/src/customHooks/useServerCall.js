@@ -3,7 +3,7 @@ import * as React from "react";
 import { HTTPContext } from "../pages";
 
 export const useServerCall = () => {
-  const {serverURL, postRequestPayload, refreshSessionToken} = React.useContext(HTTPContext);
+  const {serverURL, postRequestPayload} = React.useContext(HTTPContext);
   const fetchServer = React.useCallback((route, onResponse, method="POST") => {
       fetch(
         `${serverURL}/${route}`,
@@ -22,13 +22,12 @@ export const useServerCall = () => {
       .then((json) => {
         console.log(json);
         onResponse(json)
-        refreshSessionToken(json);
       })
       .catch((error) => {
         console.log(error);
       });
   
-    }, [serverURL, postRequestPayload, refreshSessionToken])
+    }, [serverURL, postRequestPayload])
 
   return fetchServer;
 };

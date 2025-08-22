@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-import { UserContext } from "..";
 
 import Comments from "./comments/index";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
 export default function Watch() {
-  const { sessionToken } = React.useContext(UserContext);
+  // TODO: do logic for determining video data has been retrieved
+  const  haveVideoData = false;
   return (
     <Box
       component="form"
@@ -50,7 +50,7 @@ export default function Watch() {
           }}
         >
           <Video />
-          {sessionToken === undefined ? undefined : <Comments />}
+          {haveVideoData && <Comments />}
         </Box>
         <Recommendations />
       </Box>
