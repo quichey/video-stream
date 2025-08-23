@@ -12,25 +12,18 @@ export default function Video() {
     React.useContext(VideoContext);
   const fetchData = useServerCall();
 
-  const handleServer = React.useCallback(
-    (json) => {
-      setID(videoID)
-      setFileDir(json?.video_data?.file_dir);
-      setFileName(json?.video_data?.file_name);
-    },
-    [setFileDir, setFileName, setID, videoID],
-  );
-  /*
   React.useEffect(() => {
-    setID(videoID);
-    setFileDir(undefined);
-    setFileName(undefined);
-  }, [videoID, setID, setFileDir, setFileName]); //pretty sure this will cause inf loop
-  */
+  // Clear old video state
+  setID(videoID);
+  setFileDir(undefined);
+  setFileName(undefined);
 
-  React.useEffect(() => {
-    fetchData("video", handleServer, {video_id: videoID});
-  }, [fetchData, handleServer, videoID]);
+  // Fetch new video
+  fetchData("video", (json) => {
+    setFileDir(json?.video_data?.file_dir);
+    setFileName(json?.video_data?.file_name);
+  }, { video_id: videoID });
+}, [videoID, setID, setFileDir, setFileName, fetchData]);
 
   const videoUrl =
     fileDir && fileName
