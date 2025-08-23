@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { NavLink } from "react-router";
 
 import { get_storage_url } from "../../util/urls";
-import { ChannelContext } from "..";
+import { ChannelContext } from "../../contexts/ChannelContext";
 
 export default function UserIcon({ id, userIcon, userName }) {
   const { setID, setName } = React.useContext(ChannelContext);
