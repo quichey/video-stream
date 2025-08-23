@@ -7,7 +7,7 @@ export const useServerCall = () => {
   const { serverURL } = useContext(HTTPContext);
 
   const fetchData = useCallback(
-    async (route, httpParams = {}, onResponse, method = "POST") => {
+    async (route, onResponse, httpParams = {}, method = "POST") => {
       try {
         const res = await fetch(`${serverURL}/${route}`, {
           method,
