@@ -1,5 +1,4 @@
-import { useCallback } from "react";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 
 import { HTTPContext } from "../contexts/HTTPContext";
 import { buildRequestBody } from "../api/httpUtils";
@@ -8,7 +7,7 @@ export const useServerCall = () => {
   const { serverURL } = useContext(HTTPContext);
 
   const fetchServer = useCallback(
-    async (route, httpParams = {}, method = "POST") => {
+    async (route, httpParams = {}, onResponse, method = "POST") => {
       try {
         const res = await fetch(`${serverURL}/${route}`, {
           method,
@@ -17,11 +16,17 @@ export const useServerCall = () => {
         });
 
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
         const data = await res.json();
-        return data; // caller can handle response
+
+        if (onResponse && typeof onResponse === "function") {
+          onResponse(data);
+        }
+
+        return data; // still return the data in case caller wants it
       } catch (err) {
         console.error("Server call failed", err);
-        throw err; // propagate error to caller
+        throw err; // propagate error
       }
     },
     [serverURL]
