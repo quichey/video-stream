@@ -93,7 +93,7 @@ export default function Pages() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="watch">
-                  <Route path=":videoID" element={<Watch />} />
+                  <Route path=":videoID" element={<Watch key={videoID}/>} />
                 </Route>
                 <Route path="channel">
                   <Route path=":userID" element={<User />} />
