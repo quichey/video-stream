@@ -6,7 +6,7 @@ import { buildRequestBody } from "../api/httpUtils";
 export const useServerCall = () => {
   const { serverURL } = useContext(HTTPContext);
 
-  const fetchServer = useCallback(
+  const fetchData = useCallback(
     async (route, httpParams = {}, onResponse, method = "POST") => {
       try {
         const res = await fetch(`${serverURL}/${route}`, {
@@ -32,5 +32,5 @@ export const useServerCall = () => {
     [serverURL]
   );
 
-  return fetchServer;
+  return fetchData;
 };
