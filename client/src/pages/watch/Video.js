@@ -35,7 +35,7 @@ export default function Video() {
     <video controls width="70%" height="50%">
       <source src="/media/cc0-videos/flower.webm" type="video/webm" />
       <source
-        src={`${process.env.PUBLIC_URL}/videos/${fileDir}/${fileName}`}
+        src={`${get_storage_url()}/videos/${fileDir}/${fileName}`}
         type="video/mp4"
       />
     </video>
