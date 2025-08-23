@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
 
 // 1. Create the context
-export const UserContext = createContext({
+export const ChannelContext = createContext({
   id: undefined,
   setID: () => {},
   name: undefined,
@@ -9,15 +9,15 @@ export const UserContext = createContext({
 });
 
 // 2. Create the provider component
-export const UserProvider = ({ children }) => {
+export const ChannelProvider = ({ children }) => {
   const [channelID, setChannelID] = useState(0);
   const [channelName, setChannelName] = useState("users_name_0");
 
   return (
-    <UserContext.Provider
+    <ChannelContext.Provider
       value={{ id: channelID, setID: setChannelID, name: channelName, setName: setChannelName }}
     >
       {children}
-    </UserContext.Provider>
+    </ChannelContext.Provider>
   );
 };
