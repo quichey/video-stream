@@ -1,6 +1,7 @@
 import { useCallback } from "react";
-import { HTTPContext } from "../pages";
 import { useContext } from "react";
+
+import { HTTPContext } from "../contexts/HTTPContext";
 import { buildRequestBody } from "../api/httpUtils";
 
 export const useServerCall = () => {
