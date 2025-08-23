@@ -22,7 +22,9 @@ export default function Video() {
   );
   React.useEffect(() => {
     setID(videoID);
-  }, [videoID, setID]); //pretty sure this will cause inf loop
+    setFileDir(undefined);
+    setFileName(undefined);
+  }, [videoID, setID, setFileDir, setFileName]); //pretty sure this will cause inf loop
 
   React.useEffect(() => {
     if (id !== "none" && postRequestPayload && JSON.parse(postRequestPayload).video_id !== "none") {
