@@ -30,11 +30,20 @@ export default function Video() {
     }
   }, [fetchData, handleServer, id, postRequestPayload]);
 
+  const videoUrl =
+    fileDir && fileName
+      ? `${get_storage_url()}/videos/${fileDir}/${fileName}`
+      : null;
+
+  if (!videoUrl) {
+    return <div>Loading video...</div>; // or a spinner
+  }
+
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
-    <video controls width="70%" height="50%">
+    <video controls width="100%" height="100%">
       <source
-        src={`${get_storage_url()}/videos/${fileDir}/${fileName}`}
+        src={videoUrl}
         type="video/mp4"
       />
     </video>
