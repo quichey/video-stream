@@ -3,35 +3,34 @@ import { useParams } from "react-router-dom";
 
 import { get_storage_url } from "../../util/urls";
 import { VideoContext } from "../../contexts/VideoContext";
-import { HTTPContext } from "../../contexts/HTTPContext";
 
 import { useServerCall } from "../../customHooks/useServerCall";
 
 export default function Video() {
   const { videoID } = useParams();
-  const { postRequestPayload } = React.useContext(HTTPContext);
-  const { id, setID, setFileDir, setFileName, fileDir, fileName } =
+  const { setID, setFileDir, setFileName, fileDir, fileName } =
     React.useContext(VideoContext);
   const fetchData = useServerCall();
 
   const handleServer = React.useCallback(
     (json) => {
+      setID(videoID)
       setFileDir(json?.video_data?.file_dir);
       setFileName(json?.video_data?.file_name);
     },
-    [setFileDir, setFileName],
+    [setFileDir, setFileName, setID, videoID],
   );
+  /*
   React.useEffect(() => {
     setID(videoID);
     setFileDir(undefined);
     setFileName(undefined);
   }, [videoID, setID, setFileDir, setFileName]); //pretty sure this will cause inf loop
+  */
 
   React.useEffect(() => {
-    if (id !== "none" && postRequestPayload && JSON.parse(postRequestPayload).video_id !== "none") {
-      fetchData("video", handleServer);
-    }
-  }, [fetchData, handleServer, id, postRequestPayload]);
+    fetchData("video", handleServer, {video_id: videoID});
+  }, [fetchData, handleServer, videoID]);
 
   const videoUrl =
     fileDir && fileName
@@ -52,11 +51,3 @@ export default function Video() {
     </video>
   );
 }
-
-/*
-
-      <source
-        src="https://chess-react.s3.us-west-1.amazonaws.com/WIN_20240826_10_03_57_Pro.mp4"
-        type="video/mp4"
-      />
-*/
