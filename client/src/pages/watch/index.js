@@ -14,7 +14,6 @@ export default function Watch() {
   const loadedVideo = (fileDir !== undefined) && (fileName !== undefined)
   return (
     <Box
-      component="form"
       sx={{
         "& > :not(style)": { m: 1, width: "100%" },
       }}
@@ -27,7 +26,6 @@ export default function Watch() {
       }}
     >
       <Box
-        component="form"
         sx={{
           "& > :not(style)": { m: 1, width: "100%" },
         }}
@@ -40,7 +38,6 @@ export default function Watch() {
         }}
       >
         <Box
-          component="form"
           sx={{
             "& > :not(style)": { m: 1, width: "100%" },
           }}
