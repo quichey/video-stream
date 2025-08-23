@@ -193,3 +193,7 @@ db/assets/*
 !db/assets/images
 
 .dockerignore
+
+#
+cookies.txt
+cookie*.txt

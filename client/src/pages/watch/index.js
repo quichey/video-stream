@@ -1,14 +1,17 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-import { UserContext } from "..";
+import { VideoContext } from "..";
 
 import Comments from "./comments/index";
 import Recommendations from "./Recommendations";
 import Video from "./Video";
 
 export default function Watch() {
-  const { sessionToken } = React.useContext(UserContext);
+  const { fileDir, fileName } =
+    React.useContext(VideoContext);
+
+  const loadedVideo = (fileDir !== undefined) && (fileName !== undefined)
   return (
     <Box
       component="form"
@@ -50,7 +53,7 @@ export default function Watch() {
           }}
         >
           <Video />
-          {sessionToken === undefined ? undefined : <Comments />}
+          {loadedVideo && <Comments />}
         </Box>
         <Recommendations />
       </Box>

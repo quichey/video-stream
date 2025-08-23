@@ -109,3 +109,12 @@ update records_to_insert during randomization to use Declarative Base Classes/in
 # Planning out project/integrate-cloud-runs branch
 
 Purpose: Integrate the client-side Cloud Run Instance with the Server-side Cloud-Run instance
+
+# Branch: session-non-logged-in-user
+Purpose: Handle sessions for non-logged-in-users better.
+As of now, I have to run the AdminRouter to delete the sessionmanager token
+Figure out way to where I do not have to do this
+
+# Branch: session-non-logged-in-user--client
+
+# Branch: session-non-logged-in-user

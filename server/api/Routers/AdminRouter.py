@@ -3,8 +3,9 @@ from flask import Flask, jsonify, json
 import os
 from dotenv import load_dotenv
 
-from api.Cache import Cache, SecurityError
+from api.orchestrator.Cache import Cache
 from .Router import Router
+from api.util.error_handling import SecurityError
 
 """
 Read Flask docs on base code for starting up the Gateway

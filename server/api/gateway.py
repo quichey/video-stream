@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, Response
 from flask_cors import CORS
 
-from api.Cache import Cache
+from api.orchestrator import Orchestrator
 from api.Routers import AdminRouter
 from api.Routers import ClientRouter
 
@@ -51,7 +51,11 @@ def create_app(test_config=None):
 
     # TODO: maybe need to update this host for cloud build
     client_url = os.environ.get("CLIENT_APP_URL")
-    CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", client_url]}})
+    CORS(
+        app,
+        resources={r"/*": {"origins": ["http://localhost:3000", client_url]}},
+        supports_credentials=True
+    )
 
     # different optional start-up configs
     # to alter the genetic inheritance if the
@@ -90,12 +94,12 @@ def create_app(test_config=None):
     """
     #TODO: properly setup things for the DEPOYMENT ENV Variable
     deployment = os.getenv("DEPLOYMENT")
-    cache = Cache(deployment=deployment)
+    orchestrator = Orchestrator(deployment=deployment)
 
-    client_router = ClientRouter(app=app, cache=cache, request=request)
+    client_router = ClientRouter(app=app, orchestrator=orchestrator, request=request)
     app.client_router = client_router
 
-    admin_router = AdminRouter(app=app, cache=cache, request=request)
+    admin_router = AdminRouter(app=app, orchestrator=orchestrator, request=request)
     app.admin_router = admin_router
     """
     @app.route("/getcomments", methods=["POST"])
