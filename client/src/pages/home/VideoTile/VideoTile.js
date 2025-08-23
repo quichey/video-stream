@@ -27,7 +27,6 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
     <Card variant="outlined" sx={{ maxWidth: 360 }}>
       <NavLink to={`/watch/${id}`} end>
         <video controls width="100%" height="100%">
-          <source src="/media/cc0-videos/flower.webm" type="video/webm" />
           <source
             src={`${get_storage_url()}/videos/${fileDir}/${fileName}`}
             type="video/mp4"

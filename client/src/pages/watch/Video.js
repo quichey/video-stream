@@ -33,7 +33,6 @@ export default function Video() {
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
     <video controls width="70%" height="50%">
-      <source src="/media/cc0-videos/flower.webm" type="video/webm" />
       <source
         src={`${get_storage_url()}/videos/${fileDir}/${fileName}`}
         type="video/mp4"
