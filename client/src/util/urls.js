@@ -1,4 +1,5 @@
-export function get_storage_url(deployEnv) {
+export function get_storage_url() {
+    const deployEnv = process.env.REACT_APP_DEPLOY_ENV
     if (deployEnv === "local") {
         return process.env.PUBLIC_URL
     } else {
