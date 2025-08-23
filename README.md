@@ -118,3 +118,5 @@ Figure out way to where I do not have to do this
 # Branch: session-non-logged-in-user--client
 
 # Branch: session-non-logged-in-user
+
+# Branch: readme-polish
