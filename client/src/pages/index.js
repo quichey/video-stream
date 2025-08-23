@@ -8,11 +8,8 @@ import User from "./user";
 import VideoUpload from "./video_upload";
 import Navbar from "./Navbar";
 
-export const UserContext = React.createContext(null);
 
 export const ChannelContext = React.createContext(null);
-
-export const VideoContext = React.createContext(null);
 
 export const serverURL = process.env.REACT_APP_SERVER_APP_URL || process.env.REACT_APP_API_BASE;
 export const HTTPContext = React.createContext(null);
@@ -23,11 +20,6 @@ export default function Pages() {
 
   const [channelID, setChannelID] = React.useState(0);
   const [channelName, setChannelName] = React.useState("users_name_0");
-
-  const [videoID, setVideoID] = React.useState("none");
-  const [videoFileName, setVideoFileName] = React.useState();
-  const [videoFileDir, setVideoFileDir] = React.useState();
-
   const [postRequestPayload, setPostRequestPayload] = React.useState(0);
 
   React.useEffect(() => {
@@ -43,14 +35,6 @@ export default function Pages() {
   }, [videoID]);
 
   return (
-    <UserContext.Provider
-      value={{
-        //id: userID,
-        //setID: setUserID,
-        //uName: userName,
-        //setName: setUserName,
-      }}
-    >
     <ChannelContext.Provider
       value={{
         id: channelID,
@@ -59,16 +43,6 @@ export default function Pages() {
         setName: setChannelName,
       }}
     >
-      <VideoContext.Provider
-        value={{
-          id: videoID,
-          setID: setVideoID,
-          fileName: videoFileName,
-          setFileName: setVideoFileName,
-          fileDir: videoFileDir,
-          setFileDir: setVideoFileDir,
-        }}
-      >
         <HTTPContext.Provider
           value={{
             serverURL: serverURL,
@@ -107,8 +81,6 @@ export default function Pages() {
             </Box>
           </BrowserRouter>
         </HTTPContext.Provider>
-      </VideoContext.Provider>
     </ChannelContext.Provider>
-    </UserContext.Provider>
   );
 }
