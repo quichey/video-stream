@@ -45,7 +45,3 @@ For deeper design notes and brainstorming, see [DEV_NOTES.md](./DEV_NOTES.md).
 - Optimize **video storage & retrieval**  
 
 ---
-
-## 📜 License
-
-MIT
