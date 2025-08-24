@@ -6,7 +6,7 @@ import { NavLink } from "react-router";
 import { get_storage_url } from "../../../util/urls";
 import VideoInfo from "./VideoInfo";
 
-export default function VideoTile({ id, fileName, fileDir, userName, userIcon, userID, dateCreated }) {
+export default function VideoTile({ id, fileName, fileDir, userName, userIcon, userID, dateCreated, sasURL }) {
 
   const [title, setTitle] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
@@ -28,7 +28,7 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
       <NavLink to={`/watch/${id}`} end>
         <video controls width="100%" height="100%">
           <source
-            src={`${get_storage_url()}/videos/${fileDir}/${fileName}`}
+            src={get_storage_url("videos", fileDir, fileName, sasURL)}
             type="video/mp4"
           />
         </video>

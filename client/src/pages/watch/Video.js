@@ -31,14 +31,9 @@ export default function Video() {
     }, { video_id: videoID });
   }, [videoID, setID, setFileDir, setFileName, fetchData]);
 
-  const expectedURL =
-    sasURL === undefined
-      ? `${get_storage_url()}/videos/${fileDir}/${fileName}`
-      : sasURL;
-
   const videoUrl =
     fileDir && fileName
-      ? expectedURL
+      ? get_storage_url("videos", fileDir, fileName, sasURL)
       : null;
 
   if (!videoUrl) {
