@@ -1,15 +1,13 @@
 import datetime
 import os
 import sys
-from azure.identity import DefaultAzureCredential
+from azure.identity import ClientSecretCredential
 from azure.storage.blob import (
     BlobServiceClient,
     generate_blob_sas, BlobSasPermissions
 )
 
 from util.env import load_providers_env
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../cloud")))
-from providers.azure.azure_cli import AzureCLIHelper
 
 load_providers_env()
 
@@ -18,20 +16,26 @@ class Storage():
     RESOURCE_GROUP = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
     ACR_NAME = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
 
+    TENANT_ID = os.environ.get("TENANT_ID", 'blah')
+    CLIENT_ID = os.environ.get("CLIENT_ID", 'blah')
+    CLIENT_SECRET = os.environ.get("CLIENT_SECRET_VALUE", 'blah')
+
     STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")         # env var in practice
     CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
     CONTAINER_IMAGES= "images"
 
     def __init__(self, cloud_provider="azure"):
-        self.cli_helper = AzureCLIHelper(resource_group=self.RESOURCE_GROUP, acr_name=self.ACR_NAME)
-        self.cli_helper.login()
-
-    def _blob_service_client(self):
-        # Works with Managed Identity on Azure; falls back to dev creds locally
-        cred = DefaultAzureCredential()
-        return BlobServiceClient(
+        print(f"\n\n TENANT_ID: {self.TENANT_ID} \n\n")
+        print(f"\n\n CLIENT_ID: {self.CLIENT_ID} \n\n")
+        self.credential = ClientSecretCredential(
+            tenant_id=self.TENANT_ID,
+            client_id=self.CLIENT_ID,
+            client_secret=self.CLIENT_SECRET,
+            additionally_allowed_tenants=["*"]  # allow any tenant
+        )
+        self._blob_service_client = BlobServiceClient(
             f"https://{self.STORAGE_ACCOUNT_NAME}.blob.core.windows.net",
-            credential=cred
+            credential=self.credential
         )
 
     def get_video_url(self, file_dir, file_name):
@@ -45,7 +49,7 @@ class Storage():
 
         blob_name = f"{file_dir}/{file_name}"
 
-        bsc = self._blob_service_client()
+        bsc = self._blob_service_client
 
         # Get a user delegation key (AAD-based SAS; safer than account SAS)
         # short lived (e.g., 1 hour)
