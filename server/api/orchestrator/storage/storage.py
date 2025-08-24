@@ -27,17 +27,6 @@ class Storage():
     CONTAINER_IMAGES= "images"
 
     def __init__(self, cloud_provider="azure"):
-        #print(f"\n\n TENANT_ID: {self.TENANT_ID} \n\n")
-        #print(f"\n\n CLIENT_ID: {self.CLIENT_ID} \n\n")
-        #print(f"\n\n CLIENT_SECRET: {self.CLIENT_SECRET} \n\n")
-        """
-        self.credential = ClientSecretCredential(
-            tenant_id=self.TENANT_ID,
-            client_id=self.CLIENT_ID,
-            client_secret=self.CLIENT_SECRET,
-            #additionally_allowed_tenants=["*"]  # allow any tenant
-        )
-        """
         self._blob_service_client = BlobServiceClient.from_connection_string(
             self.ACCOUNT_KEY_CONN
         )
