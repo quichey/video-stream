@@ -93,9 +93,9 @@ class SessionBase(ABC):
                 comment_data = self.VIDEO.comments.get_comments(request, response)
                 results["comment_data"] = comment_data
             case "video_upload":
-                self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT)
+                self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT, self.STORAGE)
             case "home":
-                self.HOME = Home(request, response, self.DEPLOYMENT)
+                self.HOME = Home(request, response, self.DEPLOYMENT, self.STORAGE)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
         print(f"\n\n resultsL {results} \n\n")
