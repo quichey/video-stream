@@ -68,6 +68,11 @@ class Home(StateModule):
                     "date_created": row[6],
                     "date_updated": row[7],
                 }
+                video_url = self.STORAGE.get_video_url(
+                    video_data_point["file_dir"],
+                    video_data_point["file_name"]
+                )
+                video_data_point["video_url"] = video_url
                 data.append(video_data_point)
 
         return data
