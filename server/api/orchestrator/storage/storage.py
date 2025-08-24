@@ -1,7 +1,6 @@
 import datetime
 import os
 import sys
-from azure.identity import ClientSecretCredential
 from azure.storage.blob import (
     BlobServiceClient,
     generate_blob_sas, BlobSasPermissions
@@ -20,23 +19,27 @@ class Storage():
     CLIENT_ID = os.environ.get("CLIENT_ID", 'blah')
     CLIENT_SECRET = os.environ.get("CLIENT_SECRET_VALUE", 'blah')
 
+    ACCOUNT_KEY = os.environ.get("STORAGE_ACCOUNT_ACCESS_KEY_1", 'blah')
+    ACCOUNT_KEY_CONN = os.environ.get("STORAGE_ACCOUNT_ACCESS_KEY_1_CONN", 'blah')
+
     STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")         # env var in practice
     CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
     CONTAINER_IMAGES= "images"
 
     def __init__(self, cloud_provider="azure"):
-        print(f"\n\n TENANT_ID: {self.TENANT_ID} \n\n")
-        print(f"\n\n CLIENT_ID: {self.CLIENT_ID} \n\n")
-        print(f"\n\n CLIENT_SECRET: {self.CLIENT_SECRET} \n\n")
+        #print(f"\n\n TENANT_ID: {self.TENANT_ID} \n\n")
+        #print(f"\n\n CLIENT_ID: {self.CLIENT_ID} \n\n")
+        #print(f"\n\n CLIENT_SECRET: {self.CLIENT_SECRET} \n\n")
+        """
         self.credential = ClientSecretCredential(
             tenant_id=self.TENANT_ID,
             client_id=self.CLIENT_ID,
             client_secret=self.CLIENT_SECRET,
             #additionally_allowed_tenants=["*"]  # allow any tenant
         )
-        self._blob_service_client = BlobServiceClient(
-            f"https://{self.STORAGE_ACCOUNT_NAME}.blob.core.windows.net",
-            credential=self.credential
+        """
+        self._blob_service_client = BlobServiceClient.from_connection_string(
+            self.ACCOUNT_KEY_CONN
         )
 
     def get_video_url(self, file_dir, file_name):
@@ -56,18 +59,18 @@ class Storage():
         # short lived (e.g., 1 hour)
         now = datetime.datetime.now(datetime.timezone.utc)
         print(f"\n\n before bsc.get_user_delegation_key")
-        start = now
-        print(f"\n\n start: {start}")
-        expiry = now + datetime.timedelta(hours=1)
-        print(f"\n\n expiry: {expiry}")
-        key = bsc.get_user_delegation_key(start, expiry)
-        print(f"\n\n after bsc.get_user_delegation_key")
+        #start = now
+        #print(f"\n\n start: {start}")
+        #expiry = now + datetime.timedelta(hours=1)
+        #print(f"\n\n expiry: {expiry}")
+        #key = bsc.get_user_delegation_key(start, expiry)
+        #print(f"\n\n after bsc.get_user_delegation_key")
 
         sas_token = generate_blob_sas(
             account_name=self.STORAGE_ACCOUNT_NAME,
             container_name=container,
             blob_name=blob_name,
-            user_delegation_key=key,
+            account_key=self.ACCOUNT_KEY,
             permission=BlobSasPermissions(read=True),  # READ only
             expiry=now + datetime.timedelta(minutes=60*2),  # very short-lived
             start=now - datetime.timedelta(minutes=1)     # clock skew
