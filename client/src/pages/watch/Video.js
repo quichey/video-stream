@@ -11,23 +11,34 @@ export default function Video() {
   const { setID, setFileDir, setFileName, fileDir, fileName } =
     React.useContext(VideoContext);
   const fetchData = useServerCall();
+  const [sasURL, setSasURL] = React.useState(undefined)
 
   React.useEffect(() => {
-  // Clear old video state
-  setID(videoID);
-  setFileDir(undefined);
-  setFileName(undefined);
+    // Clear old video state
+    setID(videoID);
+    setFileDir(undefined);
+    setFileName(undefined);
 
-  // Fetch new video
-  fetchData("video", (json) => {
-    setFileDir(json?.video_data?.file_dir);
-    setFileName(json?.video_data?.file_name);
-  }, { video_id: videoID });
-}, [videoID, setID, setFileDir, setFileName, fetchData]);
+    // Fetch new video
+    fetchData("video", (json) => {
+      setFileDir(json?.video_data?.file_dir);
+      setFileName(json?.video_data?.file_name);
+      if (process.env.REACT_APP_DEPLOY_ENV === 'local') {
+        setSasURL(undefined)
+      } else{
+        setSasURL(json?.video_data?.video_url)
+      }
+    }, { video_id: videoID });
+  }, [videoID, setID, setFileDir, setFileName, fetchData]);
+
+  const expectedURL =
+    sasURL === undefined
+      ? `${get_storage_url()}/videos/${fileDir}/${fileName}`
+      : sasURL;
 
   const videoUrl =
     fileDir && fileName
-      ? `${get_storage_url()}/videos/${fileDir}/${fileName}`
+      ? expectedURL
       : null;
 
   if (!videoUrl) {
