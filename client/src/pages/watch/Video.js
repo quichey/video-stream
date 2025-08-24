@@ -2,35 +2,28 @@ import * as React from "react";
 import { useParams } from "react-router-dom";
 
 import { get_storage_url } from "../../util/urls";
-import { VideoContext, HTTPContext } from "..";
+import { VideoContext } from "../../contexts/VideoContext";
 
 import { useServerCall } from "../../customHooks/useServerCall";
 
 export default function Video() {
   const { videoID } = useParams();
-  const { postRequestPayload } = React.useContext(HTTPContext);
-  const { id, setID, setFileDir, setFileName, fileDir, fileName } =
+  const { setID, setFileDir, setFileName, fileDir, fileName } =
     React.useContext(VideoContext);
   const fetchData = useServerCall();
 
-  const handleServer = React.useCallback(
-    (json) => {
-      setFileDir(json?.video_data?.file_dir);
-      setFileName(json?.video_data?.file_name);
-    },
-    [setFileDir, setFileName],
-  );
   React.useEffect(() => {
-    setID(videoID);
-    setFileDir(undefined);
-    setFileName(undefined);
-  }, [videoID, setID, setFileDir, setFileName]); //pretty sure this will cause inf loop
+  // Clear old video state
+  setID(videoID);
+  setFileDir(undefined);
+  setFileName(undefined);
 
-  React.useEffect(() => {
-    if (id !== "none" && postRequestPayload && JSON.parse(postRequestPayload).video_id !== "none") {
-      fetchData("video", handleServer);
-    }
-  }, [fetchData, handleServer, id, postRequestPayload]);
+  // Fetch new video
+  fetchData("video", (json) => {
+    setFileDir(json?.video_data?.file_dir);
+    setFileName(json?.video_data?.file_name);
+  }, { video_id: videoID });
+}, [videoID, setID, setFileDir, setFileName, fetchData]);
 
   const videoUrl =
     fileDir && fileName
@@ -51,11 +44,3 @@ export default function Video() {
     </video>
   );
 }
-
-/*
-
-      <source
-        src="https://chess-react.s3.us-west-1.amazonaws.com/WIN_20240826_10_03_57_Pro.mp4"
-        type="video/mp4"
-      />
-*/

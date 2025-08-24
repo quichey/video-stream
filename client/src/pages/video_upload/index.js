@@ -1,6 +1,6 @@
 import React from "react";
 
-import { HTTPContext } from "..";
+import { HTTPContext } from "../../contexts/HTTPContext";
 
 export default function VideoUpload() {
   const { serverURL, postRequestPayload } =
