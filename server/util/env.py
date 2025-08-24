@@ -11,5 +11,5 @@ def load_providers_env(provider="azure"):
     if deploy_env == "local":
         load_dotenv(f"../cloud/providers/{provider}/.env")
     else:
-        load_dotenv(f"../env/{provider}/.env")
+        load_dotenv(f"env/{provider}/.env")
     return
