@@ -58,7 +58,7 @@ class Storage():
             blob_name=blob_name,
             user_delegation_key=key,
             permission=BlobSasPermissions(read=True),  # READ only
-            expiry=now + datetime.timedelta(minutes=10),  # very short-lived
+            expiry=now + datetime.timedelta(minutes=60*2),  # very short-lived
             start=now - datetime.timedelta(minutes=1)     # clock skew
         )
 
