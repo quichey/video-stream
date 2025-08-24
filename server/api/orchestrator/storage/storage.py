@@ -15,8 +15,8 @@ load_providers_env()
 
 
 class Storage():
-    RESOURCE_GROUP = pass
-    ACR_NAME = pass
+    RESOURCE_GROUP = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
+    ACR_NAME = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
 
     STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")         # env var in practice
     CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
