@@ -1,6 +1,6 @@
 import datetime
 import os
-from flask import Blueprint, jsonify, request
+from flask import jsonify, request
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import (
     BlobServiceClient,
@@ -11,7 +11,6 @@ from util.env import load_providers_env
 
 load_providers_env()
 
-bp = Blueprint("media", __name__)
 
 STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")         # env var in practice
 CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
@@ -25,14 +24,16 @@ def _blob_service_client():
         credential=cred
     )
 
-@bp.route("/media-url", methods=["POST"])
-def get_media_url(container):
+def get_video_url(file_dir, file_name):
+    return get_media_url(CONTAINER_VIDEOS, file_dir=file_dir, file_name=file_name)
+
+def get_image_url(file_dir, file_name):
+    return get_media_url(CONTAINER_IMAGES, file_dir=file_dir, file_name=file_name)
+
+def get_media_url(container, file_dir, file_name):
     data = request.get_json(force=True)
     # You’ll resolve video_id -> (file_dir, file_name) from your DB
-    video_id = data["video_id"]
 
-    # Example mapping; replace with DB lookup
-    file_dir, file_name = "1", "test_video_1.mp4"
     blob_name = f"{file_dir}/{file_name}"
 
     bsc = _blob_service_client()

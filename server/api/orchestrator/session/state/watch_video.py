@@ -1,10 +1,5 @@
 from flask import json
 from sqlalchemy import select
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import (
-    BlobServiceClient,
-    generate_blob_sas, BlobSasPermissions
-)
 
 from api.orchestrator.session.state.comments import Comments
 from api.orchestrator.session.state.state_module import StateModule
