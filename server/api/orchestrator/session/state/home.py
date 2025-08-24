@@ -9,10 +9,6 @@ from api.util.request_data import extract_video_info
 class Home(StateModule):
     id: int
     timestamp: str
-
-    def __init__(self, request, response, deployment):
-        super().__init__(request, response, deployment)
-        return
     
     def get_video_list(self, request, response):
         data = []
