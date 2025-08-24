@@ -1,7 +1,6 @@
 import datetime
 import os
 import sys
-from flask import jsonify, request
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import (
     BlobServiceClient,
@@ -42,7 +41,6 @@ class Storage():
         return self.get_media_url(self.CONTAINER_IMAGES, file_dir=file_dir, file_name=file_name)
 
     def get_media_url(self, container, file_dir, file_name):
-        data = request.get_json(force=True)
         # You’ll resolve video_id -> (file_dir, file_name) from your DB
 
         blob_name = f"{file_dir}/{file_name}"
@@ -65,4 +63,4 @@ class Storage():
         )
 
         url = f"https://{self.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
-        return jsonify({"url": url})
+        return url
