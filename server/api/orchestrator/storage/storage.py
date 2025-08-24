@@ -1,5 +1,5 @@
-# server/api/storage.py
 import datetime
+import os
 from flask import Blueprint, jsonify, request
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import (
@@ -7,10 +7,15 @@ from azure.storage.blob import (
     generate_blob_sas, BlobSasPermissions
 )
 
+from util.env import load_providers_env
+
+load_providers_env()
+
 bp = Blueprint("media", __name__)
 
-STORAGE_ACCOUNT_NAME = "youracct"         # env var in practice
-CONTAINER = "videos"                      # e.g. "videos"
+STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")         # env var in practice
+CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
+CONTAINER_IMAGES= "images"
 
 def _blob_service_client():
     # Works with Managed Identity on Azure; falls back to dev creds locally
@@ -21,7 +26,7 @@ def _blob_service_client():
     )
 
 @bp.route("/media-url", methods=["POST"])
-def media_url():
+def get_media_url(container):
     data = request.get_json(force=True)
     # You’ll resolve video_id -> (file_dir, file_name) from your DB
     video_id = data["video_id"]
@@ -39,7 +44,7 @@ def media_url():
 
     sas_token = generate_blob_sas(
         account_name=STORAGE_ACCOUNT_NAME,
-        container_name=CONTAINER,
+        container_name=container,
         blob_name=blob_name,
         user_delegation_key=key,
         permission=BlobSasPermissions(read=True),  # READ only
@@ -47,5 +52,5 @@ def media_url():
         start=now - datetime.timedelta(minutes=1)     # clock skew
     )
 
-    url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{CONTAINER}/{blob_name}?{sas_token}"
+    url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
     return jsonify({"url": url})
