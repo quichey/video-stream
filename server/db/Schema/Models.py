@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 
 from sqlalchemy import MetaData
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
@@ -10,15 +9,16 @@ from typing import Optional
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
+from util.env import load_server_env, load_providers_env
+
 
 class Base(DeclarativeBase):
     pass
 
 metadata_obj = MetaData()
 
-load_dotenv()
-load_dotenv(dotenv_path="../cloud/providers/azure/.env")
-load_dotenv(dotenv_path="env/azure/.env")
+load_server_env()
+load_providers_env()
 
 admin_specs = {
     "dialect": "mysql",
