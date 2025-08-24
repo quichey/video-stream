@@ -22,7 +22,7 @@ class Storage():
     CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
     CONTAINER_IMAGES= "images"
 
-    def __init__(self):
+    def __init__(self, cloud_provider="azure"):
         self.cli_helper = AzureCLIHelper(resource_group=self.RESOURCE_GROUP, acr_name=self.ACR_NAME)
         self.cli_helper.login()
 
