@@ -27,6 +27,7 @@ class Storage():
     def __init__(self, cloud_provider="azure"):
         print(f"\n\n TENANT_ID: {self.TENANT_ID} \n\n")
         print(f"\n\n CLIENT_ID: {self.CLIENT_ID} \n\n")
+        print(f"\n\n CLIENT_SECRET: {self.CLIENT_SECRET} \n\n")
         self.credential = ClientSecretCredential(
             tenant_id=self.TENANT_ID,
             client_id=self.CLIENT_ID,
@@ -53,8 +54,14 @@ class Storage():
 
         # Get a user delegation key (AAD-based SAS; safer than account SAS)
         # short lived (e.g., 1 hour)
-        now = datetime.datetime.utcnow()
-        key = bsc.get_user_delegation_key(now, now + datetime.timedelta(hours=1))
+        now = datetime.datetime.now(datetime.timezone.utc)
+        print(f"\n\n before bsc.get_user_delegation_key")
+        start = now
+        print(f"\n\n start: {start}")
+        expiry = now + datetime.timedelta(hours=1)
+        print(f"\n\n expiry: {expiry}")
+        key = bsc.get_user_delegation_key(start, expiry)
+        print(f"\n\n after bsc.get_user_delegation_key")
 
         sas_token = generate_blob_sas(
             account_name=self.STORAGE_ACCOUNT_NAME,
@@ -65,6 +72,7 @@ class Storage():
             expiry=now + datetime.timedelta(minutes=60*2),  # very short-lived
             start=now - datetime.timedelta(minutes=1)     # clock skew
         )
+        print(f"\n\n after generate_blob_sas")
 
         url = f"https://{self.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
         return url
