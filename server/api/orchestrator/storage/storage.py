@@ -31,7 +31,7 @@ class Storage():
             tenant_id=self.TENANT_ID,
             client_id=self.CLIENT_ID,
             client_secret=self.CLIENT_SECRET,
-            additionally_allowed_tenants=["*"]  # allow any tenant
+            #additionally_allowed_tenants=["*"]  # allow any tenant
         )
         self._blob_service_client = BlobServiceClient(
             f"https://{self.STORAGE_ACCOUNT_NAME}.blob.core.windows.net",
