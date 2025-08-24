@@ -11,12 +11,12 @@ class Video(StateModule):
     timestamp: str
     comments: Comments
 
-    def __init__(self, request, response, deployment):
-        super().__init__(request, response, deployment)
+    def __init__(self, request, response, deployment, storage):
+        super().__init__(request, response, deployment, storage)
         video_info = extract_video_info(request=request)
         self.id=video_info["id"]
         self.timestamp=0,
-        self.comments=Comments(request, response, deployment, self.id)
+        self.comments=Comments(request, response, deployment, self.STORAGE, self.id)
         return
     
     def get_video_data(self, request, response):
@@ -54,7 +54,9 @@ class Video(StateModule):
                 data["file_name"] = row[0]
                 data["file_dir"] = row[1]
                 data["user_name"] = row[2]
-
+        
+        video_url = self.STORAGE.get_video_url(data["file_dir"], data["file_name"])
+        data["video_url"] = video_url
         return data
 
     def open_video(self, request, response):
