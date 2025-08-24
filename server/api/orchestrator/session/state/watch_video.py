@@ -4,6 +4,7 @@ from sqlalchemy import select
 from api.orchestrator.session.state.comments import Comments
 from api.orchestrator.session.state.state_module import StateModule
 from api.util.request_data import extract_video_info
+from api.orchestrator.storage import get_video_url
 
 
 class Video(StateModule):
@@ -54,7 +55,9 @@ class Video(StateModule):
                 data["file_name"] = row[0]
                 data["file_dir"] = row[1]
                 data["user_name"] = row[2]
-
+        
+        video_url = get_video_url(data["file_dir"], data["file_name"])
+        data["video_url"] = video_url
         return data
 
     def open_video(self, request, response):
