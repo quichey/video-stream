@@ -1,6 +1,11 @@
 import React from "react";
 import { Container } from "@mui/material";
 
+import { UserProvider } from "./contexts/UserContext";
+import { ChannelProvider } from "./contexts/ChannelContext";
+import { VideoProvider } from "./contexts/VideoContext";
+import { HTTPProvider } from "./contexts/HTTPContext";
+
 import { useLoadSession } from "./customHooks/useLoadSession";
 import useWindowDimensions from "./customHooks/useWindowDimensions";
 import Pages from "./pages";
@@ -23,19 +28,27 @@ function App() {
   if (!sessionLoaded) return <div>Loading session...</div>;
 
   return (
-    <Container
-      style={{
-        paddingLeft: 0,
-        paddingRight: 0,
-        marginLeft: 0,
-        marginRight: 0,
-        width: windowWidth,
-        maxWidth: windowWidth,
-        //overflowX: "hidden",
-      }}
-    >
-      <Pages />
-    </Container>
+    <UserProvider>
+      <ChannelProvider>
+        <VideoProvider>
+          <HTTPProvider>
+            <Container
+              style={{
+                paddingLeft: 0,
+                paddingRight: 0,
+                marginLeft: 0,
+                marginRight: 0,
+                width: windowWidth,
+                maxWidth: windowWidth,
+                //overflowX: "hidden",
+              }}
+            >
+              <Pages />
+            </Container>
+          </HTTPProvider>
+        </VideoProvider>
+      </ChannelProvider>
+    </UserProvider>
   );
 }
 

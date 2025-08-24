@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-import { VideoContext } from "..";
+import { VideoContext } from "../../contexts/VideoContext";
 
 import Comments from "./comments/index";
 import Recommendations from "./Recommendations";

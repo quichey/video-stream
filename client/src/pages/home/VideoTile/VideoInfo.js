@@ -3,8 +3,8 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { NavLink } from "react-router";
 
-import { ChannelContext } from "../..";
-import { VideoContext } from "../..";
+import { ChannelContext } from "../../../contexts/ChannelContext";
+import { VideoContext } from "../../../contexts/VideoContext";
 
 import UserIcon from "../../user/UserIcon";
 
