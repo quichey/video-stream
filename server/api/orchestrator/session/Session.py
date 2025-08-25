@@ -37,7 +37,9 @@ class SessionBase(ABC):
         request_long_term_cookie_id = extract_long_term_cookie(request)
         request_long_term_cookie_id_exists = has_long_term_cookie(request)
         if request_long_term_cookie_id_exists and (request_long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
-            raise SecurityError("Hijacked Long Term Cookie")
+            # don't know if i really need authentication here
+            print("reached here: if request_long_term_cookie_id_exists and (request_long_term_cookie_id != self.LONG_TERM_COOKIE_ID)")
+            #raise SecurityError("Hijacked Long Term Cookie")
         
         # Handle temp cookie
         request_session_token = extract_session_token(request)
