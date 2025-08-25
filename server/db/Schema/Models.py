@@ -192,10 +192,7 @@ class Comment(Base):
 
 class Cookies(Base):
     __tablename__ = "cookies"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    comment: Mapped[str] = mapped_column(String(30))
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    video_id: Mapped[int] = mapped_column(Integer, ForeignKey("videos.id"))
+    session_value: Mapped[str] = mapped_column(primary_key=True)
 
     def __repr__(self) -> str:
-        return f"Comment(id={self.id!r}, comment={self.comment!r}, user_id={self.user_id!r})"
+        return f"Cookie(session_value={self.session_value!r})"
