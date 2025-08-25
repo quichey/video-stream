@@ -19,6 +19,7 @@ export default function RecommendedVideos({ videoList }) {
               userID={videoInfo.user_id}
               dateCreated={videoInfo.date_created}
               sasURL={videoInfo.video_url}
+              userIconURL={videoInfo.user_icon_url}
             ></VideoTile>
           </ListItem>
         );
