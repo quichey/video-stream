@@ -1,4 +1,5 @@
 from flask import json
+from sqlalchemy import select
 
 from api.orchestrator.session.Session import SessionBase
 from api.util.request_data import has_user_info
@@ -23,7 +24,27 @@ class SessionManagement(DataBaseEngine):
         pass
 
     def get_stored_sessions(self):
-        pass
+        data = []
+        with self.engine.connect() as conn:
+            cookies_table = self.metadata_obj.tables["cookies"]
+
+            select_cols = [cookies_table.c.session_value]
+            stmt = select(
+                *select_cols
+            ).select_from(
+                cookies_table
+            )
+
+            records = conn.execute(stmt)
+            #TODO: consider how to actually have
+            # client show the correct video
+            # maybe could just point to
+            # api's address and move assets from
+            # db/ to api/ 
+            for row in records:
+                data.append(row[0])
+
+        return data
     
     def add_session(self, request, response):
         new_session = SessionBase(request, response, self.STORAGE, self.DEPLOYMENT)
