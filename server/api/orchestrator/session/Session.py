@@ -22,7 +22,7 @@ class SessionBase(ABC):
     VIDEO_UPLOAD = None
     HOME = None
 
-    def __init__(self, request, response, deployment, storage):
+    def __init__(self, request, response, storage, deployment):
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
         self.generate_long_term_cookie(request, response)
@@ -86,16 +86,16 @@ class SessionBase(ABC):
             case "load_session":
                 results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
             case "watch_video":
-                self.VIDEO = Video(request, response, self.DEPLOYMENT, self.STORAGE)
+                self.VIDEO = Video(request, response, self.STORAGE, self.DEPLOYMENT)
                 video_data = self.VIDEO.open_video(request, response)
                 results["video_data"] = video_data
             case "get_comments":
                 comment_data = self.VIDEO.comments.get_comments(request, response)
                 results["comment_data"] = comment_data
             case "video_upload":
-                self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT, self.STORAGE)
+                self.VIDEO_UPLOAD = VideoUpload(request, response, self.STORAGE, self.DEPLOYMENT)
             case "home":
-                self.HOME = Home(request, response, self.DEPLOYMENT, self.STORAGE)
+                self.HOME = Home(request, response, self.STORAGE, self.DEPLOYMENT)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
         print(f"\n\n resultsL {results} \n\n")

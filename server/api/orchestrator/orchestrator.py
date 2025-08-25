@@ -10,7 +10,7 @@ class Orchestrator():
     def __init__(self, deployment):
         self.DEPLOYMENT = deployment
         self.STORAGE = Storage()
-        self.SESSION_MANAGEMENT = SessionManagement(deployment, self.STORAGE)
+        self.SESSION_MANAGEMENT = SessionManagement(self.STORAGE, deployment)
         self.CACHE = Cache()
 
     def handle_request(self, request, response):

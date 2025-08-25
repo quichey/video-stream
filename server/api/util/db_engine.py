@@ -3,7 +3,10 @@ from sqlalchemy import create_engine
 from db.Schema import database_specs, database_specs_cloud_sql, Base
 
 class DataBaseEngine():
-    def __init__(self, deployment):
+    DEPLOYMENT = None
+    def __init__(self, deployment, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.DEPLOYMENT = deployment
         self.init_engine(deployment=deployment)
     
     @property

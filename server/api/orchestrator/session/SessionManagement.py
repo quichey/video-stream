@@ -2,19 +2,19 @@ from flask import json
 
 from api.orchestrator.session.Session import SessionBase
 from api.util.request_data import has_user_info
+from api.util.db_engine import DataBaseEngine
 
 class SecurityError(Exception):
     pass
 
 
 
-class SessionManagement():
+class SessionManagement(DataBaseEngine):
     SESSIONS = {}
-    DEPLOYMENT = None
     STORAGE = None
 
-    def __init__(self, deployment, storage):
-        self.DEPLOYMENT = deployment
+    def __init__(self, storage, deployment, *args, **kwargs):
+        super().__init__(deployment, *args, **kwargs)
         self.STORAGE = storage
         self.create_stored_session()
     
@@ -26,7 +26,7 @@ class SessionManagement():
         pass
     
     def add_session(self, request, response):
-        new_session = SessionBase(request, response, self.DEPLOYMENT, self.STORAGE)
+        new_session = SessionBase(request, response, self.STORAGE, self.DEPLOYMENT)
         session_uuid = new_session.LONG_TERM_COOKIE_ID
         self.SESSIONS[session_uuid] = new_session
         return new_session
