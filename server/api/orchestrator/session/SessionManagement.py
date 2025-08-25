@@ -1,7 +1,7 @@
 from flask import json
 
 from api.orchestrator.session.Session import SessionBase
-from api.util.request_data import has_user_info
+from api.util.request_data import has_user_info, extract_long_term_cookie
 
 class SecurityError(Exception):
     pass
@@ -27,13 +27,17 @@ class SessionManagement():
         pass
 
     def get_session(self, request):
-        long_term_cookie_id = request.cookies.get("long_term_session")
+        long_term_cookie_id = extract_long_term_cookie(request)
         print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         return self.SESSIONS.get(long_term_cookie_id)
+    
+    def needs_restore_lost_session(self, request):
+        long_term_cookie_id = extract_long_term_cookie(request)
+        return long_term_cookie_id not in self.SESSIONS.keys()
 
     def needs_new_session(self, request):
-        no_long_term_cookie = not request.cookies.get("long_term_session")
-        print(f"\n\n request.cookies.get: {request.cookies.get('long_term_session')}")
+        no_long_term_cookie = not extract_long_term_cookie(request)
+        print(f"\n\n request.cookies.get: {extract_long_term_cookie(request)}")
         print(f"\n\n no_long_term_cookie: {no_long_term_cookie}")
         no_user_info = not has_user_info(request)
         return no_long_term_cookie and no_user_info
@@ -59,7 +63,7 @@ class SessionManagement():
 
         # I just want SessionManagement to create a new session if needed
         print(f"\n\n self.SESSIONS -- on_request start: {self.SESSIONS}")
-        if self.needs_new_session(request=request):
+        if self.needs_new_session(request=request) or self.needs_restore_lost_session(request):
             current_session = self.add_session(request, response)
         else:
             current_session = self.get_session(request=request)
