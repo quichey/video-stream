@@ -34,6 +34,7 @@ build/
 # dotenv environment variable files (optional: ignore or keep)
 .env
 .env.*
+!.env.example
 
 # Ignore compiled Python files from other OSes
 *.pyo

@@ -4,7 +4,9 @@ from db.Schema import database_specs, database_specs_cloud_sql, Base
 #from api.Cache.SessionManagement import SessionManagement
 
 class StateModule:
-    def __init__(self, request, response, deployment):
+    STORAGE = None
+    def __init__(self, request, response, deployment, storage):
+        self.STORAGE = storage
         self.listeners = {}
         self.init_engine(deployment=deployment)
 

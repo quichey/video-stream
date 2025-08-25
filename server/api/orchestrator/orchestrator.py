@@ -1,5 +1,6 @@
 from api.orchestrator.session.SessionManagement import SessionManagement
 from api.orchestrator.Cache.Cache import Cache
+from api.orchestrator.storage.storage import Storage
 
 
 class Orchestrator():
@@ -8,7 +9,8 @@ class Orchestrator():
     DEPLOYMENT = None
     def __init__(self, deployment):
         self.DEPLOYMENT = deployment
-        self.SESSION_MANAGEMENT = SessionManagement(deployment)
+        self.STORAGE = Storage()
+        self.SESSION_MANAGEMENT = SessionManagement(deployment, self.STORAGE)
         self.CACHE = Cache()
 
     def handle_request(self, request, response):

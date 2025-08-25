@@ -3,11 +3,20 @@ import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import { NavLink } from "react-router";
 
-import { VideoContext } from "../..";
+import { get_storage_url } from "../../../util/urls";
 import VideoInfo from "./VideoInfo";
 
-export default function VideoTile({ id, fileName, fileDir, userName, userIcon, userID, dateCreated }) {
-  const { setID } = React.useContext(VideoContext);
+export default function VideoTile({
+  id,
+  fileName,
+  fileDir,
+  userName,
+  userIcon,
+  userID,
+  dateCreated,
+  sasURL,
+  userIconURL,
+ }) {
 
   const [title, setTitle] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
@@ -28,9 +37,8 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
     <Card variant="outlined" sx={{ maxWidth: 360 }}>
       <NavLink to={`/watch/${id}`} end>
         <video controls width="100%" height="100%">
-          <source src="/media/cc0-videos/flower.webm" type="video/webm" />
           <source
-            src={`${process.env.PUBLIC_URL}/videos/${fileDir}/${fileName}`}
+            src={get_storage_url("videos", fileDir, fileName, sasURL)}
             type="video/mp4"
           />
         </video>
@@ -44,6 +52,7 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
         uploadDate={dateCreated}
         userID={userID}
         videoID={id}
+        userIconURL={userIconURL}
       />
     </Card>
   );
