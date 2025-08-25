@@ -6,6 +6,13 @@ A full-stack web application inspired by YouTube, built to showcase **scalable a
 
 ---
 
+## Live Demo
+Try the project live here: [Video Stream Demo](https://client-engine-app.blacksand-ab0d98b9.westus2.azurecontainerapps.io/)
+
+> *Note: The site URL may change occasionally.*
+
+---
+
 ## ✨ Features
 
 - **Home page** with panels for available videos that when clicked take users to the Watch page 
