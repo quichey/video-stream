@@ -16,6 +16,14 @@ class SessionManagement():
     def __init__(self, deployment, storage):
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
+        self.create_stored_session()
+    
+    def create_stored_sessions(self):
+        stored_sessions = self.get_stored_sessions()
+        pass
+
+    def get_stored_sessions(self):
+        pass
     
     def add_session(self, request, response):
         new_session = SessionBase(request, response, self.DEPLOYMENT, self.STORAGE)
