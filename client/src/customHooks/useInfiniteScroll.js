@@ -1,36 +1,51 @@
-import { useCallback, useContext } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useServerCall } from "../customHooks/useServerCall";
 
-import { HTTPContext } from "../contexts/HTTPContext";
-import { buildRequestBody } from "../api/httpUtils";
+export const useInfiniteScroll = ({
+  route,
+  initialParams = {},
+  handleData,
+  batchSize = 20
+}) => {
+  const fetchServer = useServerCall();
+  const sentinelRef = useRef(null);
 
-export const useInfiniteScroll = () => {
-  const { serverURL } = useContext(HTTPContext);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchData = useCallback(
-    async (route, onResponse, httpParams = {}, method = "POST") => {
-      try {
-        const res = await fetch(`${serverURL}/${route}`, {
-          method,
-          credentials: "include",
-          body: buildRequestBody(httpParams),
-        });
+  const loadMore = useCallback(async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
 
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    try {
+      const params = { ...initialParams, offset: page * batchSize, limit: batchSize };
+      const data = await fetchServer(route, handleData, params);
+      
+      if (data.length < batchSize) setHasMore(false);
+      setPage(prev => prev + 1);
+      if (handleData) handleData(data);
+    } catch (err) {
+      console.error("Infinite scroll fetch failed", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchServer, route, page, loading, hasMore, batchSize, initialParams, handleData]);
 
-        const data = await res.json();
+  useEffect(() => {
+    if (!sentinelRef.current) return;
 
-        if (onResponse && typeof onResponse === "function") {
-          onResponse(data);
-        }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) loadMore();
+      },
+      { rootMargin: "200px" } // start loading before reaching bottom
+    );
 
-        return data; // still return the data in case caller wants it
-      } catch (err) {
-        console.error("Server call failed", err);
-        throw err; // propagate error
-      }
-    },
-    [serverURL]
-  );
+    observer.observe(sentinelRef.current);
 
-  return fetchData;
+    return () => observer.disconnect();
+  }, [loadMore]);
+
+  return { sentinelRef, loading, hasMore, loadMore };
 };
