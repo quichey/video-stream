@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { serverURL } from "../pages/index"
+import { serverURL } from "../contexts/HTTPContext";
 
 export function useLoadSession() {
   const [loaded, setLoaded] = useState(false); // initially false

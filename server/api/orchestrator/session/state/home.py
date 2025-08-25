@@ -9,10 +9,6 @@ from api.util.request_data import extract_video_info
 class Home(StateModule):
     id: int
     timestamp: str
-
-    def __init__(self, request, response, deployment):
-        super().__init__(request, response, deployment)
-        return
     
     def get_video_list(self, request, response):
         data = []
@@ -72,6 +68,16 @@ class Home(StateModule):
                     "date_created": row[6],
                     "date_updated": row[7],
                 }
+                video_url = self.STORAGE.get_video_url(
+                    video_data_point["file_dir"],
+                    video_data_point["file_name"]
+                )
+                video_data_point["video_url"] = video_url
+                user_icon_url = self.STORAGE.get_image_url(
+                    video_data_point["user_id"],
+                    video_data_point["user_icon"]
+                )
+                video_data_point["user_icon_url"] = user_icon_url
                 data.append(video_data_point)
 
         return data

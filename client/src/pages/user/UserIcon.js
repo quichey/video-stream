@@ -2,9 +2,10 @@ import * as React from "react";
 import { Box } from "@mui/material";
 import { NavLink } from "react-router";
 
-import { ChannelContext } from "..";
+import { get_storage_url } from "../../util/urls";
+import { ChannelContext } from "../../contexts/ChannelContext";
 
-export default function UserIcon({ id, userIcon, userName }) {
+export default function UserIcon({ id, userIcon, userName, userIconURL }) {
   const { setID, setName } = React.useContext(ChannelContext);
 
   const handleIconClick = React.useCallback(() => {
@@ -17,7 +18,7 @@ export default function UserIcon({ id, userIcon, userName }) {
       <NavLink to={`/channel/${id}`} end>
         <img
             alt={userIcon}
-            src={`${process.env.PUBLIC_URL}/images/${id}/${userIcon}`}
+            src={get_storage_url("images", id, userIcon, userIconURL)}
             width="20px"
             height="20px"
         />
