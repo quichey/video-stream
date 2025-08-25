@@ -45,7 +45,16 @@ function formatTimeAgo(date) {
   return new Intl.RelativeTimeFormat('en').format(-years, 'year');
 }
 
-export default function VideoInfo({ title, userName, userIcon, totalViews, uploadDate, userID, videoID }) {
+export default function VideoInfo({
+  title,
+  userName,
+  userIcon,
+  totalViews,
+  uploadDate,
+  userID,
+  videoID,
+  userIconURL,
+}) {
   const { setID, setName } = React.useContext(ChannelContext);
   const { setID: setVideoID } = React.useContext(VideoContext);
   // do things here
@@ -72,7 +81,7 @@ export default function VideoInfo({ title, userName, userIcon, totalViews, uploa
   
   return (
     <Stack direction="row" useFlexGap spacing={1}>
-        <UserIcon id={userID} userIcon={userIcon} userName={userName}/>
+        <UserIcon id={userID} userIcon={userIcon} userName={userName} userIconURL={userIconURL} />
         <Stack direction="column" spacing={1}>
             <NavLink to={`/watch/${videoID}`} end>
                 <Typography variant="h6" onClick={handleTitleClick}>{title}</Typography>

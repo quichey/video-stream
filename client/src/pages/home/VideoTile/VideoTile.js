@@ -6,7 +6,17 @@ import { NavLink } from "react-router";
 import { get_storage_url } from "../../../util/urls";
 import VideoInfo from "./VideoInfo";
 
-export default function VideoTile({ id, fileName, fileDir, userName, userIcon, userID, dateCreated, sasURL }) {
+export default function VideoTile({
+  id,
+  fileName,
+  fileDir,
+  userName,
+  userIcon,
+  userID,
+  dateCreated,
+  sasURL,
+  userIconURL,
+ }) {
 
   const [title, setTitle] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
@@ -42,6 +52,7 @@ export default function VideoTile({ id, fileName, fileDir, userName, userIcon, u
         uploadDate={dateCreated}
         userID={userID}
         videoID={id}
+        userIconURL={userIconURL}
       />
     </Card>
   );
