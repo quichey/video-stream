@@ -30,6 +30,9 @@ class SessionManagement():
         long_term_cookie_id = request.cookies.get("long_term_session")
         print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         return self.SESSIONS.get(long_term_cookie_id)
+    
+    def needs_restore_lost_session(self, request):
+        pass
 
     def needs_new_session(self, request):
         no_long_term_cookie = not request.cookies.get("long_term_session")
