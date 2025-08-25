@@ -74,8 +74,8 @@ class Home(StateModule):
                 )
                 video_data_point["video_url"] = video_url
                 user_icon_url = self.STORAGE.get_image_url(
-                    video_data_point["file_dir"],
-                    video_data_point["file_name"]
+                    video_data_point["user_id"],
+                    video_data_point["user_icon"]
                 )
                 video_data_point["user_icon_url"] = user_icon_url
                 data.append(video_data_point)
