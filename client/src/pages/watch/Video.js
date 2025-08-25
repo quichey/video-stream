@@ -5,6 +5,7 @@ import { get_storage_url } from "../../util/urls";
 import { VideoContext } from "../../contexts/VideoContext";
 
 import { useServerCall } from "../../customHooks/useServerCall";
+import Loading from "../../components/Loading";
 
 export default function Video() {
   const { videoID } = useParams();
@@ -37,7 +38,7 @@ export default function Video() {
       : null;
 
   if (!videoUrl) {
-    return <div>Loading video...</div>; // or a spinner
+    return <Loading />; // or a spinner
   }
 
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();

@@ -2,6 +2,7 @@ import * as React from "react";
 import List from "@mui/material/List";
 
 import { useInfiniteScroll } from "../../../customHooks/useInfiniteScroll";
+import Loading from "../../../components/Loading";
 
 import Comment from "./Comment";
 
@@ -21,7 +22,7 @@ export default function Comments() {
         })}
       </List>
       <div ref={sentinelRef} style={{ height: 1 }} />
-      {loading && <div>Loading...</div>}
+      {loading && <Loading />}
     </div>
   );
 }

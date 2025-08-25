@@ -10,6 +10,8 @@ import { useLoadSession } from "./customHooks/useLoadSession";
 import useWindowDimensions from "./customHooks/useWindowDimensions";
 import Pages from "./pages";
 
+import Loading from "./components/Loading";
+
 import "./App.css";
 
 function App() {
@@ -25,7 +27,7 @@ function App() {
 
   // This will handle fetching session from the server and saving temp-session from cookie
   const sessionLoaded = useLoadSession();
-  if (!sessionLoaded) return <div>Loading session...</div>;
+  if (!sessionLoaded) return <Loading />;
 
   return (
     <UserProvider>
