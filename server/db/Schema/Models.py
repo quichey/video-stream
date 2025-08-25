@@ -188,3 +188,11 @@ class Comment(Base):
 
     def __repr__(self) -> str:
         return f"Comment(id={self.id!r}, comment={self.comment!r}, user_id={self.user_id!r})"
+
+
+class Cookies(Base):
+    __tablename__ = "cookies"
+    session_value: Mapped[str] = mapped_column(primary_key=True)
+
+    def __repr__(self) -> str:
+        return f"Cookie(session_value={self.session_value!r})"

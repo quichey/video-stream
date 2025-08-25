@@ -1,24 +1,53 @@
 from flask import json
+from sqlalchemy import select
 
 from api.orchestrator.session.Session import SessionBase
 from api.util.request_data import has_user_info
+from api.util.db_engine import DataBaseEngine
 
 class SecurityError(Exception):
     pass
 
 
 
-class SessionManagement():
+class SessionManagement(DataBaseEngine):
     SESSIONS = {}
-    DEPLOYMENT = None
     STORAGE = None
 
-    def __init__(self, deployment, storage):
-        self.DEPLOYMENT = deployment
+    def __init__(self, storage, deployment, *args, **kwargs):
+        super().__init__(deployment, *args, **kwargs)
         self.STORAGE = storage
+        self.create_stored_session()
+    
+    def create_stored_sessions(self):
+        stored_sessions = self.get_stored_sessions()
+        pass
+
+    def get_stored_sessions(self):
+        data = []
+        with self.engine.connect() as conn:
+            cookies_table = self.metadata_obj.tables["cookies"]
+
+            select_cols = [cookies_table.c.session_value]
+            stmt = select(
+                *select_cols
+            ).select_from(
+                cookies_table
+            )
+
+            records = conn.execute(stmt)
+            #TODO: consider how to actually have
+            # client show the correct video
+            # maybe could just point to
+            # api's address and move assets from
+            # db/ to api/ 
+            for row in records:
+                data.append(row[0])
+
+        return data
     
     def add_session(self, request, response):
-        new_session = SessionBase(request, response, self.DEPLOYMENT, self.STORAGE)
+        new_session = SessionBase(request, response, self.STORAGE, self.DEPLOYMENT)
         session_uuid = new_session.LONG_TERM_COOKIE_ID
         self.SESSIONS[session_uuid] = new_session
         return new_session
