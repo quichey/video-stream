@@ -1,23 +1,64 @@
 import React, { useState } from "react";
 import { Popover, Button, MenuItem, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Link,
+} from "@mui/material";
 
 export default function Login() {
-  const [anchorEl, setAnchorEl] = useState(null);
+    const [open, setOpen] = useState(false);
+
+  const handleLogin = () => {
+    // handle login logic here
+    setOpen(false);
+  };
+
+  const handleRegister = () => {
+    // open registration dialog or redirect
+    console.log("Navigate to Register");
+  };
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
 
   return (
     <div>
-        <MenuItem onClick={handleClose}>Login</MenuItem>
+        <MenuItem onClick={handleClick}>Login</MenuItem>
+        <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Login</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Password"
+            type="password"
+            fullWidth
+          />
+          <Typography variant="body2" mt={2}>
+            Don't have an account?{" "}
+            <Link component="button" onClick={handleRegister}>
+              Register
+            </Link>
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleLogin}>
+            Login
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
