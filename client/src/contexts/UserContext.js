@@ -6,6 +6,10 @@ export const UserContext = createContext({
   setID: () => {},
   name: undefined,
   setName: () => {},
+  iconFileName: undefined,
+  setIconFileName: () => {},
+  iconSASURL: undefined,
+  setIconSASURL: () => {},
 });
 
 // 2. Create the provider component
