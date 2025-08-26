@@ -16,10 +16,21 @@ export const UserContext = createContext({
 export const UserProvider = ({ children }) => {
   const [id, setID] = useState(undefined);
   const [name, setName] = useState(undefined);
+  const [iconFileName, setIconFileName] = useState(undefined);
+  const [iconSASURL, setIconSASURL] = useState(undefined);
 
   return (
     <UserContext.Provider
-      value={{ id, setID, name, setName }}
+      value={{
+        id,
+        setID,
+        name,
+        setName,
+        iconFileName,
+        setIconFileName,
+        iconSASURL,
+        setIconSASURL
+      }}
     >
       {children}
     </UserContext.Provider>
