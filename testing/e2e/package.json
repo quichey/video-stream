@@ -1,0 +1,11 @@
+{
+  "name": "copy-youtube-e2e",
+  "private": true,
+  "scripts": {
+    "test": "cypress run",
+    "open": "cypress open"
+  },
+  "devDependencies": {
+    "cypress": "^13.7.0"
+  }
+}
