@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Popover, Button, MenuItem, Typography } from "@mui/material";
 
+import Login from "./Login";
+import Logout from "./Logout";
+
 export default function SessionMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -35,9 +38,9 @@ export default function SessionMenu() {
           horizontal: "left",
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <Login />
         <MenuItem onClick={handleClose}>Settings</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <Logout />
       </Popover>
     </div>
   );
