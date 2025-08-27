@@ -58,6 +58,15 @@ def has_long_term_cookie(request):
     cookie = extract_long_term_cookie(request=request)
     return cookie is not None
 
+def extract_user_session_cookie(request):
+    cookie = request.cookies.get("auth_cookie")
+    return cookie
+
+
+def has_user_session_cookie(request):
+    cookie = extract_user_session_cookie(request=request)
+    return cookie is not None
+
 def extract_session_token(request):
     if not request.data:
         return None
