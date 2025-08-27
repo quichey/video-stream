@@ -114,6 +114,14 @@ class SessionManagement():
         if self.needs_registration(request, response):
             current_session = self.do_registration(request, response)
             return "registered?"
+        elif self.needs_login(request, response):
+            current_session = self.do_login(request, response)
+            #return "login?"
+            # go to homepage?
+        elif self.needs_logout(request, response):
+            current_session = self.do_logout(request, response)
+            #return "loggedout?"
+            # go to homepage?
 
 
         print(f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}")
@@ -126,6 +134,42 @@ class SessionManagement():
         return False
 
     def do_registration(self, request, response) -> UserSession:
+        session_pair = self.get_session_pair(request)
+        self.NATIVE_AUTH.register(request, response)
+        session_pair.user_session = UserSession(
+            self.NATIVE_AUTH,
+            request,
+            response,
+            self.DEPLOYMENT,
+            self.STORAGE
+        )
+        return session_pair.user_session
+
+    def needs_login(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/login":
+            return True
+        return False
+
+    def do_login(self, request, response) -> UserSession:
+        session_pair = self.get_session_pair(request)
+        self.NATIVE_AUTH.register(request, response)
+        session_pair.user_session = UserSession(
+            self.NATIVE_AUTH,
+            request,
+            response,
+            self.DEPLOYMENT,
+            self.STORAGE
+        )
+        return session_pair.user_session
+
+    def needs_logout(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/logout":
+            return True
+        return False
+
+    def do_logout(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
         self.NATIVE_AUTH.register(request, response)
         session_pair.user_session = UserSession(
