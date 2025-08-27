@@ -127,6 +127,7 @@ class SessionManagement():
 
     def do_registration(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
+        self.NATIVE_AUTH.register(request, response)
         session_pair.user_session = UserSession(
             self.NATIVE_AUTH,
             request,
