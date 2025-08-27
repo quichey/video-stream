@@ -1,3 +1,5 @@
+from typing import Literal
+
 from api.orchestrator.session.Session import SessionBase
 
 from api.util.cookie import generate_cookie
@@ -30,7 +32,7 @@ class UserSession(SessionBase):
         self.state[key] = value
         # persist to DB
 
-    def authenticate_cookies(self, request, response) -> bool:
+    def authenticate_cookies(self, request, response) -> Literal[True]:
         if not has_user_session_cookie(request):
             raise SecurityError("No User Session Cookie")
         cookie = extract_user_session_cookie(request)
