@@ -102,6 +102,24 @@ class ClientRouter(Router):
             self.orchestrator.handle_request(request, response)
             return response
 
+        @app.route('/register', methods=["POST"])
+        def register():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/login', methods=["POST"])
+        def login():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/logout', methods=["POST"])
+        def logout():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
 
         # Route to create a new item
         @app.route('/comments', methods=['POST'])
