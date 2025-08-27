@@ -1,15 +1,26 @@
-from flask import json
+from dataclasses import dataclass
+from typing import Optional
 
 from api.orchestrator.session.Session import SessionBase
+from api.orchestrator.session.AnonymousSession import AnonymousSession
+from api.orchestrator.session.UserSession import UserSession
 from api.util.request_data import has_user_info, extract_long_term_cookie
 
 class SecurityError(Exception):
     pass
 
-
+@dataclass
+class SessionPair:
+    anonymous_session: AnonymousSession
+    user_session: Optional[UserSession] = None
+ 
+@dataclass
+class SessionRegistry:
+    # str should be cookie_id
+    sessions: dict[str, SessionPair]
 
 class SessionManagement():
-    SESSIONS = {}
+    SESSION_REGISTRY = SessionRegistry(sessions={})
     DEPLOYMENT = None
     STORAGE = None
 
