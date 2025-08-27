@@ -134,8 +134,9 @@ class SessionManagement():
 
     def do_registration(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
-        self.NATIVE_AUTH.register(request, response)
+        new_user_instance = self.NATIVE_AUTH.register(request, response)
         session_pair.user_session = UserSession(
+            new_user_instance,
             self.NATIVE_AUTH,
             request,
             response,
@@ -152,8 +153,9 @@ class SessionManagement():
 
     def do_login(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
-        self.NATIVE_AUTH.login(request, response)
+        user_instance = self.NATIVE_AUTH.login(request, response)
         session_pair.user_session = UserSession(
+            user_instance,
             self.NATIVE_AUTH,
             request,
             response,

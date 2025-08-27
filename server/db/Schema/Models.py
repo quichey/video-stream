@@ -135,7 +135,7 @@ comment_likes_table = Table(
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(30), unique=True)
     email: Mapped[Optional[str]] = mapped_column(String(30))
     profile_icon: Mapped[Optional[str]] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String(30))

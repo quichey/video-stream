@@ -1,13 +1,16 @@
 from api.orchestrator.session.Session import SessionBase
 
 from api.util.cookie import generate_cookie
+from db.Schema.Models import User
 
 
 class UserSession(SessionBase):
     AUTH_COOKIE = None
     NATIVE_AUTH = None
-    def __init__(self, native_auth, request, response, deployment, storage):
+    USER_INSTANCE = None
+    def __init__(self, user_instance: User, native_auth, request, response, deployment, storage):
         super().__init__(request, response, deployment, storage)
+        self.USER_INSTANCE = user_instance
         self.NATIVE_AUTH = native_auth
         self.generate_auth_cookie(request, response)
     
