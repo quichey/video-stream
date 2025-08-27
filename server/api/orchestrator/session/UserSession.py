@@ -1,6 +1,8 @@
 from api.orchestrator.session.Session import SessionBase
 
 from api.util.cookie import generate_cookie
+from api.util.error_handling import SecurityError
+from api.util.request_data import extract_user_session_cookie, has_user_session_cookie
 from db.Schema.Models import User
 
 
@@ -28,5 +30,10 @@ class UserSession(SessionBase):
         self.state[key] = value
         # persist to DB
 
-    def authenticate_cookies(self, request, response):
-        pass
+    def authenticate_cookies(self, request, response) -> bool:
+        if not has_user_session_cookie(request):
+            raise SecurityError("No User Session Cookie")
+        cookie = extract_user_session_cookie(request)
+        if cookie != self.AUTH_COOKIE:
+            raise SecurityError("Auth Cookie does not Match")
+        return True

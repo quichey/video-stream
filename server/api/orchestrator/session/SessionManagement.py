@@ -172,8 +172,11 @@ class SessionManagement():
 
     def do_logout(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
-        self.NATIVE_AUTH.logout(request, response)
+        #self.NATIVE_AUTH.logout(request, response)
+        if not session_pair.user_session.authenticate_cookies(request, response):
+            return "error"
         session_pair.user_session = None
+        # TODO: remove user auth cookie from browser
         return session_pair.anonymous_session
 
     def exit_session(self, user_info, session_info):
