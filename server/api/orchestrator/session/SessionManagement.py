@@ -6,6 +6,7 @@ from api.orchestrator.session.AnonymousSession import AnonymousSession
 from api.orchestrator.session.UserSession import UserSession
 from api.util.request_data import has_user_info, extract_long_term_cookie
 from api.util.cookie import generate_cookie
+from auth.native.native import NativeAuth
 
 class SecurityError(Exception):
     pass
@@ -38,10 +39,12 @@ class SessionManagement():
     SESSION_REGISTRY = SessionRegistry(sessions={})
     DEPLOYMENT = None
     STORAGE = None
+    NATIVE_AUTH = None
 
     def __init__(self, deployment, storage):
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
+        self.NATIVE_AUTH = NativeAuth(self.DEPLOYMENT)
     
     def add_session(self, request, response):
         new_session = AnonymousSession(request, response, self.DEPLOYMENT, self.STORAGE)
@@ -124,7 +127,13 @@ class SessionManagement():
 
     def do_registration(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
-        session_pair.user_session = UserSession(request, response, self.DEPLOYMENT, self.STORAGE)
+        session_pair.user_session = UserSession(
+            self.NATIVE_AUTH,
+            request,
+            response,
+            self.DEPLOYMENT,
+            self.STORAGE
+        )
         return session_pair.user_session
 
     def exit_session(self, user_info, session_info):
