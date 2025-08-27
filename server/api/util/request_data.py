@@ -11,6 +11,17 @@ def extract_registration_info(request):
         "password": form_data.get('password'),
     }
     return registration_info
+
+def extract_login_info(request):
+    if not request.data:
+        return None
+    form_data = json.loads(request.data)
+    # TODO: change later to something like request.form['username']
+    login_info = {
+        "name": form_data.get('user_name'),
+        "password": form_data.get('password'),
+    }
+    return login_info
     
 def extract_user_info(request):
     if not request.data:

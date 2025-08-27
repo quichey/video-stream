@@ -5,7 +5,7 @@ from typing import Literal
 from sqlalchemy.orm import Session
 
 from auth.Auth import Auth
-from api.util.request_data import extract_registration_info
+from api.util.request_data import extract_registration_info, extract_login_info
 from db.Schema.Models import User
 
 class NativeAuth(Auth):
@@ -17,15 +17,15 @@ class NativeAuth(Auth):
     def register(self, request, response) -> User | Literal[False]:
         registration_info = extract_registration_info(request)
         hashed_pw = self.hash_password(registration_info["password"])
-        self.store_user_record(registration_info["name"], hashed_pw)
-        #TODO: add something to response?
+        return self.store_user_record(registration_info["name"], hashed_pw)
 
     @override
     def login(self, request, response) -> User | Literal[False]:
-        user_id = pass
-        user_instance = self.get_user_instance(user_id)
+        login_info = extract_login_info(request)
+        user_name = login_info["name"]
+        user_instance = self.get_user_instance(user_name)
         stored_hash = user_instance.password
-        plain_password = pass
+        plain_password = login_info["password"]
         if self.verify_password(plain_password, stored_hash):
             return user_instance
         else:
@@ -46,13 +46,13 @@ class NativeAuth(Auth):
     def verify_password(plain_password: str, stored_hash: bytes) -> bool:
         return bcrypt.checkpw(plain_password.encode("utf-8"), stored_hash)
     
-    def get_user_instance(self, user_id) -> User:
+    def get_user_instance(self, user_name) -> User:
         user_record = None
         with Session(self.engine) as session:
-            user_record = session.get(User, user_id)
+            user_record = session.query(User).filter_by(name=user_name).first()
         return user_record
     
-    def store_user_record(self, name, password):
+    def store_user_record(self, name, password) -> User | Literal[False]:
         new_user = User(
             name=name,
             password=password,
@@ -61,4 +61,7 @@ class NativeAuth(Auth):
         with Session(self.engine) as session:
             session.add(new_user)
             session.commit()
-        return "ok"
+        if new_user.id is not None:
+            return new_user
+        else:
+            return False
