@@ -116,12 +116,11 @@ class SessionManagement():
             return "registered?"
         elif self.needs_login(request, response):
             current_session = self.do_login(request, response)
-            #return "login?"
-            # go to homepage?
+            return "login?"
         elif self.needs_logout(request, response):
+            # change to anonymous session
             current_session = self.do_logout(request, response)
-            #return "loggedout?"
-            # go to homepage?
+            return "loggedout?"
 
 
         print(f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}")
@@ -153,7 +152,7 @@ class SessionManagement():
 
     def do_login(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
-        self.NATIVE_AUTH.register(request, response)
+        self.NATIVE_AUTH.login(request, response)
         session_pair.user_session = UserSession(
             self.NATIVE_AUTH,
             request,
@@ -171,15 +170,9 @@ class SessionManagement():
 
     def do_logout(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
-        self.NATIVE_AUTH.register(request, response)
-        session_pair.user_session = UserSession(
-            self.NATIVE_AUTH,
-            request,
-            response,
-            self.DEPLOYMENT,
-            self.STORAGE
-        )
-        return session_pair.user_session
+        self.NATIVE_AUTH.logout(request, response)
+        session_pair.user_session = None
+        return session_pair.anonymous_session
 
     def exit_session(self, user_info, session_info):
         self.authenticate_user(user_info, session_info)
