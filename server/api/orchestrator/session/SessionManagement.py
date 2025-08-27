@@ -13,6 +13,11 @@ class SecurityError(Exception):
 class SessionPair:
     anonymous_session: AnonymousSession
     user_session: Optional[UserSession] = None
+
+    def create_user_session(self, request, response, deployment, storage):
+        self.user_session = UserSession(request, response, deployment, storage)
+        return self.user_session
+
  
 @dataclass
 class SessionRegistry:
@@ -29,9 +34,13 @@ class SessionManagement():
         self.STORAGE = storage
     
     def add_session(self, request, response):
-        new_session = SessionBase(request, response, self.DEPLOYMENT, self.STORAGE)
+        new_session = AnonymousSession(request, response, self.DEPLOYMENT, self.STORAGE)
+        #TODO: move LONG_TERM_COOKIE_ID logic to SessionRegistry?
         session_uuid = new_session.LONG_TERM_COOKIE_ID
-        self.SESSIONS[session_uuid] = new_session
+        session_pair = SessionPair(
+            anonymous_session=new_session
+        )
+        self.SESSIONS[session_uuid] = session_pair
         return new_session
 
     def end_session(self, request):
@@ -40,17 +49,23 @@ class SessionManagement():
     def get_session(self, request):
         long_term_cookie_id = extract_long_term_cookie(request)
         print(f"\n\n self.SESSIONS: {self.SESSIONS}")
-        return self.SESSIONS.get(long_term_cookie_id)
+        session_pair = self.SESSION_REGISTRY.sessions.get(long_term_cookie_id)
+        user_info_exists = has_user_info(request)
+        if user_info_exists:
+            return session_pair.user_session
+        else:
+            return session_pair.anonymous_session
     
     def needs_restore_lost_session(self, request):
         long_term_cookie_id = extract_long_term_cookie(request)
-        return long_term_cookie_id not in self.SESSIONS.keys()
+        return long_term_cookie_id not in self.SESSION_REGISTRY.sessions.keys()
 
     def needs_new_session(self, request):
         no_long_term_cookie = not extract_long_term_cookie(request)
         print(f"\n\n request.cookies.get: {extract_long_term_cookie(request)}")
         print(f"\n\n no_long_term_cookie: {no_long_term_cookie}")
         no_user_info = not has_user_info(request)
+        # TODO: is checking no_user_info important?
         return no_long_term_cookie and no_user_info
     
     def on_request(self, request, response):
@@ -73,14 +88,14 @@ class SessionManagement():
         # I think I want most of this logic handled in SessionBase
 
         # I just want SessionManagement to create a new session if needed
-        print(f"\n\n self.SESSIONS -- on_request start: {self.SESSIONS}")
+        print(f"\n\n self.SESSION_REGISTRY.sessions -- on_request start: {self.SESSION_REGISTRY.sessions}")
         if self.needs_new_session(request=request) or self.needs_restore_lost_session(request):
             current_session = self.add_session(request, response)
         else:
             current_session = self.get_session(request=request)
 
 
-        print(f"\n\n self.SESSIONS -- on_request end: {self.SESSIONS}")
+        print(f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}")
         return current_session.handle_request(request, response)
 
    

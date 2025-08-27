@@ -1,3 +1,4 @@
+from api.orchestrator.session.Session import SessionBase
 
 class SecurityError(Exception):
     pass
