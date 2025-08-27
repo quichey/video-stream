@@ -15,7 +15,6 @@ class SessionBase(ABC):
     DEPLOYMENT = None
     STORAGE = None
 
-    LONG_TERM_COOKIE_ID = None
     TOKEN = None
 
     VIDEO = None
@@ -25,7 +24,6 @@ class SessionBase(ABC):
     def __init__(self, request, response, deployment, storage):
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
-        self.generate_long_term_cookie(request, response)
         self.generate_token(request, response)
 
 
@@ -128,20 +126,6 @@ class SessionBase(ABC):
         _uuid = str(uuid.uuid4())
         return _uuid
 
-    def generate_long_term_cookie(self, request, response):
-        long_term_cookie_id = self.generate_uuid()
-        self.LONG_TERM_COOKIE_ID = long_term_cookie_id
-        IS_PRODUCTION = self.DEPLOYMENT is 'cloud'
-        response.set_cookie(
-            "long_term_session",
-            long_term_cookie_id,
-            max_age=30*24*60*60,  # 30 days
-            httponly=True,
-            secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
-            samesite='None' if IS_PRODUCTION else 'Lax',  # None for cross-site in prod, Lax for local
-            path='/'
-        )
-        return response
 
     def generate_token(self, request, response):
         token = self.generate_uuid()

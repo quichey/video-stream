@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
+import uuid
 
 from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
@@ -13,6 +14,30 @@ class SecurityError(Exception):
 class SessionPair:
     anonymous_session: AnonymousSession
     user_session: Optional[UserSession] = None
+    LONG_TERM_COOKIE_ID: Optional[str] = None
+
+    def create_cookie(self, request, response, deployment):
+        self.DEPLOYMENT = deployment
+        return self.generate_long_term_cookie(request, response)
+
+    def generate_uuid(self):
+        _uuid = str(uuid.uuid4())
+        return _uuid
+
+    def generate_long_term_cookie(self, request, response):
+        long_term_cookie_id = self.generate_uuid()
+        self.LONG_TERM_COOKIE_ID = long_term_cookie_id
+        IS_PRODUCTION = self.DEPLOYMENT is 'cloud'
+        response.set_cookie(
+            "long_term_session",
+            long_term_cookie_id,
+            max_age=30*24*60*60,  # 30 days
+            httponly=True,
+            secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
+            samesite='None' if IS_PRODUCTION else 'Lax',  # None for cross-site in prod, Lax for local
+            path='/'
+        )
+        return long_term_cookie_id
 
     def create_user_session(self, request, response, deployment, storage):
         self.user_session = UserSession(request, response, deployment, storage)
@@ -35,12 +60,11 @@ class SessionManagement():
     
     def add_session(self, request, response):
         new_session = AnonymousSession(request, response, self.DEPLOYMENT, self.STORAGE)
-        #TODO: move LONG_TERM_COOKIE_ID logic to SessionRegistry?
-        session_uuid = new_session.LONG_TERM_COOKIE_ID
         session_pair = SessionPair(
             anonymous_session=new_session
         )
-        self.SESSIONS[session_uuid] = session_pair
+        session_uuid = session_pair.create_cookie(request, response, self.DEPLOYMENT)
+        self.SESSION_REGISTRY.sessions[session_uuid] = session_pair
         return new_session
 
     def end_session(self, request):
