@@ -55,10 +55,15 @@ class SessionManagement():
     def end_session(self, request):
         pass
 
-    def get_session(self, request):
+    def get_session_pair(self, request) -> SessionPair:
         long_term_cookie_id = extract_long_term_cookie(request)
         print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         session_pair = self.SESSION_REGISTRY.sessions.get(long_term_cookie_id)
+        return session_pair
+
+
+    def get_session(self, request) -> SessionBase:
+        session_pair = self.get_session_pair(request)
         user_info_exists = has_user_info(request)
         if user_info_exists:
             return session_pair.user_session
@@ -102,12 +107,26 @@ class SessionManagement():
             current_session = self.add_session(request, response)
         else:
             current_session = self.get_session(request=request)
+        
+        if self.needs_registration(request, response):
+            current_session = self.do_registration(request, response)
+            return "registered?"
 
 
         print(f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}")
         return current_session.handle_request(request, response)
 
-   
+    def needs_registration(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/register":
+            return True
+        return False
+
+    def do_registration(self, request, response) -> UserSession:
+        session_pair = self.get_session_pair(request)
+        session_pair.user_session = UserSession(request, response, self.DEPLOYMENT, self.STORAGE)
+        return session_pair.user_session
+
     def exit_session(self, user_info, session_info):
         self.authenticate_user(user_info, session_info)
         self.current_state[session_info] = None
