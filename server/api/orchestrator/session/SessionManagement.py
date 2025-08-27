@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
-import uuid
 
 from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
 from api.orchestrator.session.UserSession import UserSession
 from api.util.request_data import has_user_info, extract_long_term_cookie
+from api.util.cookie import generate_cookie
 
 class SecurityError(Exception):
     pass
@@ -20,24 +20,9 @@ class SessionPair:
         self.DEPLOYMENT = deployment
         return self.generate_long_term_cookie(request, response)
 
-    def generate_uuid(self):
-        _uuid = str(uuid.uuid4())
-        return _uuid
-
     def generate_long_term_cookie(self, request, response):
-        long_term_cookie_id = self.generate_uuid()
-        self.LONG_TERM_COOKIE_ID = long_term_cookie_id
-        IS_PRODUCTION = self.DEPLOYMENT is 'cloud'
-        response.set_cookie(
-            "long_term_session",
-            long_term_cookie_id,
-            max_age=30*24*60*60,  # 30 days
-            httponly=True,
-            secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
-            samesite='None' if IS_PRODUCTION else 'Lax',  # None for cross-site in prod, Lax for local
-            path='/'
-        )
-        return long_term_cookie_id
+        self.LONG_TERM_COOKIE_ID = generate_cookie("long_term_cookie_id", self.DEPLOYMENT, response)
+        return self.LONG_TERM_COOKIE_ID
 
     def create_user_session(self, request, response, deployment, storage):
         self.user_session = UserSession(request, response, deployment, storage)
