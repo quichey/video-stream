@@ -2,7 +2,7 @@ from typing import Literal
 
 from api.orchestrator.session.Session import SessionBase
 
-from api.util.cookie import generate_cookie
+from api.util.cookie import generate_cookie, expire_cookie
 from api.util.error_handling import SecurityError
 from api.util.request_data import extract_user_session_cookie, has_user_session_cookie
 from db.Schema.Models import User
@@ -39,3 +39,6 @@ class UserSession(SessionBase):
         if cookie != self.AUTH_COOKIE:
             raise SecurityError("Auth Cookie does not Match")
         return True
+    
+    def clear_cookie(self, request, response):
+        expire_cookie("auth_cookie", self.DEPLOYMENT, response)
