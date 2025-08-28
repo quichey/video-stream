@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
 from flask import make_response
-from datetime import datetime
 import uuid
 import json
 
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
 from api.orchestrator.session.state.home import Home
-from api.util.request_data import extract_session_token, has_session_token, has_long_term_cookie, extract_long_term_cookie
+from api.util.request_data import (
+    extract_session_token,
+    has_session_token,
+    has_long_term_cookie,
+    attach_data_to_payload
+)
 from api.util.error_handling import SecurityError
 
 def post_load_session_hook(func):
@@ -105,13 +109,8 @@ class SessionBase(ABC):
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
         print(f"\n\n resultsL {results} \n\n")
-        def datetime_handler(obj):
-            if isinstance(obj, datetime):
-                return obj.isoformat()  # or str(obj)
-            raise TypeError("Type not serializable")
         
-        response.data = json.dumps(results, default=datetime_handler)
-        response.content_type = "application/json"
+        attach_data_to_payload(response, results)
         return response
 
     @property
