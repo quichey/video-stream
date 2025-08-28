@@ -17,11 +17,6 @@ export default function Login() {
     setOpen(false);
   };
 
-  const handleRegister = () => {
-    // open registration dialog or redirect
-    console.log("Navigate to Register");
-  };
-
   const handleClick = (event) => {
   };
 
@@ -45,12 +40,6 @@ export default function Login() {
             type="password"
             fullWidth
           />
-          <Typography variant="body2" mt={2}>
-            Don't have an account?{" "}
-            <Link component="button" onClick={handleRegister}>
-              Register
-            </Link>
-          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>

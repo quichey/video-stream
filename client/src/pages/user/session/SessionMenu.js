@@ -3,6 +3,7 @@ import { Popover, Button, MenuItem, Typography } from "@mui/material";
 
 import Login from "./Login";
 import Logout from "./Logout";
+import Register from "./Register";
 
 export default function SessionMenu({ handleClose, anchorEl }) {
 
@@ -29,6 +30,7 @@ export default function SessionMenu({ handleClose, anchorEl }) {
         <Login />
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Logout />
+        <Register />
       </Popover>
     </div>
   );
