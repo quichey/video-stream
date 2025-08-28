@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { Popover, Button, MenuItem, Typography } from "@mui/material";
 
-export default function Logout() {
+import { useServerCall } from "../../../customHooks/useServerCall";
 
-  const handleClick = (event) => {
-  };
+export default function Logout() {
+    const fetchData = useServerCall();
+
+  const handleClick = React.useCallback((event) => {
+    fetchData("logout", (json) => {
+        const tempToken = json.session_token
+        sessionStorage.setItem("tempSessionToken", tempToken);
+    });
+  }, []);
 
 
   return (
