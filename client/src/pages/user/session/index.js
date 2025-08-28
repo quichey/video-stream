@@ -18,7 +18,9 @@ function SessionButton() {
 
   return (
     <div>
-      <IconButtonVS IconComponent={<AccountCircleIcon />} handleClick={handleClick} />
+      <IconButtonVS handleClick={handleClick} >
+        <AccountCircleIcon />
+      </IconButtonVS>
       <SessionMenu handleClose={handleClose} anchorEl={anchorEl}/>
     </ div>
   );

@@ -7,6 +7,7 @@ import { Box, IconButton } from "@mui/material";
 import { NavLink } from "react-router";
 
 import Search from "./Search";
+import SessionButton from "./user/session";
 
 export default function Navbar() {
   return (
@@ -43,9 +44,7 @@ export default function Navbar() {
       <IconButton aria-label="notifications" size="small" style={{ width: 50 }}>
         <NotificationsIcon fontSize="inherit" />
       </IconButton>
-      <IconButton aria-label="profile" size="small" style={{ width: 50 }}>
-        <AccountCircleIcon fontSize="inherit" />
-      </IconButton>
+      <SessionButton />
     </Box>
   );
 }
