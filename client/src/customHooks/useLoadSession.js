@@ -34,6 +34,6 @@ export function useLoadSession() {
     }
 
     initSession();
-  }, []);
+  }, [setID, setIconFileName, setIconSASURL, setName]);
   return loaded;
 }
