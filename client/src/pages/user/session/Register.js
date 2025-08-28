@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Popover, Button, MenuItem, Typography } from "@mui/material";
+import { Button, MenuItem } from "@mui/material";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-  Link,
 } from "@mui/material";
 
 import { useServerCall } from "../../../customHooks/useServerCall";
+import { UserContext } from "../../../contexts/UserContext";
 
 export default function Register() {
     const [open, setOpen] = useState(false);
@@ -17,6 +17,7 @@ export default function Register() {
     const [email, setEmail] = useState(false);
     const [password, setPassword] = useState(false);
     const fetchData = useServerCall();
+    const { setName: setUserName } = React.useContext(UserContext);
 
   const handleClick = React.useCallback((event) => {
     setOpen(true)
@@ -28,9 +29,10 @@ export default function Register() {
     fetchData("register", (json) => {
         const tempToken = json.session_token
         sessionStorage.setItem("tempSessionToken", tempToken);
+        setUserName(name)
         setOpen(false);
     }, { user_name: name, email: email, password: password });
-  }, [fetchData, name, email, password]);
+  }, [fetchData, name, email, password, setUserName]);
 
   const handleNameChange = React.useCallback((e) => {
     if (e.target?.value !== undefined) {
