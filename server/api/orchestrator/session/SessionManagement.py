@@ -1,10 +1,16 @@
 from dataclasses import dataclass
 from typing import Optional
+import json
 
 from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
 from api.orchestrator.session.UserSession import UserSession
-from api.util.request_data import has_user_info, extract_long_term_cookie, has_user_session_cookie
+from api.util.request_data import (
+    has_user_info,
+    extract_long_term_cookie,
+    has_user_session_cookie,
+    attach_data_to_payload,
+)
 from api.util.cookie import generate_cookie
 from auth.native.native import NativeAuth
 
@@ -48,6 +54,7 @@ class SessionManagement():
     
     def add_session(self, request, response):
         new_session = AnonymousSession(request, response, self.DEPLOYMENT, self.STORAGE)
+        print(f"\n\n new_session: {new_session} \n\n")
         session_pair = SessionPair(
             anonymous_session=new_session
         )
@@ -56,6 +63,7 @@ class SessionManagement():
         #TODO: add check for user's auth cookie
         # COOKIE does not have info that can translate to user-id
         #TODO: add auth cookies to DB?
+        print(f"\n\n new_session: {new_session} \n\n")
         return new_session
 
     def end_session(self, request):
@@ -113,9 +121,16 @@ class SessionManagement():
 
         # I just want SessionManagement to create a new session if needed
         print(f"\n\n self.SESSION_REGISTRY.sessions -- on_request start: {self.SESSION_REGISTRY.sessions}")
-        if self.needs_new_session(request=request) or self.needs_restore_lost_session(request):
+        needs_create_session = (
+            self.needs_new_session(request=request) or
+            self.needs_restore_lost_session(request) or
+            len(self.SESSION_REGISTRY.sessions.keys()) == 0
+        )
+        if needs_create_session:
+            print("reached if needs_create_session")
             current_session = self.add_session(request, response)
         else:
+            print("reached else")
             current_session = self.get_session(request=request)
         
         if self.needs_registration(request, response):
@@ -151,6 +166,9 @@ class SessionManagement():
                 self.DEPLOYMENT,
                 self.STORAGE
             )
+            results = []
+            session_pair.user_session.post_load_session(request, response, results)
+            attach_data_to_payload(response, results)
             response.status_code = 201
             return session_pair.user_session
         else:
@@ -175,6 +193,9 @@ class SessionManagement():
                 self.DEPLOYMENT,
                 self.STORAGE
             )
+            results = []
+            session_pair.user_session.post_load_session(request, response, results)
+            attach_data_to_payload(response, results)
             response.status_code = 200
             return session_pair.user_session
         else:

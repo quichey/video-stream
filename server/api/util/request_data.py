@@ -1,5 +1,15 @@
 from flask import json
+from datetime import datetime
 
+
+def attach_data_to_payload(response, results):
+    response.data = json.dumps(results, default=datetime_handler)
+    response.content_type = "application/json"
+
+def datetime_handler(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()  # or str(obj)
+    raise TypeError("Type not serializable")
 
 def extract_registration_info(request):
     if not request.data:
