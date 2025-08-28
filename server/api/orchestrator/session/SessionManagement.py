@@ -4,7 +4,7 @@ from typing import Optional
 from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
 from api.orchestrator.session.UserSession import UserSession
-from api.util.request_data import has_user_info, extract_long_term_cookie
+from api.util.request_data import has_user_info, extract_long_term_cookie, has_user_session_cookie
 from api.util.cookie import generate_cookie
 from auth.native.native import NativeAuth
 
@@ -67,8 +67,12 @@ class SessionManagement():
 
     def get_session(self, request) -> SessionBase:
         session_pair = self.get_session_pair(request)
-        user_info_exists = has_user_info(request)
-        if user_info_exists:
+        has_user_cookie = has_user_session_cookie(request)
+        if has_user_cookie:
+            #TODO: what if user_session is empty? create user_session
+            # need to return session_token, i think already handled
+            # TODO: return user's info on /load-session api
+            # ----- name, profile pic info
             return session_pair.user_session
         else:
             return session_pair.anonymous_session
