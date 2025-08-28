@@ -22,7 +22,7 @@ class SessionPair:
         return self.generate_long_term_cookie(request, response)
 
     def generate_long_term_cookie(self, request, response):
-        self.LONG_TERM_COOKIE_ID = generate_cookie("long_term_cookie_id", self.DEPLOYMENT, response)
+        self.LONG_TERM_COOKIE_ID = generate_cookie("long_term_session", self.DEPLOYMENT, response)
         return self.LONG_TERM_COOKIE_ID
 
     def create_user_session(self, request, response, deployment, storage):
@@ -60,7 +60,7 @@ class SessionManagement():
 
     def get_session_pair(self, request) -> SessionPair:
         long_term_cookie_id = extract_long_term_cookie(request)
-        print(f"\n\n self.SESSIONS: {self.SESSIONS}")
+        #print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         session_pair = self.SESSION_REGISTRY.sessions.get(long_term_cookie_id)
         return session_pair
 
