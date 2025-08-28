@@ -10,6 +10,16 @@ from api.orchestrator.session.state.home import Home
 from api.util.request_data import extract_session_token, has_session_token, has_long_term_cookie, extract_long_term_cookie
 from api.util.error_handling import SecurityError
 
+def post_load_session_hook(func):
+    """Decorator to run a step if the subclass/provider defines it."""
+    def wrapper(self, *args, **kwargs):
+        ret_val = func(self, *args, **kwargs)
+        # Call post_load_session step if provider has it
+        post_load_session = getattr(self, "post_load_session", None)
+        if callable(post_load_session):
+            post_load_session(*args, **kwargs)
+        return ret_val
+    return wrapper
 
 class SessionBase(ABC):
     DEPLOYMENT = None
@@ -69,6 +79,10 @@ class SessionBase(ABC):
             return "get_comments"
         elif url_route == "/video-list":
             return "home"
+    
+    @post_load_session_hook
+    def load_session(self, request, response, results):
+        results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
 
     def handle_request(self, request, response):
         self.authenticate_cookies(request, response)
@@ -76,7 +90,7 @@ class SessionBase(ABC):
         results = {}
         match event:
             case "load_session":
-                results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
+                self.load_session(request, response, results)
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT, self.STORAGE)
                 video_data = self.VIDEO.open_video(request, response)

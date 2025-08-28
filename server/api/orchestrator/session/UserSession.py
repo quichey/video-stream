@@ -18,6 +18,19 @@ class UserSession(SessionBase):
         self.NATIVE_AUTH = native_auth
         self.generate_auth_cookie(request, response)
     
+    def post_load_session(self, request, response, results):
+        profile_icon_sas_url = self.STORAGE.get_image_url(
+            self.USER_INSTANCE.id,
+            self.USER_INSTANCE.profile_icon
+        )
+        results["user_data"] = {
+            "id": self.USER_INSTANCE.id,
+            "name": self.USER_INSTANCE.name,
+            "email": self.USER_INSTANCE.email,
+            "profile_icon": self.USER_INSTANCE.profile_icon,
+            "profile_icon_sas_url": profile_icon_sas_url
+        }
+    
     def generate_auth_cookie(self, request, response):
         self.AUTH_COOKIE = generate_cookie("auth_cookie", self.DEPLOYMENT, response)
         return self.AUTH_COOKIE
