@@ -166,7 +166,7 @@ class SessionManagement():
                 self.DEPLOYMENT,
                 self.STORAGE
             )
-            results = []
+            results = {}
             session_pair.user_session.post_load_session(request, response, results)
             attach_data_to_payload(response, results)
             response.status_code = 201
@@ -193,7 +193,7 @@ class SessionManagement():
                 self.DEPLOYMENT,
                 self.STORAGE
             )
-            results = []
+            results = {}
             session_pair.user_session.post_load_session(request, response, results)
             attach_data_to_payload(response, results)
             response.status_code = 200
@@ -221,6 +221,9 @@ class SessionManagement():
         session_pair.user_session = None
         response.status_code = 200
         # TODO: do i ever need to make a new Anonymous Session?
+        results = {}
+        results["session_token"] = session_pair.anonymous_session.token
+        attach_data_to_payload(response, results)
         return session_pair.anonymous_session
 
     def exit_session(self, user_info, session_info):
