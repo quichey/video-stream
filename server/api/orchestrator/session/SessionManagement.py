@@ -53,6 +53,9 @@ class SessionManagement():
         )
         session_uuid = session_pair.create_cookie(request, response, self.DEPLOYMENT)
         self.SESSION_REGISTRY.sessions[session_uuid] = session_pair
+        #TODO: add check for user's auth cookie
+        # COOKIE does not have info that can translate to user-id
+        #TODO: add auth cookies to DB?
         return new_session
 
     def end_session(self, request):
