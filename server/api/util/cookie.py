@@ -7,7 +7,7 @@ def generate_uuid():
 
 def generate_cookie(name, deployment, response):
     cookie_id = generate_uuid()
-    IS_PRODUCTION = deployment is 'cloud'
+    IS_PRODUCTION = deployment == 'cloud'
     response.set_cookie(
         name,
         cookie_id,
@@ -20,12 +20,14 @@ def generate_cookie(name, deployment, response):
     return cookie_id
 
 def expire_cookie(name, deployment, response):
-    response.set_cookie(name,
+    IS_PRODUCTION = deployment == 'cloud'   # (== not "is")
+    response.set_cookie(
+        name,
         value="",
-        expires=0,       # Expire immediately
-        path="/",
+        expires=0,   # Expire immediately
         httponly=True,
-        secure=True,
-        samesite="Strict"
+        secure=IS_PRODUCTION,
+        samesite='None' if IS_PRODUCTION else 'Lax',
+        path='/'
     )
     return
