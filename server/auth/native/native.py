@@ -53,15 +53,15 @@ class NativeAuth(Auth):
         return user_record
     
     def store_user_record(self, name, password) -> User | Literal[False]:
-        new_user = User(
-            name=name,
-            password=password,
-        )
         # also save to mysql db
         with Session(self.engine) as session:
+            new_user = User(
+                name=name,
+                password=password,
+            )
             session.add(new_user)
             session.commit()
-        if new_user.id is not None:
-            return new_user
-        else:
-            return False
+            if new_user.id is not None:
+                return new_user
+        
+        return False
