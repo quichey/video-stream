@@ -2,7 +2,7 @@ import os
 
 from sqlalchemy import MetaData
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, VARBINARY
 from sqlalchemy.orm import DeclarativeBase
 
 from typing import Optional
@@ -138,7 +138,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(30), unique=True)
     email: Mapped[Optional[str]] = mapped_column(String(30))
     profile_icon: Mapped[Optional[str]] = mapped_column(String(30))
-    password: Mapped[str] = mapped_column(String(255))
+    password: Mapped[str] = mapped_column(VARBINARY(255))
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r}, password={self.password!r})"
