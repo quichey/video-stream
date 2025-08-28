@@ -135,15 +135,20 @@ class SessionManagement():
     def do_registration(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
         new_user_instance = self.NATIVE_AUTH.register(request, response)
-        session_pair.user_session = UserSession(
-            new_user_instance,
-            self.NATIVE_AUTH,
-            request,
-            response,
-            self.DEPLOYMENT,
-            self.STORAGE
-        )
-        return session_pair.user_session
+        if new_user_instance:
+            session_pair.user_session = UserSession(
+                new_user_instance,
+                self.NATIVE_AUTH,
+                request,
+                response,
+                self.DEPLOYMENT,
+                self.STORAGE
+            )
+            response.status_code = 201
+            return session_pair.user_session
+        else:
+            # conflict (ex. duplicate username)
+            response.status_code = 409
 
     def needs_login(self, request, response) -> bool:
         url_route = request.path
@@ -154,15 +159,20 @@ class SessionManagement():
     def do_login(self, request, response) -> UserSession:
         session_pair = self.get_session_pair(request)
         user_instance = self.NATIVE_AUTH.login(request, response)
-        session_pair.user_session = UserSession(
-            user_instance,
-            self.NATIVE_AUTH,
-            request,
-            response,
-            self.DEPLOYMENT,
-            self.STORAGE
-        )
-        return session_pair.user_session
+        if user_instance:
+            session_pair.user_session = UserSession(
+                user_instance,
+                self.NATIVE_AUTH,
+                request,
+                response,
+                self.DEPLOYMENT,
+                self.STORAGE
+            )
+            response.status_code = 200
+            return session_pair.user_session
+        else:
+            # invalid credentials
+            response.status_code = 401
 
     def needs_logout(self, request, response) -> bool:
         url_route = request.path
@@ -174,9 +184,12 @@ class SessionManagement():
         session_pair = self.get_session_pair(request)
         #self.NATIVE_AUTH.logout(request, response)
         if not session_pair.user_session.authenticate_cookies(request, response):
+            # Invalid credentials
+            response.status_code = 401
             return "error"
         session_pair.user_session = None
         # TODO: remove user auth cookie from browser
+        response.status_code = 200
         return session_pair.anonymous_session
 
     def exit_session(self, user_info, session_info):
