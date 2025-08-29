@@ -16,7 +16,7 @@ export default function Login() {
     const [name, setName] = useState(false);
     const [password, setPassword] = useState(false);
     const fetchData = useServerCall();
-    const { setName: setUserName } = React.useContext(UserContext);
+    const { setName: setUserName, setID, setIconFileName, setIconSASURL } = React.useContext(UserContext);
 
     const handleLogin = React.useCallback(() => {
         // handle register logic here
@@ -25,9 +25,12 @@ export default function Login() {
             const tempToken = json.session_token
             sessionStorage.setItem("tempSessionToken", tempToken);
             setUserName(name)
+            setID(json.user_data.id)
+            setIconFileName(json.user_data.profile_icon)
+            setIconSASURL(json.user_data.profile_icon_sas_url)
             setOpen(false);
         }, { user_name: name, password: password });
-      }, [fetchData, name, password, setUserName]);
+      }, [fetchData, name, password, setID, setIconFileName, setIconSASURL, setUserName]);
 
     const handleClick = (event) => {
         setOpen(true)
