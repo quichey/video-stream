@@ -144,6 +144,16 @@ class User(Base):
         return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r}, password={self.password!r})"
 
 
+class UserCookie(Base):
+    __tablename__ = "user_cookies"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    cookie: Mapped[str] = mapped_column(String(30), unique=True)
+
+    def __repr__(self) -> str:
+        return f"UserCookie(id={self.id!r}, user_id={self.user_id!r}, cookie={self.cookie!r})"
+
+
 """
 when Video() is instantiated, with a file_name and file_location,
 want the Base's __video_file_manager__ to allocate folders/files
