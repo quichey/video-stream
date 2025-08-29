@@ -148,7 +148,7 @@ class UserCookie(Base):
     __tablename__ = "user_cookies"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    cookie: Mapped[str] = mapped_column(String(30), unique=True)
+    cookie: Mapped[str] = mapped_column(String(100), unique=True)
 
     def __repr__(self) -> str:
         return f"UserCookie(id={self.id!r}, user_id={self.user_id!r}, cookie={self.cookie!r})"
