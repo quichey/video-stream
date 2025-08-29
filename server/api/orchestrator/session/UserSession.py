@@ -1,22 +1,53 @@
 from typing import Literal
+from sqlalchemy.orm import Session
 
 from api.orchestrator.session.Session import SessionBase
 
 from api.util.cookie import generate_cookie, expire_cookie
 from api.util.error_handling import SecurityError
 from api.util.request_data import extract_user_session_cookie, has_user_session_cookie
-from db.Schema.Models import User
+from db.Schema.Models import User, UserCookie
+from api.util.db_engine import DataBaseEngine
 
 
-class UserSession(SessionBase):
+class UserSession(SessionBase, DataBaseEngine):
     AUTH_COOKIE = None
+    COOKIE_RECORD_ID = None
     NATIVE_AUTH = None
     USER_INSTANCE = None
     def __init__(self, user_instance: User, native_auth, request, response, deployment, storage):
-        super().__init__(request, response, deployment, storage)
+        SessionBase.__init__(self, request, response, deployment, storage)
+        DataBaseEngine.__init__(self, deployment)
         self.USER_INSTANCE = user_instance
         self.NATIVE_AUTH = native_auth
         self.generate_auth_cookie(request, response)
+    
+    def store_cookie_record(self) -> UserCookie | Literal[False]:
+        # also save to mysql db
+        with Session(self.engine) as session:
+            cookie_record = UserCookie(
+                user_id=self.USER_INSTANCE.id,
+                cookie=self.AUTH_COOKIE,
+            )
+            session.add(cookie_record)
+            session.commit()
+            if cookie_record.id is not None:
+                self.COOKIE_RECORD_ID = cookie_record.id
+                return cookie_record
+        
+        return False
+
+    def delete_cookie_record(self) -> bool:
+        with Session(self.engine) as session:
+            rows_deleted = session.query(UserCookie).filter(UserCookie.id == self.COOKIE_RECORD_ID).delete()
+            session.commit()
+
+            if rows_deleted > 0:
+                return True
+            else:
+                return False
+        return False
+
     
     def post_load_session(self, request, response, results):
         profile_icon_sas_url = self.STORAGE.get_image_url(
@@ -33,6 +64,7 @@ class UserSession(SessionBase):
     
     def generate_auth_cookie(self, request, response):
         self.AUTH_COOKIE = generate_cookie("auth_cookie", self.DEPLOYMENT, response)
+        self.store_cookie_record()
         return self.AUTH_COOKIE
 
     def get_token(self):
@@ -55,3 +87,5 @@ class UserSession(SessionBase):
     
     def clear_cookie(self, request, response):
         expire_cookie("auth_cookie", self.DEPLOYMENT, response)
+        self.delete_cookie_record()
+        self.AUTH_COOKIE = None
