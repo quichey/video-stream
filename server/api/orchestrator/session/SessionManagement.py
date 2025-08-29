@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
+from typing import Literal
+from sqlalchemy.orm import Session
 import json
 
 from api.orchestrator.session.Session import SessionBase
@@ -9,10 +11,13 @@ from api.util.request_data import (
     has_user_info,
     extract_long_term_cookie,
     has_user_session_cookie,
+    extract_user_session_cookie,
     attach_data_to_payload,
 )
 from api.util.cookie import generate_cookie
 from auth.native.native import NativeAuth
+from db.Schema.Models import User, UserCookie
+from api.util.db_engine import DataBaseEngine
 
 class SecurityError(Exception):
     pass
@@ -38,16 +43,17 @@ class SessionPair:
  
 @dataclass
 class SessionRegistry:
-    # str should be cookie_id
+    # str should be LONG_TERM_COOKIE_ID
     sessions: dict[str, SessionPair]
 
-class SessionManagement():
+class SessionManagement(DataBaseEngine):
     SESSION_REGISTRY = SessionRegistry(sessions={})
     DEPLOYMENT = None
     STORAGE = None
     NATIVE_AUTH = None
 
     def __init__(self, deployment, storage):
+        DataBaseEngine.__init__(self, deployment)
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
         self.NATIVE_AUTH = NativeAuth(self.DEPLOYMENT)
@@ -74,9 +80,26 @@ class SessionManagement():
         #print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         session_pair = self.SESSION_REGISTRY.sessions.get(long_term_cookie_id)
         return session_pair
+    
+    def fetch_user_cookie_record(self, cookie) -> UserCookie | Literal[False]:
+        # also save to mysql db
+        with Session(self.engine) as session:
+            cookie_record = session.query(User).filter_by(cookie=cookie).first()
+            return cookie_record
+        
+        return False
+
+    def fetch_user_record(self, cookie) -> User | Literal[False]:
+        cookie_record = self.fetch_user_cookie_record(cookie)
+        # also save to mysql db
+        with Session(self.engine) as session:
+            user_record = session.get(User, cookie_record.user_id)
+            return user_record
+        
+        return False
 
 
-    def get_session(self, request) -> SessionBase:
+    def get_session(self, request, response) -> SessionBase:
         session_pair = self.get_session_pair(request)
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
@@ -84,6 +107,18 @@ class SessionManagement():
             # need to return session_token, i think already handled
             # TODO: return user's info on /load-session api
             # ----- name, profile pic info
+            if not session_pair.user_session:
+                user_cookie = extract_user_session_cookie(request)
+                user_record = self.fetch_user_record(user_cookie)
+                session_pair.user_session = UserSession(
+                    user_record,
+                    self.NATIVE_AUTH,
+                    request,
+                    response,
+                    self.DEPLOYMENT,
+                    self.STORAGE
+                )
+
             return session_pair.user_session
         else:
             return session_pair.anonymous_session
@@ -131,7 +166,7 @@ class SessionManagement():
             current_session = self.add_session(request, response)
         else:
             print("reached else")
-            current_session = self.get_session(request=request)
+            current_session = self.get_session(request, response)
         
         if self.needs_registration(request, response):
             current_session = self.do_registration(request, response)
