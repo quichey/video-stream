@@ -84,7 +84,7 @@ class SessionManagement(DataBaseEngine):
     def fetch_user_cookie_record(self, cookie) -> UserCookie | Literal[False]:
         # also save to mysql db
         with Session(self.engine) as session:
-            cookie_record = session.query(User).filter_by(cookie=cookie).first()
+            cookie_record = session.query(UserCookie).filter_by(cookie=cookie).first()
             return cookie_record
         
         return False
@@ -111,6 +111,7 @@ class SessionManagement(DataBaseEngine):
                 user_cookie = extract_user_session_cookie(request)
                 user_record = self.fetch_user_record(user_cookie)
                 session_pair.user_session = UserSession(
+                    user_cookie,
                     user_record,
                     self.NATIVE_AUTH,
                     request,
@@ -194,6 +195,7 @@ class SessionManagement(DataBaseEngine):
         new_user_instance = self.NATIVE_AUTH.register(request, response)
         if new_user_instance:
             session_pair.user_session = UserSession(
+                None,
                 new_user_instance,
                 self.NATIVE_AUTH,
                 request,
@@ -201,9 +203,6 @@ class SessionManagement(DataBaseEngine):
                 self.DEPLOYMENT,
                 self.STORAGE
             )
-            results = {}
-            session_pair.user_session.post_load_session(request, response, results)
-            attach_data_to_payload(response, results)
             response.status_code = 201
             return session_pair.user_session
         else:
@@ -221,6 +220,7 @@ class SessionManagement(DataBaseEngine):
         user_instance = self.NATIVE_AUTH.login(request, response)
         if user_instance:
             session_pair.user_session = UserSession(
+                None,
                 user_instance,
                 self.NATIVE_AUTH,
                 request,
@@ -228,9 +228,6 @@ class SessionManagement(DataBaseEngine):
                 self.DEPLOYMENT,
                 self.STORAGE
             )
-            results = {}
-            session_pair.user_session.post_load_session(request, response, results)
-            attach_data_to_payload(response, results)
             response.status_code = 200
             return session_pair.user_session
         else:

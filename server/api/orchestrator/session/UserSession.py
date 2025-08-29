@@ -5,7 +5,7 @@ from api.orchestrator.session.Session import SessionBase
 
 from api.util.cookie import generate_cookie, expire_cookie
 from api.util.error_handling import SecurityError
-from api.util.request_data import extract_user_session_cookie, has_user_session_cookie
+from api.util.request_data import extract_user_session_cookie, has_user_session_cookie, attach_data_to_payload
 from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
 
@@ -15,12 +15,22 @@ class UserSession(SessionBase, DataBaseEngine):
     COOKIE_RECORD_ID = None
     NATIVE_AUTH = None
     USER_INSTANCE = None
-    def __init__(self, user_instance: User, native_auth, request, response, deployment, storage):
+    def __init__(self, old_cookie: str, user_instance: User, native_auth, request, response, deployment, storage):
         SessionBase.__init__(self, request, response, deployment, storage)
         DataBaseEngine.__init__(self, deployment)
         self.USER_INSTANCE = user_instance
         self.NATIVE_AUTH = native_auth
-        self.generate_auth_cookie(request, response)
+        if old_cookie:
+            self.AUTH_COOKIE = old_cookie
+        else:
+            self.generate_auth_cookie(request, response)
+            self.return_user_data(request, response)
+
+    # return user data
+    def return_user_data(self, request, response):
+        results = {}
+        self.post_load_session(request, response, results)
+        attach_data_to_payload(response, results)
     
     def store_cookie_record(self) -> UserCookie | Literal[False]:
         # also save to mysql db
