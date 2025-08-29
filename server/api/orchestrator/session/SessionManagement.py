@@ -47,7 +47,7 @@ class SessionRegistry:
     sessions: dict[str, SessionPair]
 
 class SessionManagement(DataBaseEngine):
-    SESSION_REGISTRY = SessionRegistry(sessions={})
+    SESSION_REGISTRY = None
     DEPLOYMENT = None
     STORAGE = None
     NATIVE_AUTH = None
@@ -57,6 +57,7 @@ class SessionManagement(DataBaseEngine):
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
         self.NATIVE_AUTH = NativeAuth(self.DEPLOYMENT)
+        self.SESSION_REGISTRY = SessionRegistry(sessions={})
     
     def add_session(self, request, response):
         new_session = AnonymousSession(request, response, self.DEPLOYMENT, self.STORAGE)
@@ -70,7 +71,11 @@ class SessionManagement(DataBaseEngine):
         # COOKIE does not have info that can translate to user-id
         #TODO: add auth cookies to DB?
         print(f"\n\n new_session: {new_session} \n\n")
-        return new_session
+        has_user_cookie = has_user_session_cookie(request)
+        if has_user_cookie:
+            return self.restore_lost_user_session(session_pair, request, response)
+        else:
+            return new_session
 
     def end_session(self, request):
         pass
@@ -99,8 +104,7 @@ class SessionManagement(DataBaseEngine):
         return False
 
 
-    def get_session(self, request, response) -> SessionBase:
-        session_pair = self.get_session_pair(request)
+    def restore_lost_user_session(self, session_pair, request, response) -> UserSession:
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
             #TODO: what if user_session is empty? create user_session
@@ -121,6 +125,12 @@ class SessionManagement(DataBaseEngine):
                 )
 
             return session_pair.user_session
+
+    def get_session(self, request, response) -> SessionBase:
+        session_pair = self.get_session_pair(request)
+        has_user_cookie = has_user_session_cookie(request)
+        if has_user_cookie:
+            return self.restore_lost_user_session(session_pair, request, response)
         else:
             return session_pair.anonymous_session
     
