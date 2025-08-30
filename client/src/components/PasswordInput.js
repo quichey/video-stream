@@ -1,60 +1,85 @@
+// PasswordInput.js
 import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { TextField, LinearProgress, Typography, Box } from "@mui/material";
 import zxcvbn from "zxcvbn";
 
-export default function PasswordInput({ value, onChange, label = "Password" }) {
+const PasswordInput = ({ value, onChange }) => {
   const [error, setError] = useState("");
-  const strength = zxcvbn(value || "");
+  const [strength, setStrength] = useState(null);
+
+  const validate = (val) => {
+    if (!val) return "Password is required.";
+    if (val.length < 8) return "Password must be at least 8 characters.";
+    if (!/[A-Z]/.test(val)) return "Password must include at least one uppercase letter.";
+    if (!/[a-z]/.test(val)) return "Password must include at least one lowercase letter.";
+    if (!/[0-9]/.test(val)) return "Password must include at least one number.";
+    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(val))
+      return "Password must include at least one special character.";
+    return "";
+  };
 
   const handleChange = (e) => {
-    const input = e.target.value;
-    onChange(input);
+    const val = e.target.value;
+    onChange(val);
 
-    if (input.length < 8) {
-      setError("Password must be at least 8 characters.");
+    // run rules validation
+    const rulesError = validate(val);
+    setError(rulesError);
+
+    // run zxcvbn analysis
+    if (val) {
+      setStrength(zxcvbn(val));
     } else {
-      setError("");
+      setStrength(null);
     }
   };
 
-  const strengthColors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-green-400", "bg-green-600"];
-  const strengthLabels = ["Too Weak", "Weak", "Fair", "Good", "Strong"];
+  const getStrengthColor = (score) => {
+    switch (score) {
+      case 0:
+      case 1:
+        return "error"; // red
+      case 2:
+        return "warning"; // orange
+      case 3:
+        return "info"; // blue
+      case 4:
+        return "success"; // green
+      default:
+        return "inherit";
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-      <input
+    <Box>
+      <TextField
+        label="Password"
         type="password"
         value={value}
         onChange={handleChange}
-        className={`p-2 border rounded-lg focus:outline-none focus:ring ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
-        placeholder="Enter password"
+        error={Boolean(error)}
+        helperText={error}
+        fullWidth
       />
-      {error && <p className="text-xs text-red-500">{error}</p>}
-
-      {value && (
-        <div className="mt-1">
-          <div className="flex gap-1">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`h-2 flex-1 rounded ${
-                  i <= strength.score ? strengthColors[strength.score] : "bg-gray-200"
-                }`}
-              />
-            ))}
-          </div>
-          <p className="text-xs text-gray-600 mt-1">{strengthLabels[strength.score]}</p>
-        </div>
+      {strength && (
+        <Box mt={1}>
+          <LinearProgress
+            variant="determinate"
+            value={(strength.score + 1) * 20}
+            color={getStrengthColor(strength.score)}
+          />
+          <Typography variant="body2" color="textSecondary">
+            {strength.feedback.warning || " "}
+          </Typography>
+          {strength.feedback.suggestions.length > 0 && (
+            <Typography variant="caption" color="textSecondary">
+              {strength.feedback.suggestions.join(" ")}
+            </Typography>
+          )}
+        </Box>
       )}
-    </div>
+    </Box>
   );
-}
-
-PasswordInput.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
 };
+
+export default PasswordInput;
