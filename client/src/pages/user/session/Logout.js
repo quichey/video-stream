@@ -6,15 +6,18 @@ import { UserContext } from "../../../contexts/UserContext";
 
 export default function Logout() {
     const fetchData = useServerCall();
-    const { setName } = React.useContext(UserContext);
+    const { setName, setID, setIconFileName, setIconSASURL } = React.useContext(UserContext);
 
     const handleClick = React.useCallback((event) => {
         fetchData("logout", (json) => {
             const tempToken = json.session_token
             sessionStorage.setItem("tempSessionToken", tempToken);
             setName(undefined)
+            setID(undefined)
+            setIconFileName(undefined)
+            setIconSASURL(undefined)
         });
-    }, [fetchData, setName]);
+    }, [fetchData, setID, setIconFileName, setIconSASURL, setName]);
 
 
     return (
