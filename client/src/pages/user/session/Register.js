@@ -59,7 +59,7 @@ export default function Register() {
     <div>
         <MenuItem onClick={handleClick}>Register</MenuItem>
         <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Login</DialogTitle>
+        <DialogTitle>Register</DialogTitle>
         <DialogContent>
           <UserNameInput value={name} onChange={handleNameChange} />
           <TextField
