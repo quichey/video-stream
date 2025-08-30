@@ -1,45 +1,39 @@
+// UserNameInput.js
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import * as leoProfanity from "leo-profanity"; // for profanity filter
+import { TextField } from "@mui/material";
+import * as leoProfanity from "leo-profanity";
 
-// Allowed username: 3-20 chars, alphanumeric + . _
-const USERNAME_REGEX = /^[a-zA-Z0-9._]{3,20}$/;
+leoProfanity.loadDictionary(); // load default dictionary
 
-export default function UserNameInput({ value, onChange, label = "Username" }) {
+const UserNameInput = ({ value, onChange }) => {
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const input = e.target.value;
-    onChange(input);
+  const validate = (val) => {
+    if (!val) return "Username is required.";
+    if (val.length < 3) return "Username must be at least 3 characters.";
+    if (val.length > 20) return "Username must be less than 20 characters.";
+    if (!/^[a-zA-Z0-9_]+$/.test(val))
+      return "Username can only contain letters, numbers, and underscores.";
+    if (leoProfanity.check(val)) return "Username contains inappropriate words.";
+    return "";
+  };
 
-    if (!USERNAME_REGEX.test(input)) {
-      setError("3–20 characters, letters/numbers/._ only.");
-    } else if (leoProfanity.check(input)) {
-      setError("Username contains inappropriate words.");
-    } else {
-      setError("");
-    }
+  const handleChange = (e) => {
+    const val = e.target.value;
+    onChange(val);
+    setError(validate(val));
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-      <input
-        type="text"
-        value={value}
-        onChange={handleChange}
-        className={`p-2 border rounded-lg focus:outline-none focus:ring ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
-        placeholder="Enter username"
-      />
-      {error && <p className="text-xs text-red-500">{error}</p>}
-    </div>
+    <TextField
+      label="Username"
+      value={value}
+      onChange={handleChange}
+      error={Boolean(error)}
+      helperText={error}
+      fullWidth
+    />
   );
-}
-
-UserNameInput.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
 };
+
+export default UserNameInput;
