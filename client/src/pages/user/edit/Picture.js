@@ -11,7 +11,7 @@ import { readFile } from "../../../util/fileRead";
 import ButtonVS from "../../../components/TextButton";
 
 export default function Picture() {
-    const [fileBytes, setFileBytes] = React.useState();
+    const [fileBytes, setFileBytes] = React.useState(new Uint8Array(0));
   const { id: loggedInUserID, iconFileName, iconSASURL } = React.useContext(UserContext);
   const fetchData = useServerCall()
 
