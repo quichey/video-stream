@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, MenuItem } from "@mui/material";
 import {
+  Box,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -57,28 +58,30 @@ export default function Register() {
 
   return (
     <div>
-        <MenuItem onClick={handleClick}>Register</MenuItem>
-        <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Register</DialogTitle>
-        <DialogContent>
-          <UserNameInput value={name} onChange={handleNameChange} />
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Email"
-            type="email"
-            fullWidth
-            value={email}
-            onChange={handleEmailChange}
-          />
-          <PasswordInput value={password} onChange={handlePasswordChange} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleRegister}>
-            Register
-          </Button>
-        </DialogActions>
+      <MenuItem onClick={handleClick}>Register</MenuItem>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Register</DialogTitle>
+          <DialogContent>
+            <Box sx={{ minHeight: 300, minWidth: 500 }}> 
+              <UserNameInput value={name} onChange={handleNameChange} />
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Email"
+                type="email"
+                fullWidth
+                value={email}
+                onChange={handleEmailChange}
+              />
+              <PasswordInput value={password} onChange={handlePasswordChange} />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button variant="contained" onClick={handleRegister}>
+              Register
+            </Button>
+          </DialogActions>
       </Dialog>
     </div>
   );
