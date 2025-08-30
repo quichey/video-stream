@@ -55,7 +55,12 @@ class UserSession(SessionBase, DataBaseEngine):
             if rows_deleted > 0:
                 return True
             else:
-                return False
+                rows_deleted = session.query(UserCookie).filter(UserCookie.cookie == self.AUTH_COOKIE).delete()
+                session.commit()
+                if rows_deleted > 0:
+                    return True
+                else:
+                    return False
         return False
 
     
