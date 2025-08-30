@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, MenuItem } from "@mui/material";
 import {
-  Box,
+  Stack,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -59,10 +59,10 @@ export default function Register() {
   return (
     <div>
       <MenuItem onClick={handleClick}>Register</MenuItem>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
           <DialogTitle>Register</DialogTitle>
           <DialogContent>
-            <Box sx={{ minHeight: 300, minWidth: 500 }}> 
+            <Stack spacing={4} sx={{ pt: 2 }}> 
               <UserNameInput value={name} onChange={handleNameChange} />
               <TextField
                 autoFocus
@@ -74,7 +74,7 @@ export default function Register() {
                 onChange={handleEmailChange}
               />
               <PasswordInput value={password} onChange={handlePasswordChange} />
-            </Box>
+            </Stack>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>

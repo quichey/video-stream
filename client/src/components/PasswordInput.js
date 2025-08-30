@@ -51,7 +51,7 @@ const PasswordInput = ({ value, onChange }) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ minHeight: 160 }}>
       <TextField
         label="Password"
         type="password"
