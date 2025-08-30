@@ -4,6 +4,8 @@ import { Box } from "@mui/material";
 import { UserContext } from "../../../contexts/UserContext";
 import { ChannelContext } from "../../contexts/ChannelContext";
 
+import CustomizeChannelButton from "./CustomizeChannelButton";
+
 export default function Summary() {
   const { id: loggedInUserID } = React.useContext(UserContext);
   const { id: channelID, name } = React.useContext(ChannelContext);
@@ -38,9 +40,7 @@ export default function Summary() {
       {
         isChannelOwner ? (
             <>
-                <p>
-                    Customize Channel if logged in
-                </p>
+                <CustomizeChannelButton />
                 <p>
                     Manage Videos if logged in
                 </p>
