@@ -3,13 +3,15 @@ import { MenuItem, Typography } from "@mui/material";
 import { NavLink } from "react-router";
 
 import { UserContext } from "../../../contexts/UserContext";
+import { ChannelContext } from "../../../contexts/ChannelContext";
 
 export default function ViewChannel() {
     const { id } = React.useContext(UserContext);
+    const { setID } = React.useContext(ChannelContext);
 
     const handleClick = React.useCallback((event) => {
-        console.log("do navlink to user's channel page " + id)
-    }, [id]);
+        setID(id)
+    }, [id, setID]);
 
 
     return (
