@@ -60,7 +60,6 @@ class UserSession(SessionBase, DataBaseEngine):
 
     
     def post_load_session(self, request, response, results):
-        print(f"\n\ngot within the post_load_session\n\n")
         profile_icon_sas_url = self.STORAGE.get_image_url(
             self.USER_INSTANCE.id,
             self.USER_INSTANCE.profile_icon
