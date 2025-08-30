@@ -11,6 +11,9 @@ import {
 import { useServerCall } from "../../../customHooks/useServerCall";
 import { UserContext } from "../../../contexts/UserContext";
 
+import UserNameInput from "../../../components/UserNameInput";
+import PasswordInput from "../../../components/PasswordInput";
+
 export default function Register() {
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
@@ -34,9 +37,9 @@ export default function Register() {
     }, { user_name: name, email: email, password: password });
   }, [fetchData, name, email, password, setUserName]);
 
-  const handleNameChange = React.useCallback((e) => {
-    if (e.target?.value !== undefined) {
-        setName(e.target.value)
+  const handleNameChange = React.useCallback((val) => {
+    if (val !== undefined) {
+        setName(val)
     }
   }, [])
 
@@ -46,9 +49,9 @@ export default function Register() {
     }
   }, [])
 
-  const handlePasswordChange = React.useCallback((e) => {
-    if (e.target?.value !== undefined) {
-        setPassword(e.target.value)
+  const handlePasswordChange = React.useCallback((val) => {
+    if (val !== undefined) {
+        setPassword(val)
     }
   }, [])
 
@@ -58,15 +61,7 @@ export default function Register() {
         <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Login</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="User Name"
-            type="text"
-            fullWidth
-            value={name}
-            onChange={handleNameChange}
-          />
+          <UserNameInput value={name} onChange={handleNameChange} />
           <TextField
             autoFocus
             margin="dense"
@@ -76,14 +71,7 @@ export default function Register() {
             value={email}
             onChange={handleEmailChange}
           />
-          <TextField
-            margin="dense"
-            label="Password"
-            type="password"
-            fullWidth
-            value={password}
-            onChange={handlePasswordChange}
-          />
+          <PasswordInput value={password} onChange={handlePasswordChange} />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
