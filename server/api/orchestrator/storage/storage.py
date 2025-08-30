@@ -7,11 +7,12 @@ from azure.storage.blob import (
 )
 
 from util.env import load_providers_env
+from api.orchestrator.storage.base_storage import BaseStorage
 
 load_providers_env()
 
 
-class Storage():
+class Storage(BaseStorage):
     RESOURCE_GROUP = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
     ACR_NAME = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
 
