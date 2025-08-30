@@ -2,11 +2,8 @@ import * as React from "react";
 import { Box } from "@mui/material";
 
 import { ChannelContext } from "../../contexts/ChannelContext";
-import Background from "./channel/Background";
-import Summary from "./channel/Summary";
-import Content from "./channel/Content";
 
-export default function User() {
+export default function Content() {
   const { id, name } = React.useContext(ChannelContext);
   return (
     <Box
@@ -23,11 +20,26 @@ export default function User() {
       }}
     >
       <p>
-        {`Channel ID: ${id}: Channel Name: ${name}`}
+        Home tab
       </p>
-      <Background />
-      <Summary />
-      <Content />
+      <p>
+        Videos Tab
+      </p>
+      <p>
+        Shorts tab
+      </p>
+      <p>
+        Live tab
+      </p>
+      <p>
+        Podcasts Tab
+      </p>
+      <p>
+        playlists tab
+      </p>
+      <p>
+        Posts tab
+      </p>
     </Box>
   );
 }

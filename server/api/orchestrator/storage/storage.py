@@ -7,11 +7,12 @@ from azure.storage.blob import (
 )
 
 from util.env import load_providers_env
+from api.orchestrator.storage.base_storage import BaseStorage
 
 load_providers_env()
 
 
-class Storage():
+class Storage(BaseStorage):
     RESOURCE_GROUP = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
     ACR_NAME = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
 
@@ -30,6 +31,12 @@ class Storage():
         self._blob_service_client = BlobServiceClient.from_connection_string(
             self.ACCOUNT_KEY_CONN
         )
+
+    def store_video(self, file_dir, file_name):
+        pass
+
+    def store_image(self, file_dir, file_name):
+        pass
 
     def get_video_url(self, file_dir, file_name):
         return self.get_media_url(self.CONTAINER_VIDEOS, file_dir=file_dir, file_name=file_name)

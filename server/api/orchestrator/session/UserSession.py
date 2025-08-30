@@ -104,3 +104,6 @@ class UserSession(SessionBase, DataBaseEngine):
         expire_cookie("auth_cookie", self.DEPLOYMENT, response)
         self.delete_cookie_record()
         self.AUTH_COOKIE = None
+
+    def upload_profile_pic(self, request, response):
+        pass
