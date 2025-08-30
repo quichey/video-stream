@@ -1,7 +1,37 @@
 from flask import json
+from datetime import datetime
 
 
+def attach_data_to_payload(response, results):
+    response.data = json.dumps(results, default=datetime_handler)
+    response.content_type = "application/json"
 
+def datetime_handler(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()  # or str(obj)
+    raise TypeError("Type not serializable")
+
+def extract_registration_info(request):
+    if not request.data:
+        return None
+    form_data = json.loads(request.data)
+    # TODO: change later to something like request.form['username']
+    registration_info = {
+        "name": form_data.get('user_name'),
+        "password": form_data.get('password'),
+    }
+    return registration_info
+
+def extract_login_info(request):
+    if not request.data:
+        return None
+    form_data = json.loads(request.data)
+    # TODO: change later to something like request.form['username']
+    login_info = {
+        "name": form_data.get('user_name'),
+        "password": form_data.get('password'),
+    }
+    return login_info
     
 def extract_user_info(request):
     if not request.data:
@@ -36,6 +66,15 @@ def extract_long_term_cookie(request):
 
 def has_long_term_cookie(request):
     cookie = extract_long_term_cookie(request=request)
+    return cookie is not None
+
+def extract_user_session_cookie(request):
+    cookie = request.cookies.get("auth_cookie")
+    return cookie
+
+
+def has_user_session_cookie(request):
+    cookie = extract_user_session_cookie(request=request)
     return cookie is not None
 
 def extract_session_token(request):

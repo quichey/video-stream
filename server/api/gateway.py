@@ -96,10 +96,10 @@ def create_app(test_config=None):
     deployment = os.getenv("DEPLOYMENT")
     orchestrator = Orchestrator(deployment=deployment)
 
-    client_router = ClientRouter(app=app, orchestrator=orchestrator, request=request)
+    client_router = ClientRouter(app=app, deployment=deployment, orchestrator=orchestrator, request=request)
     app.client_router = client_router
 
-    admin_router = AdminRouter(app=app, orchestrator=orchestrator, request=request)
+    admin_router = AdminRouter(app=app, deployment=deployment, orchestrator=orchestrator, request=request)
     app.admin_router = admin_router
     """
     @app.route("/getcomments", methods=["POST"])

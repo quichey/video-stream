@@ -14,9 +14,10 @@ class VideoUpload:
     upload_date: str
 
 class Router():
-    def __init__(self, app, orchestrator, request):
+    def __init__(self, app, deployment, orchestrator, request):
         self.orchestrator = orchestrator
         self.request = request
+        self.deployment = deployment
 
         self.set_up()
         self.construct_routes(app, request)

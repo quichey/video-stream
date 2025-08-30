@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext } from "react";
 
 export const serverURL = process.env.REACT_APP_SERVER_APP_URL || process.env.REACT_APP_API_BASE;
 
