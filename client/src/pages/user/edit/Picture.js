@@ -2,15 +2,22 @@ import * as React from "react";
 import { Box } from "@mui/material";
 
 import { UserContext } from "../../../contexts/UserContext";
-import { ChannelContext } from "../../contexts/ChannelContext";
 
-import CustomizeChannelButton from "./CustomizeChannelButton";
+import { useServerCall } from "../../../customHooks/useServerCall";
+
+import FileUploadButton from "../../../components/FileUploadButton";
 
 export default function Picture() {
   const { id: loggedInUserID } = React.useContext(UserContext);
-  const { id: channelID, name } = React.useContext(ChannelContext);
+  const fetchData = useServerCall()
 
-  const isChannelOwner = loggedInUserID === channelID
+  const onFileChange = (file) => {
+    fetchData("upload-profile-pic", (json) => {
+        console.log(json)
+    }, {
+        "user_id": loggedInUserID
+    })
+  }
   return (
     <Box
       component="form"
@@ -28,9 +35,7 @@ export default function Picture() {
       <p>
         Profile Icon
       </p>
-      <p>
-        Change
-      </p>
+      <FileUploadButton text="Change" onChange={onFileChange} />
       <p>
         Remove
       </p>
