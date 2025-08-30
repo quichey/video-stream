@@ -13,7 +13,7 @@ const PasswordInput = ({ value, onChange }) => {
     if (!/[A-Z]/.test(val)) return "Password must include at least one uppercase letter.";
     if (!/[a-z]/.test(val)) return "Password must include at least one lowercase letter.";
     if (!/[0-9]/.test(val)) return "Password must include at least one number.";
-    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(val))
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(val))
       return "Password must include at least one special character.";
     return "";
   };

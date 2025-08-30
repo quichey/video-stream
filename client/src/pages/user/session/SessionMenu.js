@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Popover, Button, MenuItem, Typography } from "@mui/material";
+import React from "react";
+import { Popover, MenuItem, Typography } from "@mui/material";
 
 import Login from "./Login";
 import Logout from "./Logout";

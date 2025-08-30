@@ -1,5 +1,4 @@
 import * as React from "react";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DehazeIcon from "@mui/icons-material/Dehaze";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import VideocamIcon from "@mui/icons-material/Videocam";
