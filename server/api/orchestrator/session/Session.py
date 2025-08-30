@@ -17,12 +17,10 @@ from api.util.error_handling import SecurityError
 def post_load_session_hook(func):
     """Decorator to run a step if the subclass/provider defines it."""
     def wrapper(self, *args, **kwargs):
-        print(f"\n\ngot within the wrapper\n\n")
         ret_val = func(self, *args, **kwargs)
         # Call post_load_session step if provider has it
         post_load_session = getattr(self, "post_load_session", None)
         if callable(post_load_session):
-            print(f"\n\ngot within the wrapper if context\n\n")
             post_load_session(*args, **kwargs)
         return ret_val
     return wrapper
