@@ -1,10 +1,14 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
+import { UserContext } from "../../../contexts/UserContext";
 import { ChannelContext } from "../../contexts/ChannelContext";
 
 export default function Summary() {
-  const { id, name } = React.useContext(ChannelContext);
+  const { id: loggedInUserID } = React.useContext(UserContext);
+  const { id: channelID, name } = React.useContext(ChannelContext);
+
+  const isChannelOwner = loggedInUserID === channelID
   return (
     <Box
       component="form"
@@ -31,15 +35,22 @@ export default function Summary() {
       <p>
         Description
       </p>
-      <p>
-        Customize Channel if logged in
-      </p>
-      <p>
-        Manage Videos if logged in
-      </p>
-      <p>
-        Subscribe if not logged in
-      </p>
+      {
+        isChannelOwner ? (
+            <>
+                <p>
+                    Customize Channel if logged in
+                </p>
+                <p>
+                    Manage Videos if logged in
+                </p>
+            </>
+        ): (
+            <p>
+                Subscribe if not logged in
+            </p>
+        )
+      }
     </Box>
   );
 }
