@@ -12,7 +12,7 @@ import { useServerCall } from "../../../customHooks/useServerCall";
 import { UserContext } from "../../../contexts/UserContext";
 
 export default function Login() {
-    const [open, setOpen] = useState("");
+    const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const fetchData = useServerCall();

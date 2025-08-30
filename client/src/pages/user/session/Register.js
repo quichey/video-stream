@@ -13,9 +13,9 @@ import { UserContext } from "../../../contexts/UserContext";
 
 export default function Register() {
     const [open, setOpen] = useState(false);
-    const [name, setName] = useState(false);
-    const [email, setEmail] = useState(false);
-    const [password, setPassword] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const fetchData = useServerCall();
     const { setName: setUserName } = React.useContext(UserContext);
 
