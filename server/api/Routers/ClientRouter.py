@@ -1,7 +1,9 @@
 # Example using Flask and SQLite
 from flask import make_response
+import json
 
 from .Router import Router
+from auth.native.native import NativeAuth
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -31,6 +33,7 @@ class ClientRouter(Router):
     a user to be logged in
     """
     def set_up(self):
+        self.NATIVE_AUTH = NativeAuth(self.deployment)
         return
 
 
@@ -100,6 +103,16 @@ class ClientRouter(Router):
         def read_comments():
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/verify-name', methods=["POST"])
+        def verify_name():
+            response = make_response("Initial body")
+            form_data = json.loads(request.data)
+            user_name = form_data.get("user_name")
+            verified = self.NATIVE_AUTH.verify_user_name_unique(user_name)
+            response.data = json.dumps({"verified": verified})
+            response.content_type = "application/json"
             return response
 
         @app.route('/register', methods=["POST"])

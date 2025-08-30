@@ -65,3 +65,9 @@ class NativeAuth(Auth):
                 return new_user
         
         return False
+    
+    def verify_user_name_unique(self, user_name) -> bool:
+        user_record = None
+        with Session(self.engine) as session:
+            user_record = session.query(User).filter_by(name=user_name).first()
+        return user_record is None

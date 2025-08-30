@@ -13,8 +13,8 @@ import { UserContext } from "../../../contexts/UserContext";
 
 export default function Login() {
     const [open, setOpen] = useState(false);
-    const [name, setName] = useState(false);
-    const [password, setPassword] = useState(false);
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
     const fetchData = useServerCall();
     const { setName: setUserName, setID, setIconFileName, setIconSASURL } = React.useContext(UserContext);
 
