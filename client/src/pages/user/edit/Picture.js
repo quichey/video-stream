@@ -6,9 +6,10 @@ import { UserContext } from "../../../contexts/UserContext";
 import { useServerCall } from "../../../customHooks/useServerCall";
 
 import FileUploadButton from "../../../components/FileUploadButton";
+import UserIconImg from "../../../components/UserIconImg";
 
 export default function Picture() {
-  const { id: loggedInUserID } = React.useContext(UserContext);
+  const { id: loggedInUserID, iconFileName, iconSASURL } = React.useContext(UserContext);
   const fetchData = useServerCall()
 
   const onFileChange = (file) => {
@@ -32,13 +33,16 @@ export default function Picture() {
         width: "100%",
       }}
     >
-      <p>
-        Profile Icon
-      </p>
-      <FileUploadButton text="Change" onChange={onFileChange} />
-      <p>
-        Remove
-      </p>
+        <UserIconImg
+            id={loggedInUserID}
+            userIcon={iconFileName}
+            userIconURL={iconSASURL}
+            length="50px"
+        />
+        <FileUploadButton text="Change" onChange={onFileChange} />
+        <p>
+            Remove
+        </p>
     </Box>
   );
 }
