@@ -1,14 +1,15 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
+import { UserContext } from "../../../contexts/UserContext";
 import { ChannelContext } from "../../contexts/ChannelContext";
-import Banner from "./Banner";
-import Picture from "./Picture";
-import Name from "./Name";
-import Description from "./Description";
 
-export default function CustomizeChannel() {
-  const { id, name } = React.useContext(ChannelContext);
+
+export default function Banner() {
+  const { id: loggedInUserID } = React.useContext(UserContext);
+  const { id: channelID, name } = React.useContext(ChannelContext);
+
+  const isChannelOwner = loggedInUserID === channelID
   return (
     <Box
       component="form"
@@ -24,12 +25,14 @@ export default function CustomizeChannel() {
       }}
     >
       <p>
-        {`Channel ID: ${id}: Channel Name: ${name}`}
+        Banner Image
       </p>
-      <Banner />
-      <Picture />
-      <Name />
-      <Description />
+      <p>
+        Change
+      </p>
+      <p>
+        Remove
+      </p>
     </Box>
   );
 }
