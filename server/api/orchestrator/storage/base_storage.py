@@ -14,9 +14,9 @@ class BaseStorage(ABC):
         pass
 
     @abstractmethod
-    def store_video(self, file_dir, file_name):
+    def store_video(self, file_dir, file_name, byte_stream):
         pass
 
     @abstractmethod
-    def store_image(self, file_dir, file_name):
+    def store_image(self, file_dir, file_name, byte_stream):
         pass
