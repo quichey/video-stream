@@ -47,7 +47,6 @@ class Storage():
         # Get a user delegation key (AAD-based SAS; safer than account SAS)
         # short lived (e.g., 1 hour)
         now = datetime.datetime.now(datetime.timezone.utc)
-        print(f"\n\n before bsc.get_user_delegation_key")
         #start = now
         #print(f"\n\n start: {start}")
         #expiry = now + datetime.timedelta(hours=1)
@@ -64,7 +63,6 @@ class Storage():
             expiry=now + datetime.timedelta(minutes=60*2),  # very short-lived
             start=now - datetime.timedelta(minutes=1)     # clock skew
         )
-        print(f"\n\n after generate_blob_sas")
 
         url = f"https://{self.STORAGE_ACCOUNT_NAME}.blob.core.windows.net/{container}/{blob_name}?{sas_token}"
         return url
