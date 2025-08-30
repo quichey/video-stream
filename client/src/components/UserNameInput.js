@@ -1,6 +1,6 @@
 // UserNameInput.js
 import React, { useState } from "react";
-import { TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import * as leoProfanity from "leo-profanity";
 
 leoProfanity.loadDictionary(); // load default dictionary
@@ -25,14 +25,16 @@ const UserNameInput = ({ value, onChange }) => {
   };
 
   return (
-    <TextField
-      label="Username"
-      value={value}
-      onChange={handleChange}
-      error={Boolean(error)}
-      helperText={error}
-      fullWidth
-    />
+    <Box sx={{ minHeight: 80 }}>
+        <TextField
+            label="Username"
+            value={value}
+            onChange={handleChange}
+            error={Boolean(error)}
+            helperText={error}
+            fullWidth
+        />
+    </Box>
   );
 };
 
