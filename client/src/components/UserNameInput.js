@@ -1,5 +1,5 @@
 // UserNameInput.js
-import React, { useState } from "react";
+import React from "react";
 import { Box, TextField } from "@mui/material";
 import * as leoProfanity from "leo-profanity";
 
@@ -7,8 +7,7 @@ import { useServerCall } from "../customHooks/useServerCall";
 
 leoProfanity.loadDictionary(); // load default dictionary
 
-const UserNameInput = ({ value, onChange }) => {
-  const [error, setError] = useState("");
+const UserNameInput = ({ value, onChange, error, setError }) => {
     const fetchData = useServerCall();
 
   const validate = (val) => {
@@ -25,7 +24,7 @@ const UserNameInput = ({ value, onChange }) => {
     const val = e.target.value;
     onChange(val);
     setError(validate(val));
-  }, [onChange]);
+  }, [onChange, setError]);
 
   React.useEffect(() => {
     if (error === "") {
@@ -35,7 +34,7 @@ const UserNameInput = ({ value, onChange }) => {
             }
         }, { user_name: value });
     }
-  }, [value, fetchData, error])
+  }, [value, fetchData, error, setError])
 
   return (
     <Box sx={{ minHeight: 80 }}>
