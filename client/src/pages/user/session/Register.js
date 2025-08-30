@@ -18,8 +18,10 @@ import PasswordInput from "../../../components/PasswordInput";
 export default function Register() {
     const [open, setOpen] = useState(false);
     const [name, setName] = useState("");
+    const [nameError, setNameError] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const fetchData = useServerCall();
     const { setName: setUserName } = React.useContext(UserContext);
 
@@ -56,6 +58,10 @@ export default function Register() {
     }
   }, [])
 
+  const disabled = (
+    !!nameError || !!passwordError || !name || !password
+  )
+
   return (
     <div>
       <MenuItem onClick={handleClick}>Register</MenuItem>
@@ -63,7 +69,7 @@ export default function Register() {
           <DialogTitle>Register</DialogTitle>
           <DialogContent>
             <Stack spacing={4} sx={{ pt: 2 }}> 
-              <UserNameInput value={name} onChange={handleNameChange} />
+              <UserNameInput value={name} onChange={handleNameChange} error={nameError} setError={setNameError}/>
               <TextField
                 autoFocus
                 margin="dense"
@@ -73,12 +79,12 @@ export default function Register() {
                 value={email}
                 onChange={handleEmailChange}
               />
-              <PasswordInput value={password} onChange={handlePasswordChange} />
+              <PasswordInput value={password} onChange={handlePasswordChange} error={passwordError} setError={setPasswordError} />
             </Stack>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button variant="contained" onClick={handleRegister}>
+            <Button variant="contained" onClick={handleRegister} disabled={disabled}>
               Register
             </Button>
           </DialogActions>
