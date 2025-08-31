@@ -115,12 +115,23 @@ class UserSession(SessionBase, DataBaseEngine):
         file_name = pic_info["file_name"]
         byte_stream = pic_info["byte_stream"]
         user_id = self.USER_INSTANCE.id
-        self.STORAGE.store_image(user_id, file_name, byte_stream)
-        self.update_pic_db(file_name)
+        sas_url = self.STORAGE.store_image(user_id, file_name, byte_stream)
+        succeeded = self.update_pic_db(file_name)
+        if succeeded and sas_url:
+            return {
+                "profile_icon": file_name,
+                "profile_icon_sas_url": sas_url
+            }
         #TODO: return new sasURLS so client updates all images
     
-    def update_pic_db(self, file_name):
+    def update_pic_db(self, file_name) -> bool:
         self.USER_INSTANCE.profile_icon = file_name
-        with Session(self.engine) as session:
-            session.merge(self.USER_INSTANCE)  # re-attaches it
-            session.commit()
+        try:
+            with Session(self.engine) as session:
+                session.merge(self.USER_INSTANCE)  # re-attaches it
+                session.commit()
+            return True
+        except Exception as e:
+            # optionally log the exception
+            print(f"Failed to update profile icon: {e}")
+            return False

@@ -16,9 +16,12 @@ class LocalStorage(BaseStorage):
 
     def store_video(self, file_dir, file_name, byte_stream):
         self.store_file_in_public(file_dir, file_name, byte_stream, self.CONTAINER_VIDEOS)
+        return True
 
     def store_image(self, file_dir, file_name, byte_stream):
         self.store_file_in_public(file_dir, file_name, byte_stream, self.CONTAINER_IMAGES)
+        #TODO: check if store_file actually worked
+        return True
 
     def store_file_in_public(self, file_dir, file_name, byte_stream, container):
         #TODO: understand what i did in db/Schema/Video/VideoFile.py
