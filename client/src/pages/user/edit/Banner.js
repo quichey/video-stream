@@ -2,7 +2,7 @@ import * as React from "react";
 import { Box } from "@mui/material";
 
 import { UserContext } from "../../../contexts/UserContext";
-import { ChannelContext } from "../../contexts/ChannelContext";
+import { ChannelContext } from "../../../contexts/ChannelContext";
 
 
 export default function Banner() {
