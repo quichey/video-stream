@@ -1,9 +1,9 @@
 // PicturePreview.js
 import React from "react";
 import { AccountCircle } from "@mui/icons-material";
-import { useUserPictureEdit } from "../../../contexts/UserPictureEditContext";
-import UserIconImg from "../../../components/UserIconImg";
-import { UserContext } from "../../../contexts/UserContext";
+import { useUserPictureEdit } from "./UserPictureEditContext";
+import UserIconImg from "../../../../components/UserIconImg";
+import { UserContext } from "../../../../contexts/UserContext";
 
 export default function PicturePreview() {
   const { preview, remove } = useUserPictureEdit();

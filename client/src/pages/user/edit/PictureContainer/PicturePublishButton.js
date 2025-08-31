@@ -1,8 +1,8 @@
 // PicturePublishButton.js
 import React from "react";
-import ButtonVS from "../../../components/TextButton";
-import { useUserPictureEdit } from "../../../contexts/UserPictureEditContext";
-import { useServerCall } from "../../../customHooks/useServerCall";
+import ButtonVS from "../../../../components/TextButton";
+import { useUserPictureEdit } from "./UserPictureEditContext";
+import { useServerCall } from "../../../../customHooks/useServerCall";
 
 export default function PicturePublishButton() {
   const { fileBytes, fileName, remove } = useUserPictureEdit();

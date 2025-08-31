@@ -1,7 +1,7 @@
 // Picture.js
 import React from "react";
 import { Box, Stack } from "@mui/material";
-import { UserPictureEditProvider } from "../../../contexts/UserPictureEditContext";
+import { UserPictureEditProvider } from "./UserPictureEditContext";
 import PicturePreview from "./PicturePreview";
 import PictureUploadButton from "./PictureUploadButton";
 import PictureRemoveButton from "./PictureRemoveButton";
