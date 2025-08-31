@@ -117,6 +117,7 @@ class UserSession(SessionBase, DataBaseEngine):
         user_id = self.USER_INSTANCE.id
         self.STORAGE.store_image(user_id, file_name, byte_stream)
         self.update_pic_db(file_name)
+        #TODO: return new sasURLS so client updates all images
     
     def update_pic_db(self, file_name):
         self.USER_INSTANCE.profile_icon = file_name
