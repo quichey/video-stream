@@ -56,6 +56,14 @@ def extract_video_info(request):
     if "video_id" in form_data:
         video_info["id"] = form_data['video_id']
     return video_info
+    
+def extract_profile_pic_info(request):
+    form_data = json.loads(request.data)
+    pic_info = {
+        "file_name": form_data.get('file_name'),
+        "byte_stream": form_data.get('byte_stream')
+    }
+    return pic_info
 
 
 

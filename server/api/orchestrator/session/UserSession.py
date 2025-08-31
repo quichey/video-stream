@@ -5,7 +5,12 @@ from api.orchestrator.session.Session import SessionBase
 
 from api.util.cookie import generate_cookie, expire_cookie
 from api.util.error_handling import SecurityError
-from api.util.request_data import extract_user_session_cookie, has_user_session_cookie, attach_data_to_payload
+from api.util.request_data import (
+    extract_user_session_cookie,
+    has_user_session_cookie,
+    attach_data_to_payload,
+    extract_profile_pic_info
+)
 from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
 
@@ -106,4 +111,15 @@ class UserSession(SessionBase, DataBaseEngine):
         self.AUTH_COOKIE = None
 
     def upload_profile_pic(self, request, response):
-        pass
+        pic_info = extract_profile_pic_info(request)
+        file_name = pic_info["file_name"]
+        byte_stream = pic_info["byte_stream"]
+        user_id = self.USER_INSTANCE.id
+        self.STORAGE.store_image(user_id, file_name, byte_stream)
+        self.update_pic_db(file_name)
+    
+    def update_pic_db(self, file_name):
+        self.USER_INSTANCE.profile_icon = file_name
+        with Session(self.engine) as session:
+            self.USER_INSTANCE = session.merge(self.USER_INSTANCE)  # re-attaches it
+            session.commit()
