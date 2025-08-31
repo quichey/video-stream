@@ -83,6 +83,8 @@ class SessionBase(ABC):
             return "get_comments"
         elif url_route == "/video-list":
             return "home"
+        elif url_route == "/upload-profile-pic":
+            return "upload-profile-pic"
     
     @post_load_session_hook
     def load_session(self, request, response, results):
@@ -108,6 +110,8 @@ class SessionBase(ABC):
                 self.HOME = Home(request, response, self.DEPLOYMENT, self.STORAGE)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
+            case "upload-profile-pic":
+                self.upload_profile_pic(request, response)
         print(f"\n\n resultsL {results} \n\n")
         
         attach_data_to_payload(response, results)

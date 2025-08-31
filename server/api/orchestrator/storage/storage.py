@@ -32,10 +32,10 @@ class Storage(BaseStorage):
             self.ACCOUNT_KEY_CONN
         )
 
-    def store_video(self, file_dir, file_name):
+    def store_video(self, file_dir, file_name, byte_stream):
         pass
 
-    def store_image(self, file_dir, file_name):
+    def store_image(self, file_dir, file_name, byte_stream):
         pass
 
     def get_video_url(self, file_dir, file_name):
