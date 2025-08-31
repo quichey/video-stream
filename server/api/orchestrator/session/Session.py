@@ -111,7 +111,7 @@ class SessionBase(ABC):
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
             case "upload-profile-pic":
-                self.upload_profile_pic(request, response)
+                results["pic_data"] = self.upload_profile_pic(request, response)
         print(f"\n\n resultsL {results} \n\n")
         
         attach_data_to_payload(response, results)
