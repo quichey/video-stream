@@ -7,6 +7,7 @@ import { NavLink } from "react-router";
 
 import Search from "./Search";
 import SessionButton from "./user/session";
+import Sidebar from "./sidebar";
 
 export default function Navbar() {
   return (
@@ -28,9 +29,7 @@ export default function Navbar() {
         width: "100%",
       }}
     >
-      <IconButton aria-label="drawer" size="small" style={{ width: 50 }}>
-        <DehazeIcon fontSize="inherit" />
-      </IconButton>
+      <Sidebar />
       <Search />
       <NavLink to={"/upload"} end>
         <IconButton aria-label="create" size="small" style={{ width: 50 }}>

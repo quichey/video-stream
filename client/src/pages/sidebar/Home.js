@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 
 export default function Home({ collapsed }) {
   return (
-    <ListItemButton component={NavLink} to="/home">
+    <ListItemButton component={NavLink} to="/">
       <ListItemIcon>
         <HomeIcon />
       </ListItemIcon>
