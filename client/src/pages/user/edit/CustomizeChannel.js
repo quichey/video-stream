@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 
 import { ChannelContext } from "../../../contexts/ChannelContext";
 import Banner from "./Banner";
-import Picture from "./Picture";
+import PictureContainer from "./PictureContainer/PictureContainer";
 import Name from "./Name";
 import Description from "./Description";
 
@@ -27,7 +27,7 @@ export default function CustomizeChannel() {
         {`Channel ID: ${id}: Channel Name: ${name}`}
       </p>
       <Banner />
-      <Picture />
+      <PictureContainer />
       <Name />
       <Description />
     </Box>
