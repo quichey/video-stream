@@ -11,9 +11,7 @@ function CustomizeChannelButton() {
   return (
     <div>
         <NavLink to={`/channel/${id}/editing/profile`} end>
-            <ButtonVS>
-                Customize channel
-            </ButtonVS>
+            <ButtonVS text="Customize channel" />
         </NavLink>
     </ div>
   );
