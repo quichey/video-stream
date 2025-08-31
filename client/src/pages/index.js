@@ -5,6 +5,7 @@ import { Box } from "@mui/material";
 import Home from "./home";
 import Watch from "./watch";
 import User from "./user";
+import CustomizeChannel from "./user/edit/CustomizeChannel";
 import VideoUpload from "./video_upload";
 import Navbar from "./Navbar";
 
@@ -46,7 +47,12 @@ export default function Pages() {
             <Route path=":videoID" element={<Watch />} />
           </Route>
           <Route path="channel">
-            <Route path=":userID" element={<User />} />
+            <Route path=":userID">
+              <Route index element={<User />} />
+              <Route path="editing">
+                <Route path="profile" element={<CustomizeChannel />} />
+              </Route>
+            </Route>
           </Route>
           <Route
             index
