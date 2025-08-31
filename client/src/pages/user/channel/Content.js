@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-import { ChannelContext } from "../../contexts/ChannelContext";
+import { ChannelContext } from "../../../contexts/ChannelContext";
 
 export default function Content() {
   const { id, name } = React.useContext(ChannelContext);

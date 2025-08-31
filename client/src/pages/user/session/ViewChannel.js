@@ -13,6 +13,9 @@ export default function ViewChannel() {
         setID(id)
     }, [id, setID]);
 
+    if (!id) {
+        return null
+    }
 
     return (
         <div>

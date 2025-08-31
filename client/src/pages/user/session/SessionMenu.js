@@ -6,6 +6,7 @@ import Logout from "./Logout";
 import Register from "./Register";
 
 import { UserContext } from "../../../contexts/UserContext";
+import ViewChannel from "./ViewChannel";
 
 export default function SessionMenu({ handleClose, anchorEl }) {
     const { name } = React.useContext(UserContext);
@@ -33,6 +34,7 @@ export default function SessionMenu({ handleClose, anchorEl }) {
         <Typography>
             {name}
         </Typography>
+        <ViewChannel />
         <Login />
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Logout />
