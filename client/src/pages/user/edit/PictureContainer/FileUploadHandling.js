@@ -1,8 +1,8 @@
 // PictureUploadButton.js
 import React from "react";
-import FileUploadButton from "../../../components/FileUploadButton";
-import { useUserPictureEdit } from "../../../contexts/UserPictureEditContext";
-import { readFile } from "../../../util/fileRead";
+import FileUploadButton from "../../../../components/FileUploadButton";
+import { useUserPictureEdit } from "./UserPictureEditContext";
+import { readFile } from "../../../../util/fileRead";
 
 export default function PictureUploadButton() {
   const { setPreview, setFileBytes, setFileName, setRemove } = useUserPictureEdit();
