@@ -29,12 +29,11 @@ class LocalStorage(BaseStorage):
         if not user_folder_exists:
             os.mkdir(client_full_file_location)
 
-        file_exists = os.path.exists(client_full_file_name)
-        if not file_exists:
-            #TODO: handle mp4 files
-            file = open(client_full_file_name, "wb")
-            file.write(byte_stream)
-            file.close()
+        #file_exists = os.path.exists(client_full_file_name)
+        #TODO: handle mp4 files
+        file = open(client_full_file_name, "wb")
+        file.write(byte_stream)
+        file.close()
 				
 
     def get_video_url(self, file_dir, file_name):
