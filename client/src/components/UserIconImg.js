@@ -9,6 +9,10 @@ export default function UserIconImg({ id, userIcon, userIconURL, length="20px" }
         src={get_storage_url("images", id, userIcon, userIconURL)}
         width={length}
         height={length}
+        style={{
+            borderRadius: "50%",
+            objectFit: "cover",
+        }}
     />
   );
 }

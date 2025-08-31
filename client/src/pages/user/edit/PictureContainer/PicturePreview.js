@@ -10,11 +10,11 @@ export default function PicturePreview() {
   const { id: loggedInUserID, iconFileName, iconSASURL } = React.useContext(UserContext);
 
   if (preview) {
-    return <img src={preview} alt="Preview" style={{ width: 50, height: 50 }} />;
+    return <img src={preview} alt="Preview" style={{ width: 140, height: 140 }} />;
   }
 
   if (remove) {
-    return <AccountCircle style={{ width: 50, height: 50 }} />;
+    return <AccountCircle style={{ width: 140, height: 140 }} />;
   }
 
   return (
@@ -22,7 +22,7 @@ export default function PicturePreview() {
       id={loggedInUserID}
       userIcon={iconFileName}
       userIconURL={iconSASURL}
-      length="50px"
+      length="140px"
     />
   );
 }
