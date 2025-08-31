@@ -59,9 +59,10 @@ def extract_video_info(request):
     
 def extract_profile_pic_info(request):
     form_data = json.loads(request.data)
+    byte_stream = form_data.get('byte_stream')
     pic_info = {
         "file_name": form_data.get('file_name'),
-        "byte_stream": form_data.get('byte_stream')
+        "byte_stream": bytes(byte_stream.values())
     }
     return pic_info
 

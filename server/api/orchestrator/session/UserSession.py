@@ -121,5 +121,5 @@ class UserSession(SessionBase, DataBaseEngine):
     def update_pic_db(self, file_name):
         self.USER_INSTANCE.profile_icon = file_name
         with Session(self.engine) as session:
-            self.USER_INSTANCE = session.merge(self.USER_INSTANCE)  # re-attaches it
+            session.merge(self.USER_INSTANCE)  # re-attaches it
             session.commit()
