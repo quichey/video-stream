@@ -1,4 +1,5 @@
 import * as React from "react";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Box } from "@mui/material";
 
 import { UserContext } from "../../../contexts/UserContext";
@@ -14,6 +15,7 @@ export default function Picture() {
     const [fileBytes, setFileBytes] = React.useState(new Uint8Array(0));
     const [fileName, setFileName] = React.useState(new Uint8Array(0));
     const [preview, setPreview] = React.useState(null);
+    const [remove, setRemove] = React.useState(null);
   const { id: loggedInUserID, iconFileName, iconSASURL } = React.useContext(UserContext);
   const fetchData = useServerCall()
 
@@ -28,13 +30,33 @@ export default function Picture() {
   }
 
   const onPublish = () => {
-    fetchData("upload-profile-pic", (json) => {
-        console.log(json)
-    }, {
-        "file_name": fileName,
-        "byte_stream": fileBytes
-    })
+    if (remove) {
+        fetchData("remove-profile-pic", (json) => {
+            console.log(json)
+        })
+    }
+    else {
+        fetchData("upload-profile-pic", (json) => {
+            console.log(json)
+        }, {
+            "file_name": fileName,
+            "byte_stream": fileBytes
+        })
+    }
   }
+  let displayedPic = 
+                <UserIconImg
+                    id={loggedInUserID}
+                    userIcon={iconFileName}
+                    userIconURL={iconSASURL}
+                    length="50px"
+                />
+    if (!!preview) {
+        displayedPic = <img src={preview} alt="Preview" style={{ width: 50, height: 50}}/>
+    }
+    else if (remove) {
+        displayedPic = <AccountCircleIcon />
+    }
   return (
     <Box
       component="form"
@@ -49,22 +71,11 @@ export default function Picture() {
         width: "100%",
       }}
     >
-        {
-            preview ? (
-                <img src={preview} alt="Preview" style={{ width: 50, height: 50}}/>
-            ):
-                <UserIconImg
-                    id={loggedInUserID}
-                    userIcon={iconFileName}
-                    userIconURL={iconSASURL}
-                    length="50px"
-                />
-
-        }
+        {displayedPic}
         <FileUploadButton text="Change" onChange={onFileChange} />
-        <p>
-            Remove
-        </p>
+        <ButtonVS text="Remove" handleClick={() => {
+            setRemove(true)
+        }}/>
         <ButtonVS text="Publish" handleClick={onPublish}/>
     </Box>
   );
