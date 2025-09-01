@@ -11,37 +11,42 @@ import SidebarButton from "./sidebar/SidebarButton";
 export default function Navbar({ handleSidbarClick }) {
   return (
     <Box
-      component="form"
-      sx={{
-        "& > :not(style)": { m: 1, width: "100%" },
-      }}
-      noValidate
       display="flex"
       flexDirection="row"
-      autoComplete="off"
-      style={{
+      alignItems="center"
+      justifyContent="space-between"
+      sx={{
         border: "1px solid grey",
-        borderRadius: 5,
-        marginTop: 10,
-        marginBottom: 10,
-        paddingBottom: 10,
+        borderRadius: 2,
+        mt: 1,
+        mb: 1,
+        px: 2,
+        py: 1,
         width: "100%",
       }}
     >
-      <SidebarButton handleClick={handleSidbarClick} />
-      <Search />
-      <NavLink to={"/upload"} end>
-        <IconButton aria-label="create" size="small" style={{ width: 50 }}>
-          <VideocamIcon fontSize="inherit" />
-          {/*
-          TODO: I think add navlink to /upload route here
-          */}
+      {/* Left Section */}
+      <Box display="flex" alignItems="center">
+        <SidebarButton handleClick={handleSidbarClick} />
+      </Box>
+
+      {/* Center Section */}
+      <Box flex={1} display="flex" justifyContent="center">
+        <Search />
+      </Box>
+
+      {/* Right Section */}
+      <Box display="flex" alignItems="center">
+        <NavLink to="/upload" end>
+          <IconButton aria-label="create" size="small">
+            <VideocamIcon fontSize="inherit" />
+          </IconButton>
+        </NavLink>
+        <IconButton aria-label="notifications" size="small">
+          <NotificationsIcon fontSize="inherit" />
         </IconButton>
-      </NavLink>
-      <IconButton aria-label="notifications" size="small" style={{ width: 50 }}>
-        <NotificationsIcon fontSize="inherit" />
-      </IconButton>
-      <SessionButton />
+        <SessionButton />
+      </Box>
     </Box>
   );
 }
