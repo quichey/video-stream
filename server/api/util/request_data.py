@@ -3,7 +3,25 @@ from datetime import datetime
 
 
 def attach_data_to_payload(response, results):
-    response.data = json.dumps(results, default=datetime_handler)
+    try:
+        # If response.data already has JSON, parse it
+        existing = json.loads(response.data)
+    except (AttributeError, ValueError, TypeError):
+        # If no data or invalid JSON, start fresh
+        existing = {}
+
+    # Make sure both are dicts
+    if not isinstance(existing, dict):
+        existing = {}
+
+    if not isinstance(results, dict):
+        raise ValueError("results must be a dictionary")
+
+    # Merge: results overwrite keys in existing if there's a conflict
+    complete_results = {**existing, **results}
+
+    # Update response
+    response.data = json.dumps(complete_results, default=datetime_handler)
     response.content_type = "application/json"
 
 def datetime_handler(obj):
@@ -56,6 +74,15 @@ def extract_video_info(request):
     if "video_id" in form_data:
         video_info["id"] = form_data['video_id']
     return video_info
+    
+def extract_profile_pic_info(request):
+    form_data = json.loads(request.data)
+    byte_stream = form_data.get('byte_stream')
+    pic_info = {
+        "file_name": form_data.get('file_name'),
+        "byte_stream": bytes(byte_stream.values())
+    }
+    return pic_info
 
 
 

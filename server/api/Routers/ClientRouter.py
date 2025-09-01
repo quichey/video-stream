@@ -70,6 +70,18 @@ class ClientRouter(Router):
             self.orchestrator.handle_request(request, response)
             return response
 
+        @app.route('/upload-profile-pic', methods=["POST"])
+        def upload_profile_pic():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/remove-profile-pic', methods=["POST"])
+        def remove_profile_pic():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
         """
         curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
         """

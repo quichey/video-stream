@@ -6,9 +6,10 @@ import Logout from "./Logout";
 import Register from "./Register";
 
 import { UserContext } from "../../../contexts/UserContext";
+import ViewChannel from "./ViewChannel";
 
 export default function SessionMenu({ handleClose, anchorEl }) {
-    const { name } = React.useContext(UserContext);
+    const { name, id: userID } = React.useContext(UserContext);
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
@@ -33,10 +34,11 @@ export default function SessionMenu({ handleClose, anchorEl }) {
         <Typography>
             {name}
         </Typography>
-        <Login />
+        <ViewChannel />
+        {!userID && <Login />}
         <MenuItem onClick={handleClose}>Settings</MenuItem>
-        <Logout />
-        <Register />
+        {!!userID && <Logout />}
+        {!userID && <Register />}
       </Popover>
     </div>
   );
