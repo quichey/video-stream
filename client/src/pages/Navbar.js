@@ -16,12 +16,7 @@ export default function Navbar({ handleSidbarClick }) {
       alignItems="center"
       justifyContent="space-between"
       sx={{
-        border: "1px solid grey",
-        borderRadius: 2,
-        mt: 1,
-        mb: 1,
-        px: 2,
-        py: 1,
+        maxWidth: "100%",
         width: "100%",
       }}
     >

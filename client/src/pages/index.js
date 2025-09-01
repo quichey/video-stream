@@ -32,17 +32,9 @@ export default function Pages() {
   return (
     <BrowserRouter>
       <Box
-        component="form"
-        sx={{
-          "& > :not(style)": { m: 1, width: "100%" },
-        }}
-        noValidate
-        display="flex"
+        sx={{ width: "100%" }}
         flexDirection="column"
-        autoComplete="off"
-        style={{
-          width: "100%",
-        }}
+        width="100%"
       >
         <Navbar handleSidbarClick={toggleCollapsed} />
         <Box display="flex" flexDirection="row" width="100%" height="calc(100vh - 64px)">

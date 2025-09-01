@@ -6,14 +6,14 @@ import { ChannelProvider } from "./contexts/ChannelContext";
 import { VideoProvider } from "./contexts/VideoContext";
 import { HTTPProvider } from "./contexts/HTTPContext";
 
-import useWindowDimensions from "./customHooks/useWindowDimensions";
+//import useWindowDimensions from "./customHooks/useWindowDimensions";
 import Pages from "./pages";
 
 
 import "./App.css";
 
 function App() {
-  const { width: windowWidth } = useWindowDimensions();
+  //const { width: windowWidth } = useWindowDimensions();
 
   return (
     <UserProvider>
@@ -21,15 +21,9 @@ function App() {
         <VideoProvider>
           <HTTPProvider>
             <Container
-              style={{
-                paddingLeft: 0,
-                paddingRight: 0,
-                marginLeft: 0,
-                marginRight: 0,
-                width: windowWidth,
-                maxWidth: windowWidth,
-                //overflowX: "hidden",
-              }}
+              disableGutters
+              maxWidth={false}
+              sx={{ width: "100%" }}
             >
               <Pages />
             </Container>
