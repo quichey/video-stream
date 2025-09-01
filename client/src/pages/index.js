@@ -14,7 +14,7 @@ import Loading from "../components/Loading";
 import Sidebar from "./sidebar";
 
 export default function Pages() {
-  const [collapsed, setCollapsed] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(true);
 
   const toggleCollapsed = () => setCollapsed((prev) => !prev);
   

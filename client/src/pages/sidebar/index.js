@@ -1,6 +1,5 @@
 import React from "react";
-import { Drawer, List, Divider, IconButton, Box } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Box, List } from "@mui/material";
 
 import Home from "./Home";
 import Shorts from "./Shorts";
@@ -12,39 +11,25 @@ import Downloads from "./Downloads";
 const drawerWidth = 240;
 const collapsedWidth = 72;
 
-export default function Sidebar({ collapsed, toggleCollapsed }) {
-
-  const renderItem = (Component) => (
-    <Component collapsed={collapsed} />
-  );
+export default function Sidebar({ collapsed }) {
+  const renderItem = (Component) => <Component collapsed={collapsed} />;
 
   return (
-    <Drawer
-      variant="permanent"
+    <Box
       sx={{
         width: collapsed ? collapsedWidth : drawerWidth,
         flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: collapsed ? collapsedWidth : drawerWidth,
-          boxSizing: "border-box",
-        },
+        bgcolor: "background.paper",
+        height: "100%",      // full height of parent container
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "auto",   // scroll if content is too tall
+        borderRight: 1,
+        borderColor: "divider",
+        transition: "width 0.3s", // smooth expand/collapse
       }}
     >
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent={collapsed ? "center" : "flex-end"}
-        px={1}
-        py={1}
-      >
-        <IconButton onClick={toggleCollapsed}>
-          <MenuIcon />
-        </IconButton>
-      </Box>
-
-      <Divider />
-
-      <List>
+      <List sx={{ p: 0 }}>
         {renderItem(Home)}
         {renderItem(Shorts)}
         {renderItem(Subscriptions)}
@@ -52,6 +37,6 @@ export default function Sidebar({ collapsed, toggleCollapsed }) {
         {renderItem(You)}
         {renderItem(Downloads)}
       </List>
-    </Drawer>
+    </Box>
   );
 }
