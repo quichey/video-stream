@@ -12,6 +12,7 @@ export default function PicturePublishButton() {
   const fetchData = useServerCall();
 
   const onPublish = () => {
+    console.log(`sessionToken: ${sessionStorage.getItem("tempSessionToken")}`)
     if (remove) {
       fetchData("remove-profile-pic",
         (json) => {

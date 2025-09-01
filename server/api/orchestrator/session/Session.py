@@ -59,6 +59,8 @@ class SessionBase(ABC):
         request_session_token = extract_session_token(request)
         request_session_token_exists = has_session_token(request)
         if request_session_token_exists and (request_session_token != self.TOKEN):
+            print(f"\n\n request_session_token: {request_session_token}  \n\n")
+            print(f"\n\n self.TOKEN: {self.TOKEN}  \n\n")
             raise SecurityError("Hijacked Session Token")
 
         # Handle User refresh web-page
@@ -103,6 +105,7 @@ class SessionBase(ABC):
         results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
 
     def handle_request(self, request, response):
+        print(f"\n\n self.TOKEN -- handle_request: {self.TOKEN}  \n\n")
         self.authenticate_session(request, response)
         event = self.determine_event(request)
         results = {}
