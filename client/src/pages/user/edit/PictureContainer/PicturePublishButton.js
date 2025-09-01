@@ -13,7 +13,14 @@ export default function PicturePublishButton() {
 
   const onPublish = () => {
     if (remove) {
-      fetchData("remove-profile-pic", console.log);
+      fetchData("remove-profile-pic",
+        (json) => {
+            if (json?.pic_data?.success) {
+                setIconFileName(undefined)
+                setIconSASURL(undefined)
+            }
+        }
+      );
     } else {
       fetchData(
         "upload-profile-pic",
