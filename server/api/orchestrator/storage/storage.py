@@ -1,17 +1,19 @@
 import datetime
 import os
 import sys
+from typing import NewType, Literal
 from azure.storage.blob import (
     BlobServiceClient,
     generate_blob_sas, BlobSasPermissions
 )
 
 from util.env import load_providers_env
+from api.orchestrator.storage.base_storage import BaseStorage
 
 load_providers_env()
+URL = NewType("URL", str)
 
-
-class Storage():
+class Storage(BaseStorage):
     RESOURCE_GROUP = os.environ.get("RESOURCE_GROUP_CENTRAL", 'blah')
     ACR_NAME = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
 
@@ -30,14 +32,47 @@ class Storage():
         self._blob_service_client = BlobServiceClient.from_connection_string(
             self.ACCOUNT_KEY_CONN
         )
+        self._containter_client_images = self._blob_service_client.get_container_client(
+            self.CONTAINER_IMAGES
+        )
+        self._containter_client_videos = self._blob_service_client.get_container_client(
+            self.CONTAINER_VIDEOS
+        )
 
-    def get_video_url(self, file_dir, file_name):
+    def store_video(self, file_dir, file_name, byte_stream) -> URL | Literal[False]:
+        success = self.store_file(file_dir, file_name, byte_stream, self.CONTAINER_VIDEOS)
+        if success:
+            return self.get_video_url(file_dir, file_name)
+        else:
+            return False
+
+    def store_image(self, file_dir, file_name, byte_stream) -> URL | Literal[False]:
+        success = self.store_file(file_dir, file_name, byte_stream, self.CONTAINER_IMAGES)
+        if success:
+            return self.get_image_url(file_dir, file_name)
+        else:
+            return False
+
+    def store_file(self, file_dir, file_name, byte_stream, container) -> bool:
+        container_client = None
+        if container == self.CONTAINER_IMAGES:
+            container_client = self._containter_client_images
+        elif container == self.CONTAINER_VIDEOS:
+            container_client = self._containter_client_videos
+        blob_name = f"{file_dir}/{file_name}"
+        try:
+            container_client.upload_blob(name=blob_name, data=byte_stream, overwrite=True)
+            return True
+        except:
+            return False
+
+    def get_video_url(self, file_dir, file_name) -> URL:
         return self.get_media_url(self.CONTAINER_VIDEOS, file_dir=file_dir, file_name=file_name)
 
-    def get_image_url(self, file_dir, file_name):
+    def get_image_url(self, file_dir, file_name) -> URL:
         return self.get_media_url(self.CONTAINER_IMAGES, file_dir=file_dir, file_name=file_name)
 
-    def get_media_url(self, container, file_dir, file_name):
+    def get_media_url(self, container, file_dir, file_name) -> URL:
         # You’ll resolve video_id -> (file_dir, file_name) from your DB
 
         blob_name = f"{file_dir}/{file_name}"

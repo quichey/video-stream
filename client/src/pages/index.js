@@ -5,13 +5,22 @@ import { Box } from "@mui/material";
 import Home from "./home";
 import Watch from "./watch";
 import User from "./user";
+import CustomizeChannel from "./user/edit/CustomizeChannel";
 import VideoUpload from "./video_upload";
 import Navbar from "./Navbar";
 
 import { useLoadSession } from "../customHooks/useLoadSession";
 import Loading from "../components/Loading";
+import Sidebar from "./sidebar";
+
+export const drawerWidth = 240;
+export const collapsedWidth = 72;
+export const navbarHeight = 64;
 
 export default function Pages() {
+  const [collapsed, setCollapsed] = React.useState(true);
+
+  const toggleCollapsed = () => setCollapsed((prev) => !prev);
   
 
   React.useEffect(() => {
@@ -26,27 +35,28 @@ export default function Pages() {
   if (!sessionLoaded) return <Loading />;
   return (
     <BrowserRouter>
+      <Navbar handleSidbarClick={toggleCollapsed} />
+      <Sidebar collapsed={collapsed}/>
       <Box
-        component="form"
+        component="main"
         sx={{
-          "& > :not(style)": { m: 1, width: "100%" },
-        }}
-        noValidate
-        display="flex"
-        flexDirection="column"
-        autoComplete="off"
-        style={{
-          width: "100%",
+          mt: `${navbarHeight}px`,
+          ml: collapsed ? `${collapsedWidth}px` : `${drawerWidth}px`,
+          p: 2,
         }}
       >
-        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="watch">
             <Route path=":videoID" element={<Watch />} />
           </Route>
           <Route path="channel">
-            <Route path=":userID" element={<User />} />
+            <Route path=":userID">
+              <Route index element={<User />} />
+              <Route path="editing">
+                <Route path="profile" element={<CustomizeChannel />} />
+              </Route>
+            </Route>
           </Route>
           <Route
             index

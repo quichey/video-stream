@@ -1,12 +1,13 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-import { ChannelContext } from "../../contexts/ChannelContext";
-import Background from "./channel/Background";
-import Summary from "./channel/Summary";
-import Content from "./channel/Content";
+import { ChannelContext } from "../../../contexts/ChannelContext";
+import Banner from "./Banner";
+import PictureContainer from "./PictureContainer/PictureContainer";
+import Name from "./Name";
+import Description from "./Description";
 
-export default function User() {
+export default function CustomizeChannel() {
   const { id, name } = React.useContext(ChannelContext);
   return (
     <Box
@@ -25,9 +26,10 @@ export default function User() {
       <p>
         {`Channel ID: ${id}: Channel Name: ${name}`}
       </p>
-      <Background />
-      <Summary />
-      <Content />
+      <Banner />
+      <PictureContainer />
+      <Name />
+      <Description />
     </Box>
   );
 }
