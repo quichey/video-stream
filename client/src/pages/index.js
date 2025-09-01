@@ -45,26 +45,30 @@ export default function Pages() {
         }}
       >
         <Navbar handleSidbarClick={toggleCollapsed} />
-        <Sidebar collapsed={collapsed}/>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="watch">
-            <Route path=":videoID" element={<Watch />} />
-          </Route>
-          <Route path="channel">
-            <Route path=":userID">
-              <Route index element={<User />} />
-              <Route path="editing">
-                <Route path="profile" element={<CustomizeChannel />} />
+        <Box display="flex" flexDirection="row" width="100%" height="calc(100vh - 64px)">
+          <Sidebar collapsed={collapsed}/>
+          <Box flexGrow={1} p={2}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="watch">
+                <Route path=":videoID" element={<Watch />} />
               </Route>
-            </Route>
-          </Route>
-          <Route
-            index
-            path="upload"
-            element={<VideoUpload />}
-          />
-        </Routes>
+              <Route path="channel">
+                <Route path=":userID">
+                  <Route index element={<User />} />
+                  <Route path="editing">
+                    <Route path="profile" element={<CustomizeChannel />} />
+                  </Route>
+                </Route>
+              </Route>
+              <Route
+                index
+                path="upload"
+                element={<VideoUpload />}
+              />
+            </Routes>
+          </Box>
+        </Box>
       </Box>
     </BrowserRouter>
   );
