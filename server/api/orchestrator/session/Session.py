@@ -156,6 +156,7 @@ class SessionBase(ABC):
     def generate_token(self, request, response):
         token = self.generate_uuid()
         self.TOKEN = token
+        attach_data_to_payload(response, {"session_token": token})
         self.refresh_state()
         return token
     
