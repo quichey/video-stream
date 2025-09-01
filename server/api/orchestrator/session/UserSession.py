@@ -97,6 +97,9 @@ class UserSession(SessionBase, DataBaseEngine):
         self.state[key] = value
         # persist to DB
 
+    def pre_authenticate_session(self, request, response) -> Literal[True]:
+        return self.authenticate_cookies(request, response)
+
     def authenticate_cookies(self, request, response) -> Literal[True]:
         if not has_user_session_cookie(request):
             raise SecurityError("No User Session Cookie")
