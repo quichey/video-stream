@@ -1,15 +1,15 @@
 import React from "react";
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import { NavLink } from "react-router-dom";
 
 export default function Subscriptions({ collapsed }) {
   return (
-    <ListItemButton component={NavLink} to="/home">
+    <ListItemButton component={NavLink} to="/subscriptions">
       <ListItemIcon>
-        <HomeIcon />
+        <SubscriptionsIcon />
       </ListItemIcon>
-      {!collapsed && <ListItemText primary="Home" />}
+      {!collapsed && <ListItemText primary="Subscriptions" />}
     </ListItemButton>
   );
 }
