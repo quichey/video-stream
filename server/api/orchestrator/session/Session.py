@@ -95,6 +95,8 @@ class SessionBase(ABC):
             return "home"
         elif url_route == "/upload-profile-pic":
             return "upload-profile-pic"
+        elif url_route == "/remove-profile-pic":
+            return "remove-profile-pic"
     
     @post_load_session_hook
     def load_session(self, request, response, results):
@@ -122,6 +124,8 @@ class SessionBase(ABC):
                 results["video_list"] = video_list_data
             case "upload-profile-pic":
                 results["pic_data"] = self.upload_profile_pic(request, response)
+            case "remove-profile-pic":
+                results["pic_data"] = self.remove_profile_pic(request, response)
         print(f"\n\n resultsL {results} \n\n")
         
         attach_data_to_payload(response, results)

@@ -138,3 +138,21 @@ class UserSession(SessionBase, DataBaseEngine):
             # optionally log the exception
             print(f"Failed to update profile icon: {e}")
             return False
+
+    def remove_profile_pic(self, request, response):
+        self.USER_INSTANCE.profile_icon = None
+        try:
+            with Session(self.engine) as session:
+                session.merge(self.USER_INSTANCE)  # re-attaches it
+                session.commit()
+            response.status_code = 200
+            return {
+                "success": True
+            }
+        except Exception as e:
+            # optionally log the exception
+            print(f"Failed to remove profile icon: {e}")
+            response.status_code = 500
+            return {
+                "success": False
+            }
