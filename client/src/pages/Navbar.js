@@ -1,5 +1,4 @@
 import * as React from "react";
-import DehazeIcon from "@mui/icons-material/Dehaze";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import { Box, IconButton } from "@mui/material";
