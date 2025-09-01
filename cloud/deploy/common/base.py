@@ -17,11 +17,12 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
 
-    def __init__(self, provider_name):
+    def __init__(self, provider_name, env):
         if self.is_cloud():
             self.cloud_mixin_instance = CloudMixin(
                 provider_name=provider_name,
-                context=self.CONTEXT
+                context=self.CONTEXT,
+                env=env
             )
 
     def deploy(self):

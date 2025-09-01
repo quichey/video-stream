@@ -6,9 +6,10 @@ from common.dataclasses_models.image import Image
 
 class BaseCloudProvider(ABC):
     PROVIDER_NAME = ""
-    def __init__(self, context):
+    def __init__(self, context, env):
         self._context = context
-        self._image = Image(registry="unkown", repository=f"{context}-engine", tag='1.0.0')
+        repository = f"{context}-engine" if env == "prod" else f"{context}-engine-{env}"
+        self._image = Image(registry="unkown", repository=repository, tag='1.0.0')
 
     @property
     def context(self):
