@@ -13,6 +13,10 @@ import { useLoadSession } from "../customHooks/useLoadSession";
 import Loading from "../components/Loading";
 import Sidebar from "./sidebar";
 
+export const drawerWidth = 240;
+export const collapsedWidth = 72;
+export const navbarHeight = 64;
+
 export default function Pages() {
   const [collapsed, setCollapsed] = React.useState(true);
 
@@ -31,36 +35,35 @@ export default function Pages() {
   if (!sessionLoaded) return <Loading />;
   return (
     <BrowserRouter>
+      <Navbar handleSidbarClick={toggleCollapsed} />
+      <Sidebar collapsed={collapsed}/>
       <Box
-        sx={{ width: "100%" }}
-        flexDirection="column"
-        width="100%"
+        component="main"
+        sx={{
+          mt: `${navbarHeight}px`,
+          ml: collapsed ? `${collapsedWidth}px` : `${drawerWidth}px`,
+          p: 2,
+        }}
       >
-        <Navbar handleSidbarClick={toggleCollapsed} />
-        <Box display="flex" flexDirection="row" width="100%" height="calc(100vh - 64px)">
-          <Sidebar collapsed={collapsed}/>
-          <Box flexGrow={1} p={2}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="watch">
-                <Route path=":videoID" element={<Watch />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="watch">
+            <Route path=":videoID" element={<Watch />} />
+          </Route>
+          <Route path="channel">
+            <Route path=":userID">
+              <Route index element={<User />} />
+              <Route path="editing">
+                <Route path="profile" element={<CustomizeChannel />} />
               </Route>
-              <Route path="channel">
-                <Route path=":userID">
-                  <Route index element={<User />} />
-                  <Route path="editing">
-                    <Route path="profile" element={<CustomizeChannel />} />
-                  </Route>
-                </Route>
-              </Route>
-              <Route
-                index
-                path="upload"
-                element={<VideoUpload />}
-              />
-            </Routes>
-          </Box>
-        </Box>
+            </Route>
+          </Route>
+          <Route
+            index
+            path="upload"
+            element={<VideoUpload />}
+          />
+        </Routes>
       </Box>
     </BrowserRouter>
   );
