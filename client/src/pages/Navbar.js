@@ -6,9 +6,9 @@ import { NavLink } from "react-router";
 
 import Search from "./Search";
 import SessionButton from "./user/session";
-import Sidebar from "./sidebar";
+import SidebarButton from "./sidebar/SidebarButton";
 
-export default function Navbar() {
+export default function Navbar({ handleSidbarClick }) {
   return (
     <Box
       component="form"
@@ -28,7 +28,7 @@ export default function Navbar() {
         width: "100%",
       }}
     >
-      <Sidebar />
+      <SidebarButton handleClick={handleSidbarClick} />
       <Search />
       <NavLink to={"/upload"} end>
         <IconButton aria-label="create" size="small" style={{ width: 50 }}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Drawer, List, Divider, IconButton, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -12,10 +12,7 @@ import Downloads from "./Downloads";
 const drawerWidth = 240;
 const collapsedWidth = 72;
 
-export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-
-  const toggleCollapsed = () => setCollapsed((prev) => !prev);
+export default function Sidebar({ collapsed, toggleCollapsed }) {
 
   const renderItem = (Component) => (
     <Component collapsed={collapsed} />

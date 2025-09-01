@@ -11,8 +11,12 @@ import Navbar from "./Navbar";
 
 import { useLoadSession } from "../customHooks/useLoadSession";
 import Loading from "../components/Loading";
+import Sidebar from "./sidebar";
 
 export default function Pages() {
+  const [collapsed, setCollapsed] = React.useState(false);
+
+  const toggleCollapsed = () => setCollapsed((prev) => !prev);
   
 
   React.useEffect(() => {
@@ -40,7 +44,8 @@ export default function Pages() {
           width: "100%",
         }}
       >
-        <Navbar />
+        <Navbar handleSidbarClick={toggleCollapsed} />
+        <Sidebar collapsed={collapsed}/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="watch">
