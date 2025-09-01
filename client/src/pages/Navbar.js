@@ -16,8 +16,11 @@ export default function Navbar({ handleSidbarClick }) {
       alignItems="center"
       justifyContent="space-between"
       sx={{
-        maxWidth: "100%",
+        position: "fixed",
+        top: 0,
+        left: 0,
         width: "100%",
+        zIndex: 1200,
       }}
     >
       {/* Left Section */}

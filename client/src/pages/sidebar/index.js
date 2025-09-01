@@ -8,8 +8,7 @@ import Music from "./Music";
 import You from "./You";
 import Downloads from "./Downloads";
 
-const drawerWidth = 240;
-const collapsedWidth = 72;
+import { collapsedWidth, drawerWidth, navbarHeight } from "..";
 
 export default function Sidebar({ collapsed }) {
   const renderItem = (Component) => <Component collapsed={collapsed} />;
@@ -17,16 +16,17 @@ export default function Sidebar({ collapsed }) {
   return (
     <Box
       sx={{
+        position: "fixed",
+        top: navbarHeight,       // sits below Navbar
+        left: 0,
         width: collapsed ? collapsedWidth : drawerWidth,
-        flexShrink: 0,
+        height: `calc(100vh - ${navbarHeight}px)`,
         bgcolor: "background.paper",
-        height: "100%",      // full height of parent container
-        display: "flex",
-        flexDirection: "column",
-        overflowY: "auto",   // scroll if content is too tall
         borderRight: 1,
         borderColor: "divider",
-        transition: "width 0.3s", // smooth expand/collapse
+        transition: "width 0.3s ease",
+        overflowY: "auto",       // Sidebar can scroll independently if items overflow
+        zIndex: 1100,
       }}
     >
       <List sx={{ p: 0 }}>
