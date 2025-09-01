@@ -14,6 +14,16 @@ from api.util.request_data import (
 )
 from api.util.error_handling import SecurityError
 
+def pre_athenticate_session_hook(func):
+    """Decorator to run a step if the subclass/provider defines it."""
+    def wrapper(self, *args, **kwargs):
+        # Call post_load_session step if provider has it
+        post_load_session = getattr(self, "pre_authenticate_session", None)
+        if callable(post_load_session):
+            post_load_session(*args, **kwargs)
+        return func(self, *args, **kwargs)
+    return wrapper
+
 def post_load_session_hook(func):
     """Decorator to run a step if the subclass/provider defines it."""
     def wrapper(self, *args, **kwargs):
@@ -40,8 +50,8 @@ class SessionBase(ABC):
         self.STORAGE = storage
         self.generate_token(request, response)
 
-
-    def authenticate_cookies(self, request, response):
+    @pre_athenticate_session_hook
+    def authenticate_session(self, request, response):
         # TODO: Verify LONG_TERM_COOKIE_ID matches from request
         # Verify TEMP_COOKIE_ID matches from request
         
@@ -91,7 +101,7 @@ class SessionBase(ABC):
         results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
 
     def handle_request(self, request, response):
-        self.authenticate_cookies(request, response)
+        self.authenticate_session(request, response)
         event = self.determine_event(request)
         results = {}
         match event:
