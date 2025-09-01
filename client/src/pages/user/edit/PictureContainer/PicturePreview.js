@@ -14,7 +14,18 @@ export default function PicturePreview() {
   }
 
   if (preview) {
-    return <img src={preview} alt="Preview" style={{ width: 140, height: 140 }} />;
+    return (
+      <img
+        src={preview}
+        alt="Preview"
+        style={{ 
+          width: 140,
+          height: 140,
+          borderRadius: "50%",
+          objectFit: "cover",
+        }} 
+      />
+    )
   }
 
   return (
