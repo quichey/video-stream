@@ -31,6 +31,10 @@ class BaseCloudProvider(ABC):
         return
 
     @abstractmethod
+    def get_container_url(self):
+        pass
+
+    @abstractmethod
     def get_latest_image_cmd(self):
         pass
 

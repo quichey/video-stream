@@ -13,11 +13,24 @@ from common.dataclasses_models.image import Image
 
 load_dotenv()
 
+def pre_set_up_cloud_env_hook(func):
+    """Decorator to run a pre-set-up-cloud-env step if the subclass/provider defines it."""
+    def wrapper(self, *args, **kwargs):
+        # Call pre-build step if provider has it
+        pre_build = getattr(self.provider, "pre_set_up_cloud_env", None)
+        if callable(pre_build):
+            print(f"[BaseDeployer] Running pre-set-up-cloud-env step for {self.context}...")
+            pre_build(*args, **kwargs)
+        return func(self, *args, **kwargs)
+    return wrapper
+
 class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
+    ENV = None
 
     def __init__(self, provider_name, env):
+        self.ENV = env
         if self.is_cloud():
             self.cloud_mixin_instance = CloudMixin(
                 provider_name=provider_name,
