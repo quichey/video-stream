@@ -22,6 +22,8 @@ class ServerDeployer(BaseDeployer):
         # REACT_APP_SERVER_URL={server_container_url}
         dot_env_file_path = "../providers/azure/.env"
         update_file(dot_env_file_path, "CLIENT_APP_URL=", f"CLIENT_APP_URL={client_container_url}\n")
+        update_file(dot_env_file_path, "BLOB_CONTAINER=", f"BLOB_CONTAINER={self.ENV}\n")
+
 
     @override
     def clean_up(self):
