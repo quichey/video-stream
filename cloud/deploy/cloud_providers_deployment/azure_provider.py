@@ -15,8 +15,8 @@ load_dotenv(dotenv_path="../providers/azure/.env")
 class AzureProvider(BaseCloudProvider, DockerMixin):
     PROVIDER_NAME = "azure"
 
-    def __init__(self, context):
-        super().__init__(context=context)
+    def __init__(self, context, env):
+        super().__init__(context, env)
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
         self.acr_login_server = os.environ.get("CONTAINER_REGISTRY_LOGIN_SERVER", 'blah')
         self.acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", 'blah')
