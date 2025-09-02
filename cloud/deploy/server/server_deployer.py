@@ -23,6 +23,10 @@ class ServerDeployer(BaseDeployer):
         dot_env_file_path = "../providers/azure/.env"
         update_file(dot_env_file_path, "CLIENT_APP_URL=", f"CLIENT_APP_URL={client_container_url}\n")
         update_file(dot_env_file_path, "BLOB_CONTAINER=", f"BLOB_CONTAINER={self.ENV}\n")
+        if self.ENV == "prod":
+            update_file(dot_env_file_path, "MYSQL_DB_NAME=", f"MYSQL_DB_NAME=video-stream\n")
+        else:
+            update_file(dot_env_file_path, "MYSQL_DB_NAME=", f"MYSQL_DB_NAME=video-stream-{self.ENV}\n")
 
 
     @override
