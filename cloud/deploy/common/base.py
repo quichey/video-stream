@@ -46,6 +46,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
+        self.clean_up()
 
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""
@@ -126,3 +127,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
                 image_name=self.image.full_name,
                 port=port,
             )
+    
+    @abstractmethod
+    def clean_up(self):
+        pass
