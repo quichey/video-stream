@@ -25,41 +25,35 @@ class Storage(BaseStorage):
     ACCOUNT_KEY_CONN = os.environ.get("STORAGE_ACCOUNT_ACCESS_KEY_1_CONN", 'blah')
 
     STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")         # env var in practice
-    CONTAINER_VIDEOS = "videos"                      # e.g. "videos"
-    CONTAINER_IMAGES= "images"
+    DIR_VIDEOS = "videos"                      # e.g. "videos"
+    DIR_IMAGES = "images"
+    BLOB_CONTAINER = os.environ.get("BLOB_CONTAINER")  
 
     def __init__(self, cloud_provider="azure"):
         self._blob_service_client = BlobServiceClient.from_connection_string(
             self.ACCOUNT_KEY_CONN
         )
-        self._containter_client_images = self._blob_service_client.get_container_client(
-            self.CONTAINER_IMAGES
-        )
-        self._containter_client_videos = self._blob_service_client.get_container_client(
-            self.CONTAINER_VIDEOS
+        self._containter_client = self._blob_service_client.get_container_client(
+            self.BLOB_CONTAINER
         )
 
     def store_video(self, file_dir, file_name, byte_stream) -> URL | Literal[False]:
-        success = self.store_file(file_dir, file_name, byte_stream, self.CONTAINER_VIDEOS)
+        success = self.store_file(file_dir, file_name, byte_stream, self.DIR_VIDEOS)
         if success:
             return self.get_video_url(file_dir, file_name)
         else:
             return False
 
     def store_image(self, file_dir, file_name, byte_stream) -> URL | Literal[False]:
-        success = self.store_file(file_dir, file_name, byte_stream, self.CONTAINER_IMAGES)
+        success = self.store_file(file_dir, file_name, byte_stream, self.DIR_IMAGES)
         if success:
             return self.get_image_url(file_dir, file_name)
         else:
             return False
 
-    def store_file(self, file_dir, file_name, byte_stream, container) -> bool:
-        container_client = None
-        if container == self.CONTAINER_IMAGES:
-            container_client = self._containter_client_images
-        elif container == self.CONTAINER_VIDEOS:
-            container_client = self._containter_client_videos
-        blob_name = f"{file_dir}/{file_name}"
+    def store_file(self, file_dir, file_name, byte_stream, root_dir) -> bool:
+        container_client = self._containter_client
+        blob_name = f"{root_dir}/{file_dir}/{file_name}"
         try:
             container_client.upload_blob(name=blob_name, data=byte_stream, overwrite=True)
             return True
@@ -67,15 +61,15 @@ class Storage(BaseStorage):
             return False
 
     def get_video_url(self, file_dir, file_name) -> URL:
-        return self.get_media_url(self.CONTAINER_VIDEOS, file_dir=file_dir, file_name=file_name)
+        return self.get_media_url(self.DIR_VIDEOS, file_dir=file_dir, file_name=file_name)
 
     def get_image_url(self, file_dir, file_name) -> URL:
-        return self.get_media_url(self.CONTAINER_IMAGES, file_dir=file_dir, file_name=file_name)
+        return self.get_media_url(self.DIR_IMAGES, file_dir=file_dir, file_name=file_name)
 
-    def get_media_url(self, container, file_dir, file_name) -> URL:
+    def get_media_url(self, root_dir, file_dir, file_name) -> URL:
         # You’ll resolve video_id -> (file_dir, file_name) from your DB
 
-        blob_name = f"{file_dir}/{file_name}"
+        blob_name = f"{root_dir}/{file_dir}/{file_name}"
 
         bsc = self._blob_service_client
 
@@ -89,6 +83,7 @@ class Storage(BaseStorage):
         #key = bsc.get_user_delegation_key(start, expiry)
         #print(f"\n\n after bsc.get_user_delegation_key")
 
+        container = self.BLOB_CONTAINER
         sas_token = generate_blob_sas(
             account_name=self.STORAGE_ACCOUNT_NAME,
             container_name=container,
