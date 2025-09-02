@@ -41,6 +41,10 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
             "--output", "tsv"
         ]
     
+    @override
+    def get_container_url(self):
+        pass
+    
     def pre_build_image_cloud(self, dockerfile, package_path):
         print(f"[AzureProvider] Pre-building Docker image locally...")
         self.build_docker_image_local(image_name=self.image.full_name, dockerfile=dockerfile, package_path=package_path)
