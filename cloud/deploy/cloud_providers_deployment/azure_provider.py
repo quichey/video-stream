@@ -3,6 +3,7 @@ from typing_extensions import override
 import os
 import sys
 
+from util.subprocess_helper import run_cmd_with_retries
 from common.mixins.docker_mixin import DockerMixin
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -43,7 +44,15 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
     
     @override
     def get_container_url(self):
-        pass
+        cmd = [
+            "az", "containerapp", "show",
+            "--name", self.container_app_name,
+            "--resource-group", "my-resource-group",
+            "--query", "properties.configuration.ingress.fqdn",
+            "-o", "tsv"
+        ]
+        app_url = run_cmd_with_retries(cmd)
+        return app_url
     
     def pre_build_image_cloud(self, dockerfile, package_path):
         print(f"[AzureProvider] Pre-building Docker image locally...")
