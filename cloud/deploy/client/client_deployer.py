@@ -25,7 +25,7 @@ class ClientDeployer(BaseDeployer):
         #TODO: write to cloud/providers/azure/.env
         # REACT_APP_SERVER_URL={server_container_url}
         dot_env_file_path = "../providers/azure/.env"
-        update_file(dot_env_file_path, "REACT_APP_SERVER_APP_URL=", f"REACT_APP_SERVER_APP_URL={server_container_url}")
+        update_file(dot_env_file_path, "REACT_APP_SERVER_APP_URL=", f"REACT_APP_SERVER_APP_URL={server_container_url}\n")
 
         #TODO: update client/package.json? home: attribute
         package_dot_json_path = self.PACKAGE_JSON_PATH
@@ -35,7 +35,7 @@ class ClientDeployer(BaseDeployer):
         print(f"\n\n cp_cmd: {cp_cmd} \n\n")
         run_cmd_with_retries(cp_cmd)
         #TODO: think about git history with package.json homepage attribute changing
-        update_file(package_dot_json_path, '  "homepage":', f'  "homepage": "{client_container_url}",')
+        update_file(package_dot_json_path, '  "homepage":', f'  "homepage": "{client_container_url}",\n')
 
     @override
     def clean_up(self):
