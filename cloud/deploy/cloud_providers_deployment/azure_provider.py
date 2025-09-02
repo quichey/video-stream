@@ -47,7 +47,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         cmd = [
             "az", "containerapp", "show",
             "--name", self.container_app_name,
-            "--resource-group", "my-resource-group",
+            "--resource-group", self.resource_group,
             "--query", "properties.configuration.ingress.fqdn",
             "-o", "tsv"
         ]
