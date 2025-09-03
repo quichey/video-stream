@@ -64,7 +64,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         Build and push the Docker image to Azure Container Registry (ACR).
         Assumes the ACR is already created and user is logged in via az.
         """
-
+        print(f"\n\n self.image.full_name: {self.image.full_name}")
         return [
             # Step 1: Build the image locally
             #["docker", "build", "-f", dockerfile, "-t", self.tag, package_path],
