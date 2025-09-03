@@ -13,15 +13,29 @@ from common.dataclasses_models.image import Image
 
 load_dotenv()
 
+def pre_set_up_cloud_env_hook(func):
+    """Decorator to run a pre-set-up-cloud-env step if the subclass/provider defines it."""
+    def wrapper(self, *args, **kwargs):
+        # Call pre-build step if provider has it
+        pre_build = getattr(self, "pre_set_up_cloud_env", None)
+        if callable(pre_build):
+            print(f"[BaseDeployer] Running pre-set-up-cloud-env step for {self.CONTEXT}...")
+            pre_build(*args, **kwargs)
+        return func(self, *args, **kwargs)
+    return wrapper
+
 class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
+    ENV = None
 
-    def __init__(self, provider_name):
+    def __init__(self, provider_name, env):
+        self.ENV = env
         if self.is_cloud():
             self.cloud_mixin_instance = CloudMixin(
                 provider_name=provider_name,
-                context=self.CONTEXT
+                context=self.CONTEXT,
+                env=env
             )
 
     def deploy(self):
@@ -32,6 +46,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
+        self.clean_up()
 
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""
@@ -57,6 +72,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
     
+    @pre_set_up_cloud_env_hook
     def set_up_cloud_env(self):
         if self.is_cloud():
             print(f"[BaseDeployer] Setting Up Cloud Provider env for {self.CONTEXT}")
@@ -112,3 +128,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
                 image_name=self.image.full_name,
                 port=port,
             )
+    
+    @abstractmethod
+    def clean_up(self):
+        pass
