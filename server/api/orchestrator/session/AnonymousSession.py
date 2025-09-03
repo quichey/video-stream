@@ -1,7 +1,11 @@
+from api.orchestrator.session.Session import SessionBase
+
 class AnonymousSession(SessionBase):
+    """
     def __init__(self, server_session_id: str):
         self.token = server_session_id
         self.state = {}  # maybe pulled from Redis or DB
+    """
 
     def get_token(self):
         return self.token

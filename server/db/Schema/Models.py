@@ -2,7 +2,7 @@ import os
 
 from sqlalchemy import MetaData
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, VARBINARY
 from sqlalchemy.orm import DeclarativeBase
 
 from typing import Optional
@@ -135,37 +135,25 @@ comment_likes_table = Table(
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(30), unique=True)
     email: Mapped[Optional[str]] = mapped_column(String(30))
     profile_icon: Mapped[Optional[str]] = mapped_column(String(30))
+    password: Mapped[str] = mapped_column(VARBINARY(255))
 
     def __repr__(self) -> str:
-        return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r})"
+        return f"User(id={self.id!r}, name={self.name!r}, email={self.email!r}, password={self.password!r})"
 
 
-"""
-when Video() is instantiated, with a file_name and file_location,
-want the Base's __video_file_manager__ to allocate folders/files
-w/in the operating system and keep an internal python object to
-keep track of these things
+class UserCookie(Base):
+    __tablename__ = "user_cookies"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    cookie: Mapped[str] = mapped_column(String(100), unique=True)
 
-not sure if...
-- Session or Video instance does the read/update/delete
---- if Session does it, do I need to sub-class my own Session class?
---- or the sqlalchemy.orm.registry
-"""
+    def __repr__(self) -> str:
+        return f"UserCookie(id={self.id!r}, user_id={self.user_id!r}, cookie={self.cookie!r})"
 
-"""
-class MyClass(Base):
-    def __init__(self, id=None, name=None):
-        self.name = name
-        super().__init__(id=id)
-"""
 
-"""
-maybe need to add property decorator to
-each of the column fields and do "name".setter decorator?
-"""
 class Video(Base):
     __tablename__ = "videos"
     id: Mapped[int] = mapped_column(primary_key=True)

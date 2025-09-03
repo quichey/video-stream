@@ -1,7 +1,9 @@
 # Example using Flask and SQLite
 from flask import make_response
+import json
 
 from .Router import Router
+from auth.native.native import NativeAuth
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -31,6 +33,7 @@ class ClientRouter(Router):
     a user to be logged in
     """
     def set_up(self):
+        self.NATIVE_AUTH = NativeAuth(self.deployment)
         return
 
 
@@ -67,6 +70,18 @@ class ClientRouter(Router):
             self.orchestrator.handle_request(request, response)
             return response
 
+        @app.route('/upload-profile-pic', methods=["POST"])
+        def upload_profile_pic():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/remove-profile-pic', methods=["POST"])
+        def remove_profile_pic():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
         """
         curl --header "Content-Type: application/json" --request POST --data '{"user_id":"0","user_name":"users_name_0", "video_id": 1}' http://127.0.0.1:5000/video
         """
@@ -98,6 +113,34 @@ class ClientRouter(Router):
         """
         @app.route('/getcomments', methods=["POST"])
         def read_comments():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/verify-name', methods=["POST"])
+        def verify_name():
+            response = make_response("Initial body")
+            form_data = json.loads(request.data)
+            user_name = form_data.get("user_name")
+            verified = self.NATIVE_AUTH.verify_user_name_unique(user_name)
+            response.data = json.dumps({"verified": verified})
+            response.content_type = "application/json"
+            return response
+
+        @app.route('/register', methods=["POST"])
+        def register():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/login', methods=["POST"])
+        def login():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route('/logout', methods=["POST"])
+        def logout():
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
             return response

@@ -1,0 +1,39 @@
+// PicturePreview.js
+import React from "react";
+import { AccountCircle } from "@mui/icons-material";
+import { useUserPictureEdit } from "./UserPictureEditContext";
+import UserIconImg from "../../../../components/UserIconImg";
+import { UserContext } from "../../../../contexts/UserContext";
+
+export default function PicturePreview() {
+  const { preview, remove } = useUserPictureEdit();
+  const { id: loggedInUserID, iconFileName, iconSASURL } = React.useContext(UserContext);
+
+  if (remove) {
+    return <AccountCircle style={{ width: 140, height: 140 }} />;
+  }
+
+  if (preview) {
+    return (
+      <img
+        src={preview}
+        alt="Preview"
+        style={{ 
+          width: 140,
+          height: 140,
+          borderRadius: "50%",
+          objectFit: "cover",
+        }} 
+      />
+    )
+  }
+
+  return (
+    <UserIconImg
+      id={loggedInUserID}
+      userIcon={iconFileName}
+      userIconURL={iconSASURL}
+      length="140px"
+    />
+  );
+}

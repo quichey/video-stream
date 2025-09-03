@@ -1,21 +1,44 @@
 from abc import ABC, abstractmethod
 from flask import make_response
-from datetime import datetime
 import uuid
 import json
 
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
 from api.orchestrator.session.state.home import Home
-from api.util.request_data import extract_session_token, has_session_token, has_long_term_cookie, extract_long_term_cookie
+from api.util.request_data import (
+    extract_session_token,
+    has_session_token,
+    has_long_term_cookie,
+    attach_data_to_payload
+)
 from api.util.error_handling import SecurityError
 
+def pre_athenticate_session_hook(func):
+    """Decorator to run a step if the subclass/provider defines it."""
+    def wrapper(self, *args, **kwargs):
+        # Call post_load_session step if provider has it
+        post_load_session = getattr(self, "pre_authenticate_session", None)
+        if callable(post_load_session):
+            post_load_session(*args, **kwargs)
+        return func(self, *args, **kwargs)
+    return wrapper
+
+def post_load_session_hook(func):
+    """Decorator to run a step if the subclass/provider defines it."""
+    def wrapper(self, *args, **kwargs):
+        ret_val = func(self, *args, **kwargs)
+        # Call post_load_session step if provider has it
+        post_load_session = getattr(self, "post_load_session", None)
+        if callable(post_load_session):
+            post_load_session(*args, **kwargs)
+        return ret_val
+    return wrapper
 
 class SessionBase(ABC):
     DEPLOYMENT = None
     STORAGE = None
 
-    LONG_TERM_COOKIE_ID = None
     TOKEN = None
 
     VIDEO = None
@@ -25,26 +48,19 @@ class SessionBase(ABC):
     def __init__(self, request, response, deployment, storage):
         self.DEPLOYMENT = deployment
         self.STORAGE = storage
-        self.generate_long_term_cookie(request, response)
         self.generate_token(request, response)
 
-
-    def authenticate_cookies(self, request, response):
+    @pre_athenticate_session_hook
+    def authenticate_session(self, request, response):
         # TODO: Verify LONG_TERM_COOKIE_ID matches from request
         # Verify TEMP_COOKIE_ID matches from request
-
-        # Handle long term cookie
-        request_long_term_cookie_id = extract_long_term_cookie(request)
-        request_long_term_cookie_id_exists = has_long_term_cookie(request)
-        if request_long_term_cookie_id_exists and (request_long_term_cookie_id != self.LONG_TERM_COOKIE_ID):
-            # don't know if i really need authentication here
-            print("reached here: if request_long_term_cookie_id_exists and (request_long_term_cookie_id != self.LONG_TERM_COOKIE_ID)")
-            #raise SecurityError("Hijacked Long Term Cookie")
         
         # Handle temp cookie
         request_session_token = extract_session_token(request)
         request_session_token_exists = has_session_token(request)
         if request_session_token_exists and (request_session_token != self.TOKEN):
+            print(f"\n\n request_session_token: {request_session_token}  \n\n")
+            print(f"\n\n self.TOKEN: {self.TOKEN}  \n\n")
             raise SecurityError("Hijacked Session Token")
 
         # Handle User refresh web-page
@@ -79,14 +95,23 @@ class SessionBase(ABC):
             return "get_comments"
         elif url_route == "/video-list":
             return "home"
+        elif url_route == "/upload-profile-pic":
+            return "upload-profile-pic"
+        elif url_route == "/remove-profile-pic":
+            return "remove-profile-pic"
+    
+    @post_load_session_hook
+    def load_session(self, request, response, results):
+        results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
 
     def handle_request(self, request, response):
-        self.authenticate_cookies(request, response)
+        print(f"\n\n self.TOKEN -- handle_request: {self.TOKEN}  \n\n")
+        self.authenticate_session(request, response)
         event = self.determine_event(request)
         results = {}
         match event:
             case "load_session":
-                results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
+                self.load_session(request, response, results)
             case "watch_video":
                 self.VIDEO = Video(request, response, self.DEPLOYMENT, self.STORAGE)
                 video_data = self.VIDEO.open_video(request, response)
@@ -100,14 +125,13 @@ class SessionBase(ABC):
                 self.HOME = Home(request, response, self.DEPLOYMENT, self.STORAGE)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
+            case "upload-profile-pic":
+                results["pic_data"] = self.upload_profile_pic(request, response)
+            case "remove-profile-pic":
+                results["pic_data"] = self.remove_profile_pic(request, response)
         print(f"\n\n resultsL {results} \n\n")
-        def datetime_handler(obj):
-            if isinstance(obj, datetime):
-                return obj.isoformat()  # or str(obj)
-            raise TypeError("Type not serializable")
         
-        response.data = json.dumps(results, default=datetime_handler)
-        response.content_type = "application/json"
+        attach_data_to_payload(response, results)
         return response
 
     @property
@@ -128,24 +152,11 @@ class SessionBase(ABC):
         _uuid = str(uuid.uuid4())
         return _uuid
 
-    def generate_long_term_cookie(self, request, response):
-        long_term_cookie_id = self.generate_uuid()
-        self.LONG_TERM_COOKIE_ID = long_term_cookie_id
-        IS_PRODUCTION = self.DEPLOYMENT is 'cloud'
-        response.set_cookie(
-            "long_term_session",
-            long_term_cookie_id,
-            max_age=30*24*60*60,  # 30 days
-            httponly=True,
-            secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
-            samesite='None' if IS_PRODUCTION else 'Lax',  # None for cross-site in prod, Lax for local
-            path='/'
-        )
-        return response
 
     def generate_token(self, request, response):
         token = self.generate_uuid()
         self.TOKEN = token
+        attach_data_to_payload(response, {"session_token": token})
         self.refresh_state()
         return token
     
