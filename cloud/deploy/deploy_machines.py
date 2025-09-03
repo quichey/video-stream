@@ -16,6 +16,12 @@ if __name__ == "__main__":
 
     # cloud provider option
     parser.add_argument("--cloud_provider", default="Azure", help="Cloud Provider")
+    parser.add_argument(
+        "--env",
+        default="dev",
+        choices=["prod", "stage", "dev", "test"],
+        help="Deployment environment (prod/stage/dev/test)"
+    )
 
     parser.add_argument("--client", action="store_true", help="Deploy client service")
     parser.add_argument("--server", action="store_true", help="Deploy server service")
@@ -23,14 +29,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(f"Cloud-Provider: {args.cloud_provider}")
+    print(f"Deployment Environment: {args.env}")
 
     print(f"Client: {args.client}")
     print(f"Server: {args.server}")
     if args.client is None and args.server is None:
         print("No Machines specified -- Deploying All")
 
-    client_deployer = ClientDeployer(provider_name=args.cloud_provider)
-    server_deployer = ServerDeployer(provider_name=args.cloud_provider)
+    client_deployer = ClientDeployer(provider_name=args.cloud_provider, env=args.env)
+    server_deployer = ServerDeployer(provider_name=args.cloud_provider, env=args.env)
 
     default_all = [client_deployer, server_deployer]
     machines = []

@@ -3,6 +3,7 @@ from typing_extensions import override
 import os
 import sys
 
+from util.subprocess_helper import run_cmd_with_retries
 from common.mixins.docker_mixin import DockerMixin
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
@@ -15,8 +16,8 @@ load_dotenv(dotenv_path="../providers/azure/.env")
 class AzureProvider(BaseCloudProvider, DockerMixin):
     PROVIDER_NAME = "azure"
 
-    def __init__(self, context):
-        super().__init__(context=context)
+    def __init__(self, context, env):
+        super().__init__(context, env)
         self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", 'blah')
         self.acr_login_server = os.environ.get("CONTAINER_REGISTRY_LOGIN_SERVER", 'blah')
         self.acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", 'blah')
@@ -41,6 +42,18 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
             "--output", "tsv"
         ]
     
+    @override
+    def get_container_url(self):
+        cmd = [
+            "az", "containerapp", "show",
+            "--name", self.container_app_name,
+            "--resource-group", self.resource_group,
+            "--query", "properties.configuration.ingress.fqdn",
+            "-o", "tsv"
+        ]
+        app_url = run_cmd_with_retries(cmd)
+        return app_url
+    
     def pre_build_image_cloud(self, dockerfile, package_path):
         print(f"[AzureProvider] Pre-building Docker image locally...")
         self.build_docker_image_local(image_name=self.image.full_name, dockerfile=dockerfile, package_path=package_path)
@@ -51,7 +64,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         Build and push the Docker image to Azure Container Registry (ACR).
         Assumes the ACR is already created and user is logged in via az.
         """
-
+        print(f"\n\n self.image.full_name: {self.image.full_name}")
         return [
             # Step 1: Build the image locally
             #["docker", "build", "-f", dockerfile, "-t", self.tag, package_path],

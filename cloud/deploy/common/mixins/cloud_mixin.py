@@ -17,9 +17,9 @@ def pre_build_hook(func):
     return wrapper
 
 class CloudMixin:
-    def __init__(self, provider_name, context):
+    def __init__(self, provider_name, context, env):
         self.context = context
-        self.provider = get_provider_class(provider_name)(context)
+        self.provider = get_provider_class(provider_name)(context, env)
     
     def set_up_provider_env(self):
         self.provider.set_up_env()

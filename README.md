@@ -18,6 +18,7 @@ Try the project live here: [Video Stream Demo](https://client-engine-app.blacksa
 - **Home page** with panels for available videos that when clicked take users to the Watch page 
 - **Watch Page** View Video with comments section
 - **Infinite scroll** for comments (efficient pagination & API design)  
+- **Profile Pictures** Upload profile pictures  
 - **Anonymous & session-based users** (cookie/session token system)  
 - **Cloud-ready**: deployable client and server with Cloud services  
 
