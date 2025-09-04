@@ -1,9 +1,8 @@
 # Example using Flask and SQLite
-from flask import Flask, jsonify, json
+from flask import json
 import os
 from dotenv import load_dotenv
 
-from api.orchestrator.Cache import Cache
 from .Router import Router
 from api.util.error_handling import SecurityError
 

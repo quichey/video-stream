@@ -1,7 +1,5 @@
-from abc import ABC, abstractmethod
-from flask import make_response
+from abc import ABC
 import uuid
-import json
 
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
