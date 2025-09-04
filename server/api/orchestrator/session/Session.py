@@ -143,9 +143,6 @@ class SessionBase(ABC):
     def token(self, new_value) -> str:
         self.TOKEN = new_value
 
-    def generate_token(self):
-        pass
-
     def generate_uuid(self):
         _uuid = str(uuid.uuid4())
         return _uuid

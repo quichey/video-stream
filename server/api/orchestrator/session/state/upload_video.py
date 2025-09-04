@@ -3,7 +3,6 @@ from datetime import datetime
 
 from db.Schema import Video
 from db.Schema.Video import VideoFileManager
-from api.Routers import VideoUpload
 
 from api.orchestrator.session.state.state_module import StateModule
 
