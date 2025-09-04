@@ -125,7 +125,6 @@ TODO: at some point
 implement way to handle chunked data
 """
 def extract_video_file_info(request):
-    user_info = extract_user_info(request)
     #print(f"\n\n reached extract_video_file_info \n\n")
     form_data = json.loads(request.data)
     video_file_info = {}
