@@ -1,7 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy import text
 
-
+from typing import List
+from typing import Optional
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 # create engine
 def start_engine():
@@ -150,13 +154,6 @@ def print_base_metadata():
 def print_base_registry():
     print(f"Base.registry: {Base.registry}")
 
-
-
-from typing import List
-from typing import Optional
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "user_account"
