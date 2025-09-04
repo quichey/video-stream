@@ -1,6 +1,7 @@
+import datetime
 import os
 
-from sqlalchemy import MetaData
+from sqlalchemy import JSON, MetaData
 from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
 from sqlalchemy import ForeignKey, VARBINARY
 from sqlalchemy.orm import DeclarativeBase
@@ -152,6 +153,30 @@ class UserCookie(Base):
 
     def __repr__(self) -> str:
         return f"UserCookie(id={self.id!r}, user_id={self.user_id!r}, cookie={self.cookie!r})"
+
+
+class ThirdPartyAuth(Base):
+    __tablename__ = "third_party_auth"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    provider: Mapped[str] = mapped_column(String(50))
+    provider_user_id: Mapped[str] = mapped_column(String(255))
+    access_token: Mapped[str] = mapped_column(String(500))
+    refresh_token: Mapped[Optional[str]] = mapped_column(String(500))
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime) # type: ignore
+    metadata: Mapped[dict] = mapped_column(JSON)  # provider-specific info
+
+    def __repr__(self) -> str:
+        return f"""ThirdPartyAuth(
+            id={self.id!r},
+            user_id={self.user_id!r},
+            provider={self.provider!r}),
+            provider_user_id={self.provider_user_id!r},
+            access_token={self.access_token!r},
+            refresh_token={self.refresh_token!r}),
+            expires_at={self.expires_at!r},
+            metadata={self.metadata!r})
+        """
 
 
 class Video(Base):
