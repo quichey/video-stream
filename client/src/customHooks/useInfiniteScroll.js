@@ -5,7 +5,7 @@ export const useInfiniteScroll = ({
   route,
   initialParams = {},
   handleData,
-  batchSize = 20
+  batchSize = 20,
 }) => {
   const fetchServer = useServerCall();
   const sentinelRef = useRef(null);
@@ -19,18 +19,31 @@ export const useInfiniteScroll = ({
     setLoading(true);
 
     try {
-      const params = { ...initialParams, offset: page * batchSize, limit: batchSize };
+      const params = {
+        ...initialParams,
+        offset: page * batchSize,
+        limit: batchSize,
+      };
       const data = await fetchServer(route, handleData, params);
-      
+
       if (data.length < batchSize) setHasMore(false);
-      setPage(prev => prev + 1);
+      setPage((prev) => prev + 1);
       if (handleData) handleData(data);
     } catch (err) {
       console.error("Infinite scroll fetch failed", err);
     } finally {
       setLoading(false);
     }
-  }, [fetchServer, route, page, loading, hasMore, batchSize, initialParams, handleData]);
+  }, [
+    fetchServer,
+    route,
+    page,
+    loading,
+    hasMore,
+    batchSize,
+    initialParams,
+    handleData,
+  ]);
 
   useEffect(() => {
     if (!sentinelRef.current) return;
@@ -39,7 +52,7 @@ export const useInfiniteScroll = ({
       ([entry]) => {
         if (entry.isIntersecting) loadMore();
       },
-      { rootMargin: "200px" } // start loading before reaching bottom
+      { rootMargin: "200px" }, // start loading before reaching bottom
     );
 
     observer.observe(sentinelRef.current);

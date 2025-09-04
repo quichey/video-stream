@@ -9,7 +9,7 @@ import UserIconImg from "../../../components/UserIconImg";
 
 function SessionButton() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { id, iconFileName, iconSASURL } = React.useContext(UserContext)
+  const { id, iconFileName, iconSASURL } = React.useContext(UserContext);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -21,7 +21,7 @@ function SessionButton() {
 
   return (
     <div>
-      <IconButtonVS handleClick={handleClick} >
+      <IconButtonVS handleClick={handleClick}>
         <UserIconImg
           id={id}
           userIcon={iconFileName}
@@ -29,8 +29,8 @@ function SessionButton() {
           length="24px"
         />
       </IconButtonVS>
-      <SessionMenu handleClose={handleClose} anchorEl={anchorEl}/>
-    </ div>
+      <SessionMenu handleClose={handleClose} anchorEl={anchorEl} />
+    </div>
   );
 }
 

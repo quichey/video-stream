@@ -1,6 +1,6 @@
 import React from "react";
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
+import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import { NavLink } from "react-router-dom";
 
 export default function Music({ collapsed }) {

@@ -5,11 +5,15 @@ import { UserContext } from "../contexts/UserContext";
 
 export function useLoadSession() {
   const [loaded, setLoaded] = useState(false); // initially false
-  const { setName, setIconFileName, setIconSASURL, setID } = useContext(UserContext)
+  const { setName, setIconFileName, setIconSASURL, setID } =
+    useContext(UserContext);
   useEffect(() => {
     async function initSession() {
       try {
-        const res = await fetch(`${serverURL}/load-session`, {method: "POST", credentials: "include"});
+        const res = await fetch(`${serverURL}/load-session`, {
+          method: "POST",
+          credentials: "include",
+        });
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
         const data = await res.json();
@@ -17,16 +21,16 @@ export function useLoadSession() {
         const userData = data.user_data;
 
         if (userData) {
-          setName(userData.name)
-          setIconFileName(userData.profile_icon)
-          setIconSASURL(userData.profile_icon_sas_url)
-          setID(userData.id)
+          setName(userData.name);
+          setIconFileName(userData.profile_icon);
+          setIconSASURL(userData.profile_icon_sas_url);
+          setID(userData.id);
         }
         if (tempToken) {
           sessionStorage.setItem("tempSessionToken", tempToken);
           setLoaded(true); // token retrieved
         } else {
-            setLoaded(false)
+          setLoaded(false);
         }
       } catch (err) {
         console.error("Failed to load session", err);

@@ -22,9 +22,7 @@ export default function User() {
         width: "100%",
       }}
     >
-      <p>
-        {`Channel ID: ${id}: Channel Name: ${name}`}
-      </p>
+      <p>{`Channel ID: ${id}: Channel Name: ${name}`}</p>
       <Background />
       <Summary />
       <Content />

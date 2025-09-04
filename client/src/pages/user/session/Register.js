@@ -16,78 +16,99 @@ import UserNameInput from "../../../components/UserNameInput";
 import PasswordInput from "../../../components/PasswordInput";
 
 export default function Register() {
-    const [open, setOpen] = useState(false);
-    const [name, setName] = useState("");
-    const [nameError, setNameError] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const fetchData = useServerCall();
-    const { setName: setUserName } = React.useContext(UserContext);
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const fetchData = useServerCall();
+  const { setName: setUserName } = React.useContext(UserContext);
 
   const handleClick = React.useCallback((event) => {
-    setOpen(true)
+    setOpen(true);
   }, []);
 
   const handleRegister = React.useCallback(() => {
     // handle register logic here
     // Do Server api
-    fetchData("register", (json) => {
-        const tempToken = json.session_token
+    fetchData(
+      "register",
+      (json) => {
+        const tempToken = json.session_token;
         sessionStorage.setItem("tempSessionToken", tempToken);
-        setUserName(name)
+        setUserName(name);
         setOpen(false);
-    }, { user_name: name, email: email, password: password });
+      },
+      { user_name: name, email: email, password: password },
+    );
   }, [fetchData, name, email, password, setUserName]);
 
   const handleNameChange = React.useCallback((val) => {
     if (val !== undefined) {
-        setName(val)
+      setName(val);
     }
-  }, [])
+  }, []);
 
   const handleEmailChange = React.useCallback((e) => {
     if (e.target?.value !== undefined) {
-        setEmail(e.target.value)
+      setEmail(e.target.value);
     }
-  }, [])
+  }, []);
 
   const handlePasswordChange = React.useCallback((val) => {
     if (val !== undefined) {
-        setPassword(val)
+      setPassword(val);
     }
-  }, [])
+  }, []);
 
-  const disabled = (
-    !!nameError || !!passwordError || !name || !password
-  )
+  const disabled = !!nameError || !!passwordError || !name || !password;
 
   return (
     <div>
       <MenuItem onClick={handleClick}>Register</MenuItem>
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-          <DialogTitle>Register</DialogTitle>
-          <DialogContent>
-            <Stack spacing={4} sx={{ pt: 2 }}> 
-              <UserNameInput value={name} onChange={handleNameChange} error={nameError} setError={setNameError}/>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Email"
-                type="email"
-                fullWidth
-                value={email}
-                onChange={handleEmailChange}
-              />
-              <PasswordInput value={password} onChange={handlePasswordChange} error={passwordError} setError={setPasswordError} />
-            </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button variant="contained" onClick={handleRegister} disabled={disabled}>
-              Register
-            </Button>
-          </DialogActions>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Register</DialogTitle>
+        <DialogContent>
+          <Stack spacing={4} sx={{ pt: 2 }}>
+            <UserNameInput
+              value={name}
+              onChange={handleNameChange}
+              error={nameError}
+              setError={setNameError}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Email"
+              type="email"
+              fullWidth
+              value={email}
+              onChange={handleEmailChange}
+            />
+            <PasswordInput
+              value={password}
+              onChange={handlePasswordChange}
+              error={passwordError}
+              setError={setPasswordError}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleRegister}
+            disabled={disabled}
+          >
+            Register
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );

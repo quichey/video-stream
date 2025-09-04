@@ -11,14 +11,15 @@ export default function Comments() {
 
   const { sentinelRef, loading } = useInfiniteScroll({
     route: "getcomments",
-    handleData: (data) => setComments(prev => [...prev, ...data.comment_data]),
+    handleData: (data) =>
+      setComments((prev) => [...prev, ...data.comment_data]),
   });
 
   return (
     <div>
       <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
-        {comments.map(data => {
-          return <Comment comment={data.comment} user={data.user_name} />
+        {comments.map((data) => {
+          return <Comment comment={data.comment} user={data.user_name} />;
         })}
       </List>
       <div ref={sentinelRef} style={{ height: 1 }} />

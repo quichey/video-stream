@@ -7,7 +7,11 @@ import { UserContext } from "../../../../contexts/UserContext";
 
 export default function PicturePreview() {
   const { preview, remove } = useUserPictureEdit();
-  const { id: loggedInUserID, iconFileName, iconSASURL } = React.useContext(UserContext);
+  const {
+    id: loggedInUserID,
+    iconFileName,
+    iconSASURL,
+  } = React.useContext(UserContext);
 
   if (remove) {
     return <AccountCircle style={{ width: 140, height: 140 }} />;
@@ -18,14 +22,14 @@ export default function PicturePreview() {
       <img
         src={preview}
         alt="Preview"
-        style={{ 
+        style={{
           width: 140,
           height: 140,
           borderRadius: "50%",
           objectFit: "cover",
-        }} 
+        }}
       />
-    )
+    );
   }
 
   return (

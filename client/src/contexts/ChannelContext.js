@@ -15,7 +15,12 @@ export const ChannelProvider = ({ children }) => {
 
   return (
     <ChannelContext.Provider
-      value={{ id: channelID, setID: setChannelID, name: channelName, setName: setChannelName }}
+      value={{
+        id: channelID,
+        setID: setChannelID,
+        name: channelName,
+        setName: setChannelName,
+      }}
     >
       {children}
     </ChannelContext.Provider>
