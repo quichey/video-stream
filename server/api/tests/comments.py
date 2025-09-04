@@ -1,7 +1,7 @@
 import pytest
 import time
-from datetime import timedelta, date, datetime
-from flask import request, json
+from datetime import datetime
+from flask import json
 
 from api import create_app
 from api.Cache import COMMENTS_FIRST_PAGE_SIZE, COMMENTS_NEXT_PAGE_SIZE

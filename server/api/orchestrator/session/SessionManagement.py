@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Optional
 from typing import Literal
 from sqlalchemy.orm import Session
-import json
 
 from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
@@ -112,7 +111,7 @@ class SessionManagement(DataBaseEngine):
             # TODO: return user's info on /load-session api
             # ----- name, profile pic info
             if not session_pair.user_session:
-                print(f"\n\n got here: if not session_pair.user_session \n\n")
+                print("\n\n got here: if not session_pair.user_session \n\n")
                 user_cookie = extract_user_session_cookie(request)
                 user_record = self.fetch_user_record(user_cookie)
                 session_pair.user_session = UserSession(

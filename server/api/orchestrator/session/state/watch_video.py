@@ -1,4 +1,3 @@
-from flask import json
 from sqlalchemy import select
 
 from api.orchestrator.session.state.comments import Comments

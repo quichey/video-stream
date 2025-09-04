@@ -1,6 +1,5 @@
 import datetime
 import os
-import sys
 from typing import NewType, Literal
 from azure.storage.blob import (
     BlobServiceClient,
