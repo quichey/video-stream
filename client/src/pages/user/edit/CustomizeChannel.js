@@ -23,9 +23,7 @@ export default function CustomizeChannel() {
         width: "100%",
       }}
     >
-      <p>
-        {`Channel ID: ${id}: Channel Name: ${name}`}
-      </p>
+      <p>{`Channel ID: ${id}: Channel Name: ${name}`}</p>
       <Banner />
       <PictureContainer />
       <Name />

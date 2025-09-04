@@ -12,7 +12,7 @@ export default function Video() {
   const { setID, setFileDir, setFileName, fileDir, fileName } =
     React.useContext(VideoContext);
   const fetchData = useServerCall();
-  const [sasURL, setSasURL] = React.useState(undefined)
+  const [sasURL, setSasURL] = React.useState(undefined);
 
   React.useEffect(() => {
     // Clear old video state
@@ -21,15 +21,19 @@ export default function Video() {
     setFileName(undefined);
 
     // Fetch new video
-    fetchData("video", (json) => {
-      setFileDir(json?.video_data?.file_dir);
-      setFileName(json?.video_data?.file_name);
-      if (process.env.REACT_APP_DEPLOY_ENV === 'local') {
-        setSasURL(undefined)
-      } else{
-        setSasURL(json?.video_data?.video_url)
-      }
-    }, { video_id: videoID });
+    fetchData(
+      "video",
+      (json) => {
+        setFileDir(json?.video_data?.file_dir);
+        setFileName(json?.video_data?.file_name);
+        if (process.env.REACT_APP_DEPLOY_ENV === "local") {
+          setSasURL(undefined);
+        } else {
+          setSasURL(json?.video_data?.video_url);
+        }
+      },
+      { video_id: videoID },
+    );
   }, [videoID, setID, setFileDir, setFileName, fetchData]);
 
   const videoUrl =
@@ -44,10 +48,7 @@ export default function Video() {
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
     <video controls width="100%" height="100%">
-      <source
-        src={videoUrl}
-        type="video/mp4"
-      />
+      <source src={videoUrl} type="video/mp4" />
     </video>
   );
 }

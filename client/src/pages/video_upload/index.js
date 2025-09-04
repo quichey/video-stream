@@ -3,8 +3,7 @@ import React from "react";
 import { HTTPContext } from "../../contexts/HTTPContext";
 
 export default function VideoUpload() {
-  const { serverURL, postRequestPayload } =
-    React.useContext(HTTPContext);
+  const { serverURL, postRequestPayload } = React.useContext(HTTPContext);
   const [UPLOAD_ENDPOINT] = React.useState(`${serverURL}/video-upload`);
   const [file, setFile] = React.useState(new Uint8Array());
   const [name, setName] = React.useState("");
@@ -33,7 +32,7 @@ export default function VideoUpload() {
         //token: 0,
         file_info: fileInfo,
       };
-      body.session_token = sessionStorage.getItem("tempSessionToken")
+      body.session_token = sessionStorage.getItem("tempSessionToken");
       const fetchParams = {
         body: JSON.stringify(body),
         method: "POST",
@@ -41,8 +40,7 @@ export default function VideoUpload() {
       if (baseCaseReached) {
         fetch(UPLOAD_ENDPOINT, fetchParams)
           .then((response) => response.json())
-          .then((json) => {
-          })
+          .then((json) => {})
           .catch((error) => {
             console.log(error);
           });

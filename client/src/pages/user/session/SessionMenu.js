@@ -9,19 +9,18 @@ import { UserContext } from "../../../contexts/UserContext";
 import ViewChannel from "./ViewChannel";
 
 export default function SessionMenu({ handleClose, anchorEl }) {
-    const { name, id: userID } = React.useContext(UserContext);
-    const [mounted, setMounted] = React.useState(false);
+  const { name, id: userID } = React.useContext(UserContext);
+  const [mounted, setMounted] = React.useState(false);
 
-    React.useEffect(() => {
-      setMounted(true);
-    }, []);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
   return (
     <div>
-
       <Popover
         id={id}
         open={open}
@@ -36,20 +35,16 @@ export default function SessionMenu({ handleClose, anchorEl }) {
           horizontal: "left",
         }}
       >
-        {
-          mounted && (
-            <>
-              <Typography>
-                  {name}
-              </Typography>
-              <ViewChannel />
-              {!userID && <Login />}
-              <MenuItem onClick={handleClose}>Settings</MenuItem>
-              {!!userID && <Logout />}
-              {!userID && <Register />}
-            </>
-          )
-        }
+        {mounted && (
+          <>
+            <Typography>{name}</Typography>
+            <ViewChannel />
+            {!userID && <Login />}
+            <MenuItem onClick={handleClose}>Settings</MenuItem>
+            {!!userID && <Logout />}
+            {!userID && <Register />}
+          </>
+        )}
       </Popover>
     </div>
   );

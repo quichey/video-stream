@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-
 export default function Banner() {
   return (
     <Box
@@ -17,15 +16,9 @@ export default function Banner() {
         width: "100%",
       }}
     >
-      <p>
-        Banner Image
-      </p>
-      <p>
-        Change
-      </p>
-      <p>
-        Remove
-      </p>
+      <p>Banner Image</p>
+      <p>Change</p>
+      <p>Remove</p>
     </Box>
   );
 }
