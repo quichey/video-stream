@@ -8,7 +8,8 @@ class GoogleAuth(ThirdPartyAuth):
     GOOGLE_CLIENT_ID = ""
     GOOGLE_CLIENT_SECRET = ""
 
-    def __init__(self, app):
+    def __init__(self, app, deployment, *args, **kwargs):
+        super().__init__(deployment, args, **kwargs)
         self.oauth = OAuth(app)
         self.oauth_client = self.oauth.register(
             name="google",
