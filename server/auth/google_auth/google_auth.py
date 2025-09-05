@@ -1,9 +1,10 @@
 from authlib.integrations.flask_client import OAuth
 
-from auth.auth import Auth
+from auth.ThirdPartyAuth import ThirdPartyAuth
 
 
-class GoogleAuth(Auth):
+class GoogleAuth(ThirdPartyAuth):
+    PROVIDER = "google"
     GOOGLE_CLIENT_ID = ""
     GOOGLE_CLIENT_SECRET = ""
 
