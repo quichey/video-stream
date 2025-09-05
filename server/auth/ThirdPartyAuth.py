@@ -28,7 +28,7 @@ Rather leave all User database updates and reads to here
 """
 
 
-class Auth(Auth, ABC):
+class ThirdPartyAuth(Auth, ABC):
     def __init__(self, deployment, *args, **kwargs):
         super().__init__(deployment, args, **kwargs)
 
