@@ -3,7 +3,7 @@ from functools import wraps
 
 from sqlalchemy.orm import Session
 
-from db.Schema import User
+from db.Schema.Models import User, ThirdPartyAuth
 from auth import Auth
 
 """
@@ -29,6 +29,8 @@ Rather leave all User database updates and reads to here
 
 
 class ThirdPartyAuth(Auth, ABC):
+    PROVIDER = None
+
     def __init__(self, deployment, *args, **kwargs):
         super().__init__(deployment, args, **kwargs)
 
@@ -95,3 +97,18 @@ class ThirdPartyAuth(Auth, ABC):
         with Session(self.engine) as session:
             user = session.get(User, user_id)
         return user
+
+    def initialize_auth_record(
+        self, user_id, provider_user_id, access_token, metadata
+    ) -> ThirdPartyAuth:
+        record = ThirdPartyAuth(
+            user_id=user_id,
+            provider=self.PROVIDER,
+            provider_user_id=provider_user_id,
+            access_token=access_token,
+            metadata=metadata,
+        )
+        with Session(self.engine) as session:
+            session.add(record)
+            session.commit()
+        return record
