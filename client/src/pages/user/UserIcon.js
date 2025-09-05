@@ -9,12 +9,12 @@ export default function UserIcon({ id, userIcon, userName, userIconURL }) {
   const { setID, setName } = React.useContext(ChannelContext);
 
   const handleIconClick = React.useCallback(() => {
-    setID(id)
+    setID(id);
     setName(userName);
   }, [id, userName, setID, setName]); //pretty sure this will cause inf loop
 
   return (
-    <Box  sx={{ maxWidth: 360 }} onClick={handleIconClick}>
+    <Box sx={{ maxWidth: 360 }} onClick={handleIconClick}>
       <NavLink to={`/channel/${id}`} end>
         <UserIconImg
           id={id}

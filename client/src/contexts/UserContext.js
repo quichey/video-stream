@@ -29,7 +29,7 @@ export const UserProvider = ({ children }) => {
         iconFileName,
         setIconFileName,
         iconSASURL,
-        setIconSASURL
+        setIconSASURL,
       }}
     >
       {children}

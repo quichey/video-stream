@@ -29,7 +29,7 @@ export const useServerCall = () => {
         throw err; // propagate error
       }
     },
-    [serverURL]
+    [serverURL],
   );
 
   return fetchData;

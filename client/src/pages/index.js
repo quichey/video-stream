@@ -21,7 +21,6 @@ export default function Pages() {
   const [collapsed, setCollapsed] = React.useState(true);
 
   const toggleCollapsed = () => setCollapsed((prev) => !prev);
-  
 
   React.useEffect(() => {
     // Cleanup function: remove temp-session token from sessionStorage on unmount
@@ -36,7 +35,7 @@ export default function Pages() {
   return (
     <BrowserRouter>
       <Navbar handleSidbarClick={toggleCollapsed} />
-      <Sidebar collapsed={collapsed}/>
+      <Sidebar collapsed={collapsed} />
       <Box
         component="main"
         sx={{
@@ -58,11 +57,7 @@ export default function Pages() {
               </Route>
             </Route>
           </Route>
-          <Route
-            index
-            path="upload"
-            element={<VideoUpload />}
-          />
+          <Route index path="upload" element={<VideoUpload />} />
         </Routes>
       </Box>
     </BrowserRouter>

@@ -17,7 +17,7 @@ export default function Sidebar({ collapsed }) {
     <Box
       sx={{
         position: "fixed",
-        top: navbarHeight,       // sits below Navbar
+        top: navbarHeight, // sits below Navbar
         left: 0,
         width: collapsed ? collapsedWidth : drawerWidth,
         height: `calc(100vh - ${navbarHeight}px)`,
@@ -25,7 +25,7 @@ export default function Sidebar({ collapsed }) {
         borderRight: 1,
         borderColor: "divider",
         transition: "width 0.3s ease",
-        overflowY: "auto",       // Sidebar can scroll independently if items overflow
+        overflowY: "auto", // Sidebar can scroll independently if items overflow
         zIndex: 1100,
       }}
     >

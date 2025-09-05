@@ -8,10 +8,9 @@ import Recommendations from "./Recommendations";
 import Video from "./Video";
 
 export default function Watch() {
-  const { fileDir, fileName } =
-    React.useContext(VideoContext);
+  const { fileDir, fileName } = React.useContext(VideoContext);
 
-  const loadedVideo = (fileDir !== undefined) && (fileName !== undefined)
+  const loadedVideo = fileDir !== undefined && fileName !== undefined;
   return (
     <Box
       sx={{

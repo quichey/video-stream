@@ -1,1 +1,1 @@
-from .gateway import create_app
+from .gateway import create_app as create_app

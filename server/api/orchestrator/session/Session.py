@@ -1,7 +1,5 @@
-from abc import ABC, abstractmethod
-from flask import make_response
+from abc import ABC
 import uuid
-import json
 
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
@@ -144,9 +142,6 @@ class SessionBase(ABC):
     @token.setter
     def token(self, new_value) -> str:
         self.TOKEN = new_value
-
-    def generate_token(self):
-        pass
 
     def generate_uuid(self):
         _uuid = str(uuid.uuid4())

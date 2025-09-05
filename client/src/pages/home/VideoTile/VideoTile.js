@@ -16,8 +16,7 @@ export default function VideoTile({
   dateCreated,
   sasURL,
   userIconURL,
- }) {
-
+}) {
   const [title, setTitle] = React.useState("");
   const [totalViews, setTotalViews] = React.useState("");
 
