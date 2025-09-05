@@ -8,7 +8,7 @@ import CustomizeChannelButton from "./CustomizeChannelButton";
 
 export default function Summary() {
   const { id: loggedInUserID } = React.useContext(UserContext);
-  const { id: channelID, name } = React.useContext(ChannelContext);
+  const { id: channelID } = React.useContext(ChannelContext);
 
   const isChannelOwner = loggedInUserID === channelID;
   return (
