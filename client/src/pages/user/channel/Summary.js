@@ -8,9 +8,9 @@ import CustomizeChannelButton from "./CustomizeChannelButton";
 
 export default function Summary() {
   const { id: loggedInUserID } = React.useContext(UserContext);
-  const { id: channelID, name } = React.useContext(ChannelContext);
+  const { id: channelID } = React.useContext(ChannelContext);
 
-  const isChannelOwner = loggedInUserID === channelID
+  const isChannelOwner = loggedInUserID === channelID;
   return (
     <Box
       component="form"
@@ -25,32 +25,18 @@ export default function Summary() {
         width: "100%",
       }}
     >
-      <p>
-        Profile Icon
-      </p>
-      <p>
-        Name
-      </p>
-      <p>
-        @handle
-      </p>
-      <p>
-        Description
-      </p>
-      {
-        isChannelOwner ? (
-            <>
-                <CustomizeChannelButton />
-                <p>
-                    Manage Videos if logged in
-                </p>
-            </>
-        ): (
-            <p>
-                Subscribe if not logged in
-            </p>
-        )
-      }
+      <p>Profile Icon</p>
+      <p>Name</p>
+      <p>@handle</p>
+      <p>Description</p>
+      {isChannelOwner ? (
+        <>
+          <CustomizeChannelButton />
+          <p>Manage Videos if logged in</p>
+        </>
+      ) : (
+        <p>Subscribe if not logged in</p>
+      )}
     </Box>
   );
 }

@@ -8,28 +8,26 @@ import { useServerCall } from "../../../../customHooks/useServerCall";
 
 export default function PicturePublishButton() {
   const { fileBytes, fileName, remove } = useUserPictureEdit();
-  const { setIconFileName, setIconSASURL } = React.useContext(UserContext)
+  const { setIconFileName, setIconSASURL } = React.useContext(UserContext);
   const fetchData = useServerCall();
 
   const onPublish = () => {
-    console.log(`sessionToken: ${sessionStorage.getItem("tempSessionToken")}`)
+    console.log(`sessionToken: ${sessionStorage.getItem("tempSessionToken")}`);
     if (remove) {
-      fetchData("remove-profile-pic",
-        (json) => {
-            if (json?.pic_data?.success) {
-                setIconFileName(undefined)
-                setIconSASURL(undefined)
-            }
+      fetchData("remove-profile-pic", (json) => {
+        if (json?.pic_data?.success) {
+          setIconFileName(undefined);
+          setIconSASURL(undefined);
         }
-      );
+      });
     } else {
       fetchData(
         "upload-profile-pic",
         (json) => {
-            setIconFileName(json?.pic_data?.profile_icon)
-            setIconSASURL(json?.pic_data?.profile_icon_sas_url)
+          setIconFileName(json?.pic_data?.profile_icon);
+          setIconSASURL(json?.pic_data?.profile_icon_sas_url);
         },
-        { file_name: fileName, byte_stream: fileBytes }
+        { file_name: fileName, byte_stream: fileBytes },
       );
     }
   };

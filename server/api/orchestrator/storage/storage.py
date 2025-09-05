@@ -1,6 +1,5 @@
 import datetime
 import os
-import sys
 from typing import NewType, Literal
 from azure.storage.blob import (
     BlobServiceClient,
@@ -57,7 +56,8 @@ class Storage(BaseStorage):
         try:
             container_client.upload_blob(name=blob_name, data=byte_stream, overwrite=True)
             return True
-        except:
+        except Exception as e:
+            print(f"\n\n Exception: {e} ")
             return False
 
     def get_video_url(self, file_dir, file_name) -> URL:
@@ -71,7 +71,6 @@ class Storage(BaseStorage):
 
         blob_name = f"{root_dir}/{file_dir}/{file_name}"
 
-        bsc = self._blob_service_client
 
         # Get a user delegation key (AAD-based SAS; safer than account SAS)
         # short lived (e.g., 1 hour)

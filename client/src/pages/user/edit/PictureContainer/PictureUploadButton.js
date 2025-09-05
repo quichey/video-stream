@@ -5,7 +5,8 @@ import { useUserPictureEdit } from "./UserPictureEditContext";
 import { readFile } from "../../../../util/fileRead";
 
 export default function PictureUploadButton() {
-  const { setPreview, setFileBytes, setFileName, setRemove } = useUserPictureEdit();
+  const { setPreview, setFileBytes, setFileName, setRemove } =
+    useUserPictureEdit();
 
   const onFileChange = (file) => {
     setRemove(false);

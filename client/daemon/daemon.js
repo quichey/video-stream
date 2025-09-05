@@ -19,20 +19,19 @@ const app = express();
 //const port = process.env.PORT || 8080;
 const port = 8080;
 
-
-
 //Serve website
 app.use(express.static(path.join(__dirname, "..", "public/build")));
 
-
-
 //Client side routing fix on page refresh or direct browsing to non-root directory
 app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public/build", "index.html"), (err) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-  });
+  res.sendFile(
+    path.join(__dirname, "..", "public/build", "index.html"),
+    (err) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+    },
+  );
 });
 
 //Start the server

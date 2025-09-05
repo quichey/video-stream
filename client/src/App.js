@@ -9,7 +9,6 @@ import { HTTPProvider } from "./contexts/HTTPContext";
 //import useWindowDimensions from "./customHooks/useWindowDimensions";
 import Pages from "./pages";
 
-
 import "./App.css";
 
 function App() {
@@ -20,11 +19,7 @@ function App() {
       <ChannelProvider>
         <VideoProvider>
           <HTTPProvider>
-            <Container
-              disableGutters
-              maxWidth={false}
-              sx={{ width: "100%" }}
-            >
+            <Container disableGutters maxWidth={false} sx={{ width: "100%" }}>
               <Pages />
             </Container>
           </HTTPProvider>
