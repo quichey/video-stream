@@ -68,12 +68,30 @@ class ThirdPartyAuth(Auth, ABC):
     def authorize(self, user_info):
         pass
 
+    @abstractmethod
+    def get_provider_user_id(self, user):
+        pass
+
+    @abstractmethod
+    def get_access_token(self, user):
+        pass
+
+    @abstractmethod
+    def get_metadata(self, user):
+        pass
+
     @override
     @needs_authorization
     def register(self, request, response) -> User:
         user_info = extract_registration_info(request)
         user = self.create_user(user_info=user_info)
 
+        self.initialize_auth_record(
+            user_id=user.id,
+            provider_user_id=self.get_provider_user_id(user),
+            access_token=self.get_access_token(user),
+            metadata=self.get_metadata(user),
+        )
         return user
 
     @override
