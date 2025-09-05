@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
 from functools import wraps
+from typing import override
 
 from sqlalchemy.orm import Session
 
 from db.Schema.Models import User, ThirdPartyAuth
 from auth import Auth
+from api.util.request_data import extract_login_info, extract_registration_info
 
 """
 What is a reasonalbe Interface for this base class?
@@ -66,19 +68,24 @@ class ThirdPartyAuth(Auth, ABC):
     def authorize(self, user_info):
         pass
 
+    @override
     @needs_authorization
-    def register(self, user_info) -> User:
+    def register(self, request, response) -> User:
+        user_info = extract_registration_info(request)
         user = self.create_user(user_info=user_info)
 
         return user
 
+    @override
     @needs_authorization
-    def login(self, user_info) -> User:
+    def login(self, request, response) -> User:
+        user_info = extract_login_info(request)
         user = self.get_user_info(user_info["id"])
         return user
 
+    @override
     @needs_authorization
-    def logout(self, user_info):
+    def logout(self, request, response):
         pass
 
     def create_user(self, user_info) -> User:
