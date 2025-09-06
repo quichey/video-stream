@@ -1,4 +1,3 @@
-
 from sqlalchemy import select
 
 from api.orchestrator.session.state.state_module import StateModule
@@ -13,9 +12,9 @@ class Comments(StateModule):
     limit: int = COMMENTS_FIRST_PAGE_SIZE
     video_id: int = None
 
-    def __init__(self, request, response, deployment, storage, video_id):
-        super().__init__(request, response, deployment, storage)
-        #self.on_event("load_first_page_of_comments", self.load_first_page)
+    def __init__(self, request, response, video_id):
+        super().__init__(request, response)
+        # self.on_event("load_first_page_of_comments", self.load_first_page)
         self.video_id = video_id
 
     @property
@@ -23,9 +22,10 @@ class Comments(StateModule):
         if self.page_number == 0:
             return 0
         else:
-            return COMMENTS_FIRST_PAGE_SIZE + (self.page_number - 1) * COMMENTS_NEXT_PAGE_SIZE
-    
-
+            return (
+                COMMENTS_FIRST_PAGE_SIZE
+                + (self.page_number - 1) * COMMENTS_NEXT_PAGE_SIZE
+            )
 
     """
     * From google search -- Performance optimization for later
@@ -34,6 +34,7 @@ class Comments(StateModule):
         using large OFFSET values can lead to slower queries, especially on large tables,
         as the database needs to scan through a large number of rows before applying the LIMIT. 
     """
+
     def get_comments(self, request, response):
         limit = self.limit
         offset = self.offset
@@ -44,26 +45,20 @@ class Comments(StateModule):
             users_table = self.metadata_obj.tables["users"]
 
             subquery_select_cols = [comments_table.c.comment, comments_table.c.user_id]
-            subquery = select(
-                *subquery_select_cols
-            ).select_from(
-                comments_table
-            ).where(
-                comments_table.c.video_id == self.video_id
-            ).cte("comments_one_video")
+            subquery = (
+                select(*subquery_select_cols)
+                .select_from(comments_table)
+                .where(comments_table.c.video_id == self.video_id)
+                .cte("comments_one_video")
+            )
 
             select_cols = [subquery.c.comment, users_table.c.name]
-            stmt = select(
-                *select_cols
-            ).select_from(
-                subquery
-            ).join(
-                    users_table,
-                    subquery.c.user_id == users_table.c.id
-            ).limit(
-                limit
-            ).offset(
-                offset
+            stmt = (
+                select(*select_cols)
+                .select_from(subquery)
+                .join(users_table, subquery.c.user_id == users_table.c.id)
+                .limit(limit)
+                .offset(offset)
             )
 
             records = conn.execute(stmt)
@@ -71,10 +66,7 @@ class Comments(StateModule):
             for row in records:
                 new_offset = new_offset + 1
 
-                comment_data_point = {
-                    "comment": row[0],
-                    "user_name": row[1]
-                }
+                comment_data_point = {"comment": row[0], "user_name": row[1]}
                 data.append(comment_data_point)
 
         self.page_number += 1
