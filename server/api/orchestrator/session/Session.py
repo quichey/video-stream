@@ -41,16 +41,13 @@ def post_load_session_hook(func):
 
 
 class SessionBase(ABC):
-    STORAGE = None
-
     TOKEN = None
 
     VIDEO = None
     VIDEO_UPLOAD = None
     HOME = None
 
-    def __init__(self, request, response, storage):
-        self.STORAGE = storage
+    def __init__(self, request, response):
         self.generate_token(request, response)
 
     @pre_athenticate_session_hook
@@ -119,16 +116,16 @@ class SessionBase(ABC):
             case "load_session":
                 self.load_session(request, response, results)
             case "watch_video":
-                self.VIDEO = Video(request, response, self.STORAGE)
+                self.VIDEO = Video(request, response)
                 video_data = self.VIDEO.open_video(request, response)
                 results["video_data"] = video_data
             case "get_comments":
                 comment_data = self.VIDEO.comments.get_comments(request, response)
                 results["comment_data"] = comment_data
             case "video_upload":
-                self.VIDEO_UPLOAD = VideoUpload(request, response, self.STORAGE)
+                self.VIDEO_UPLOAD = VideoUpload(request, response)
             case "home":
-                self.HOME = Home(request, response, self.STORAGE)
+                self.HOME = Home(request, response)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
             case "upload-profile-pic":
