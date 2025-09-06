@@ -8,11 +8,8 @@ from auth.Auth import Auth
 from api.util.request_data import extract_registration_info, extract_login_info
 from db.Schema.Models import User
 
-class NativeAuth(Auth):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-    
+class NativeAuth(Auth):
     @override
     def register(self, request, response) -> User | Literal[False]:
         registration_info = extract_registration_info(request)
@@ -45,13 +42,13 @@ class NativeAuth(Auth):
     # User logs in -> verify their password against stored hash
     def verify_password(self, plain_password: str, stored_hash: bytes) -> bool:
         return bcrypt.checkpw(plain_password.encode("utf-8"), stored_hash)
-    
+
     def get_user_instance(self, user_name) -> User:
         user_record = None
         with Session(self.engine) as session:
             user_record = session.query(User).filter_by(name=user_name).first()
         return user_record
-    
+
     def store_user_record(self, name, password) -> User | Literal[False]:
         # also save to mysql db
         with Session(self.engine) as session:
@@ -63,9 +60,9 @@ class NativeAuth(Auth):
             session.commit()
             if new_user.id is not None:
                 return new_user
-        
+
         return False
-    
+
     def verify_user_name_unique(self, user_name) -> bool:
         user_record = None
         with Session(self.engine) as session:
