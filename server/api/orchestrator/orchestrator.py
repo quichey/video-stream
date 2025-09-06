@@ -1,20 +1,13 @@
 from api.orchestrator.session.SessionManagement import SessionManagement
 from api.orchestrator.Cache.Cache import Cache
-from api.orchestrator.storage.storage import Storage
-from api.orchestrator.storage.local_storage import LocalStorage
-from util.deployment import Deployment
 
 
-class Orchestrator(Deployment):
+class Orchestrator:
     SESSION_MANAGEMENT = None
     CACHE = None
 
     def __init__(self):
-        if self.deployment == "local":
-            self.STORAGE = LocalStorage()
-        else:
-            self.STORAGE = Storage()
-        self.SESSION_MANAGEMENT = SessionManagement(self.STORAGE)
+        self.SESSION_MANAGEMENT = SessionManagement()
         self.CACHE = Cache()
 
     def handle_request(self, request, response):

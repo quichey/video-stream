@@ -1,12 +1,13 @@
 from sqlalchemy import select
 
 from api.orchestrator.session.state.state_module import StateModule
+from api.orchestrator.storage import STORAGE
 
 
 class Home(StateModule):
     id: int
     timestamp: str
-    
+
     def get_video_list(self, request, response):
         data = []
         with self.engine.connect() as conn:
@@ -21,13 +22,12 @@ class Home(StateModule):
                 videos_table.c.date_created,
                 videos_table.c.date_updated,
             ]
-            subquery = select(
-                *subquery_select_cols
-            ).select_from(
-                videos_table
-            ).limit(
-                10
-            ).cte("one_page_videos")
+            subquery = (
+                select(*subquery_select_cols)
+                .select_from(videos_table)
+                .limit(10)
+                .cte("one_page_videos")
+            )
 
             select_cols = [
                 subquery.c.id,
@@ -39,21 +39,18 @@ class Home(StateModule):
                 subquery.c.date_created,
                 subquery.c.date_updated,
             ]
-            stmt = select(
-                *select_cols
-            ).select_from(
-                subquery
-            ).join(
-                users_table,
-                subquery.c.user_id == users_table.c.id
+            stmt = (
+                select(*select_cols)
+                .select_from(subquery)
+                .join(users_table, subquery.c.user_id == users_table.c.id)
             )
 
             records = conn.execute(stmt)
-            #TODO: consider how to actually have
+            # TODO: consider how to actually have
             # client show the correct video
             # maybe could just point to
             # api's address and move assets from
-            # db/ to api/ 
+            # db/ to api/
             for row in records:
                 video_data_point = {
                     "id": row[0],
@@ -65,14 +62,12 @@ class Home(StateModule):
                     "date_created": row[6],
                     "date_updated": row[7],
                 }
-                video_url = self.STORAGE.get_video_url(
-                    video_data_point["file_dir"],
-                    video_data_point["file_name"]
+                video_url = STORAGE.get_video_url(
+                    video_data_point["file_dir"], video_data_point["file_name"]
                 )
                 video_data_point["video_url"] = video_url
-                user_icon_url = self.STORAGE.get_image_url(
-                    video_data_point["user_id"],
-                    video_data_point["user_icon"]
+                user_icon_url = STORAGE.get_image_url(
+                    video_data_point["user_id"], video_data_point["user_icon"]
                 )
                 video_data_point["user_icon_url"] = user_icon_url
                 data.append(video_data_point)

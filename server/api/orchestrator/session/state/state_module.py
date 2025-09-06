@@ -2,10 +2,7 @@ from api.util.db_engine import DataBaseEngine
 
 
 class StateModule(DataBaseEngine):
-    STORAGE = None
-
-    def __init__(self, request, response, storage):
-        self.STORAGE = storage
+    def __init__(self, request, response):
         self.listeners = {}
 
     def on_event(self, event_name, callback):

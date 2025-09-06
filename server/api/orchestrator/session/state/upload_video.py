@@ -19,8 +19,8 @@ class VideoUpload(StateModule):
 
     manager: VideoFileManager
 
-    def __init__(self, request, response, storage):
-        super().__init__(request, response, storage)
+    def __init__(self, request, response):
+        super().__init__(request, response)
         video_file_info = extract_video_file_info(request=request)
         self.name = video_file_info["name"]
         self.byte_stream = video_file_info["byte_stream"]

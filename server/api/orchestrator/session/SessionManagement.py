@@ -36,8 +36,8 @@ class SessionPair:
         self.LONG_TERM_COOKIE_ID = generate_cookie("long_term_session", response)
         return self.LONG_TERM_COOKIE_ID
 
-    def create_user_session(self, request, response, storage):
-        self.user_session = UserSession(request, response, storage)
+    def create_user_session(self, request, response):
+        self.user_session = UserSession(request, response)
         return self.user_session
 
 
@@ -49,16 +49,14 @@ class SessionRegistry:
 
 class SessionManagement(DataBaseEngine):
     SESSION_REGISTRY = None
-    STORAGE = None
     NATIVE_AUTH = None
 
-    def __init__(self, storage):
-        self.STORAGE = storage
+    def __init__(self):
         self.NATIVE_AUTH = NativeAuth()
         self.SESSION_REGISTRY = SessionRegistry(sessions={})
 
     def add_session(self, request, response):
-        new_session = AnonymousSession(request, response, self.STORAGE)
+        new_session = AnonymousSession(request, response)
         print(f"\n\n new_session: {new_session} \n\n")
         session_pair = SessionPair(anonymous_session=new_session)
         session_uuid = session_pair.create_cookie(request, response)
@@ -116,7 +114,6 @@ class SessionManagement(DataBaseEngine):
                     self.NATIVE_AUTH,
                     request,
                     response,
-                    self.STORAGE,
                 )
 
             return session_pair.user_session
@@ -208,7 +205,6 @@ class SessionManagement(DataBaseEngine):
                 self.NATIVE_AUTH,
                 request,
                 response,
-                self.STORAGE,
             )
             response.status_code = 201
             return session_pair.user_session
@@ -232,7 +228,6 @@ class SessionManagement(DataBaseEngine):
                 self.NATIVE_AUTH,
                 request,
                 response,
-                self.STORAGE,
             )
             response.status_code = 200
             return session_pair.user_session
