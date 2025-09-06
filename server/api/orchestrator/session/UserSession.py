@@ -9,10 +9,11 @@ from api.util.request_data import (
     extract_user_session_cookie,
     has_user_session_cookie,
     attach_data_to_payload,
-    extract_profile_pic_info
+    extract_profile_pic_info,
 )
 from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
+from api.orchestrator.storage import STORAGE
 
 
 class UserSession(SessionBase, DataBaseEngine):
@@ -20,9 +21,16 @@ class UserSession(SessionBase, DataBaseEngine):
     COOKIE_RECORD_ID = None
     NATIVE_AUTH = None
     USER_INSTANCE = None
-    def __init__(self, old_cookie: str, user_instance: User, native_auth, request, response, deployment, storage):
-        SessionBase.__init__(self, request, response, deployment, storage)
-        DataBaseEngine.__init__(self, deployment)
+
+    def __init__(
+        self,
+        old_cookie: str,
+        user_instance: User,
+        native_auth,
+        request,
+        response,
+    ):
+        SessionBase.__init__(self, request, response)
         self.USER_INSTANCE = user_instance
         self.NATIVE_AUTH = native_auth
         if old_cookie:
@@ -36,7 +44,7 @@ class UserSession(SessionBase, DataBaseEngine):
         results = {}
         self.post_load_session(request, response, results)
         attach_data_to_payload(response, results)
-    
+
     def store_cookie_record(self) -> UserCookie | Literal[False]:
         # also save to mysql db
         with Session(self.engine) as session:
@@ -49,18 +57,26 @@ class UserSession(SessionBase, DataBaseEngine):
             if cookie_record.id is not None:
                 self.COOKIE_RECORD_ID = cookie_record.id
                 return cookie_record
-        
+
         return False
 
     def delete_cookie_record(self) -> bool:
         with Session(self.engine) as session:
-            rows_deleted = session.query(UserCookie).filter(UserCookie.id == self.COOKIE_RECORD_ID).delete()
+            rows_deleted = (
+                session.query(UserCookie)
+                .filter(UserCookie.id == self.COOKIE_RECORD_ID)
+                .delete()
+            )
             session.commit()
 
             if rows_deleted > 0:
                 return True
             else:
-                rows_deleted = session.query(UserCookie).filter(UserCookie.cookie == self.AUTH_COOKIE).delete()
+                rows_deleted = (
+                    session.query(UserCookie)
+                    .filter(UserCookie.cookie == self.AUTH_COOKIE)
+                    .delete()
+                )
                 session.commit()
                 if rows_deleted > 0:
                     return True
@@ -68,22 +84,20 @@ class UserSession(SessionBase, DataBaseEngine):
                     return False
         return False
 
-    
     def post_load_session(self, request, response, results):
-        profile_icon_sas_url = self.STORAGE.get_image_url(
-            self.USER_INSTANCE.id,
-            self.USER_INSTANCE.profile_icon
+        profile_icon_sas_url = STORAGE.get_image_url(
+            self.USER_INSTANCE.id, self.USER_INSTANCE.profile_icon
         )
         results["user_data"] = {
             "id": self.USER_INSTANCE.id,
             "name": self.USER_INSTANCE.name,
             "email": self.USER_INSTANCE.email,
             "profile_icon": self.USER_INSTANCE.profile_icon,
-            "profile_icon_sas_url": profile_icon_sas_url
+            "profile_icon_sas_url": profile_icon_sas_url,
         }
-    
+
     def generate_auth_cookie(self, request, response):
-        self.AUTH_COOKIE = generate_cookie("auth_cookie", self.DEPLOYMENT, response)
+        self.AUTH_COOKIE = generate_cookie("auth_cookie", response)
         self.store_cookie_record()
         return self.AUTH_COOKIE
 
@@ -107,9 +121,9 @@ class UserSession(SessionBase, DataBaseEngine):
         if cookie != self.AUTH_COOKIE:
             raise SecurityError("Auth Cookie does not Match")
         return True
-    
+
     def clear_cookie(self, request, response):
-        expire_cookie("auth_cookie", self.DEPLOYMENT, response)
+        expire_cookie("auth_cookie", response)
         self.delete_cookie_record()
         self.AUTH_COOKIE = None
 
@@ -118,15 +132,12 @@ class UserSession(SessionBase, DataBaseEngine):
         file_name = pic_info["file_name"]
         byte_stream = pic_info["byte_stream"]
         user_id = self.USER_INSTANCE.id
-        sas_url = self.STORAGE.store_image(user_id, file_name, byte_stream)
+        sas_url = STORAGE.store_image(user_id, file_name, byte_stream)
         succeeded = self.update_pic_db(file_name)
         if succeeded and sas_url:
-            return {
-                "profile_icon": file_name,
-                "profile_icon_sas_url": sas_url
-            }
-        #TODO: return new sasURLS so client updates all images
-    
+            return {"profile_icon": file_name, "profile_icon_sas_url": sas_url}
+        # TODO: return new sasURLS so client updates all images
+
     def update_pic_db(self, file_name) -> bool:
         self.USER_INSTANCE.profile_icon = file_name
         try:
@@ -146,13 +157,9 @@ class UserSession(SessionBase, DataBaseEngine):
                 session.merge(self.USER_INSTANCE)  # re-attaches it
                 session.commit()
             response.status_code = 200
-            return {
-                "success": True
-            }
+            return {"success": True}
         except Exception as e:
             # optionally log the exception
             print(f"Failed to remove profile icon: {e}")
             response.status_code = 500
-            return {
-                "success": False
-            }
+            return {"success": False}

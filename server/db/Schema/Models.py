@@ -1,19 +1,32 @@
 import os
+import datetime
 
-from sqlalchemy import MetaData
-from sqlalchemy import Table, Column, Boolean, Integer, String, DateTime
-from sqlalchemy import ForeignKey, VARBINARY
+from sqlalchemy import (
+    JSON,
+    MetaData,
+    Table,
+    Column,
+    Boolean,
+    Integer,
+    String,
+    DateTime,
+    ForeignKey,
+    VARBINARY,
+    UniqueConstraint,
+    Index,
+)
 from sqlalchemy.orm import DeclarativeBase
 
 from typing import Optional
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import mapped_column, relationship
 
 from util.env import load_server_env, load_providers_env
 
 
 class Base(DeclarativeBase):
     pass
+
 
 metadata_obj = MetaData()
 
@@ -25,7 +38,7 @@ admin_specs = {
     "db_api": "mysqlconnector",
     "user": "root",
     "pw": os.getenv("MYSQL_ADMIN_SECRET"),
-    "hostname": "localhost:3306"
+    "hostname": "localhost:3306",
 }
 
 database_specs = {
@@ -34,7 +47,7 @@ database_specs = {
     "user": "new_user",
     "pw": "password",
     "hostname": "localhost:3306",
-    "dbname": "video_stream"
+    "dbname": "video_stream",
 }
 
 """
@@ -49,7 +62,7 @@ admin_specs_cloud_sql = {
     "provider": "azure",
 }
 
-#TODO: make non-admin mysql user on azure
+# TODO: make non-admin mysql user on azure
 database_specs_cloud_sql = {
     "dialect": "mysql",
     "db_api": "mysqlconnector",
@@ -58,21 +71,21 @@ database_specs_cloud_sql = {
     "hostname": f"{os.getenv('MYSQL_DB_NAME')}.mysql.database.azure.com",
     "dbname": "video_stream",
     "provider": "azure",
-    #"CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
+    # "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
 }
 
 """
 create _specs but for g-cloud sql
 """
-#admin_specs_cloud_sql = {
+# admin_specs_cloud_sql = {
 #    "dialect": "mysql",
 #    "db_api": "mysqlconnector",
 #    "user": "mysql-db-on-g-cloud-sql",
 #    "pw": os.getenv("MYSQL_ADMIN_SECRET"),
 #    "hostname": "35.226.88.211:3306"
-#}
+# }
 
-#database_specs_cloud_sql = {
+# database_specs_cloud_sql = {
 #    "dialect": "mysql",
 #    "db_api": "mysqlconnector",
 #    "user": "mysql-db-on-g-cloud-sql",
@@ -80,25 +93,22 @@ create _specs but for g-cloud sql
 #    "hostname": "35.226.88.211:3306",
 #    "dbname": "video_stream",
 #    "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
-#}
+# }
 
 users_table = Table(
     "users",
     metadata_obj,
     Column("id", Integer, primary_key=True),
-
     Column("name", String(30)),
     Column("email", String(30)),
 )
 
-videos_table= Table(
+videos_table = Table(
     "videos",
     metadata_obj,
     Column("id", Integer, primary_key=True),
-
     Column("file", String(100)),
     Column("user_id", ForeignKey("users.id"), nullable=False),
-
 )
 
 comments_table = Table(
@@ -107,9 +117,8 @@ comments_table = Table(
     Column("id", Integer, primary_key=True),
     Column("user_id", ForeignKey("users.id"), nullable=False),
     Column("video_id", ForeignKey("videos.id"), nullable=False),
-    #Column("thread_comment_id", ForeignKey("comments.id"), nullable=True),
+    # Column("thread_comment_id", ForeignKey("comments.id"), nullable=True),
     Column("thread_comment_id", Integer),
-
     Column("comment", String(100)),
     Column("date", DateTime),
     Column("edited_flag", Boolean),
@@ -118,7 +127,7 @@ comments_table = Table(
 comment_likes_table = Table(
     "comment_likes",
     metadata_obj,
-    #Column("id", Integer, primary_key=True),
+    # Column("id", Integer, primary_key=True),
     # not yet certain if this is the proper way to define multi-column primary key
     # i'll check later or something
     # need this to ensure there is no weird duplication of records with
@@ -126,10 +135,8 @@ comment_likes_table = Table(
     # this wouldn't make sense
     Column("comment_id", ForeignKey("comments.id"), nullable=False, primary_key=True),
     Column("user_id", ForeignKey("users.id"), nullable=False, primary_key=True),
-
     Column("like_dislike_flag", Boolean),
 )
-
 
 
 class User(Base):
@@ -152,6 +159,29 @@ class UserCookie(Base):
 
     def __repr__(self) -> str:
         return f"UserCookie(id={self.id!r}, user_id={self.user_id!r}, cookie={self.cookie!r})"
+
+
+class ThirdPartyAuth(Base):
+    __tablename__ = "third_party_auth"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    provider: Mapped[str] = mapped_column(String(50))
+    provider_user_id: Mapped[str] = mapped_column(String(255))
+    access_token: Mapped[str] = mapped_column(String(500))
+    refresh_token: Mapped[Optional[str]] = mapped_column(String(500))
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime)  # type: ignore
+    metadata: Mapped[dict] = mapped_column(JSON)
+
+    user = relationship("User", back_populates="third_party_accounts")
+
+    __table_args__ = (
+        # Enforce uniqueness of provider + provider_user_id
+        UniqueConstraint("provider", "provider_user_id", name="uq_provider_user"),
+        # Add indexes for common lookups
+        Index("idx_user_id", "user_id"),
+        Index("idx_provider", "provider"),
+    )
 
 
 class Video(Base):
