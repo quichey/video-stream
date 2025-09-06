@@ -8,22 +8,27 @@ from api.util.request_data import (
     extract_session_token,
     has_session_token,
     has_long_term_cookie,
-    attach_data_to_payload
+    attach_data_to_payload,
 )
 from api.util.error_handling import SecurityError
 
+
 def pre_athenticate_session_hook(func):
     """Decorator to run a step if the subclass/provider defines it."""
+
     def wrapper(self, *args, **kwargs):
         # Call post_load_session step if provider has it
         post_load_session = getattr(self, "pre_authenticate_session", None)
         if callable(post_load_session):
             post_load_session(*args, **kwargs)
         return func(self, *args, **kwargs)
+
     return wrapper
+
 
 def post_load_session_hook(func):
     """Decorator to run a step if the subclass/provider defines it."""
+
     def wrapper(self, *args, **kwargs):
         ret_val = func(self, *args, **kwargs)
         # Call post_load_session step if provider has it
@@ -31,10 +36,11 @@ def post_load_session_hook(func):
         if callable(post_load_session):
             post_load_session(*args, **kwargs)
         return ret_val
+
     return wrapper
 
+
 class SessionBase(ABC):
-    DEPLOYMENT = None
     STORAGE = None
 
     TOKEN = None
@@ -43,8 +49,7 @@ class SessionBase(ABC):
     VIDEO_UPLOAD = None
     HOME = None
 
-    def __init__(self, request, response, deployment, storage):
-        self.DEPLOYMENT = deployment
+    def __init__(self, request, response, storage):
         self.STORAGE = storage
         self.generate_token(request, response)
 
@@ -52,7 +57,7 @@ class SessionBase(ABC):
     def authenticate_session(self, request, response):
         # TODO: Verify LONG_TERM_COOKIE_ID matches from request
         # Verify TEMP_COOKIE_ID matches from request
-        
+
         # Handle temp cookie
         request_session_token = extract_session_token(request)
         request_session_token_exists = has_session_token(request)
@@ -65,7 +70,7 @@ class SessionBase(ABC):
         self.handle_new_temp_session(request, response)
 
         return "ok"
-    
+
     def handle_new_temp_session(self, request, response):
         # needed  and (self.TEMP_COOKIE_ID is None)
         # so that first request did not generate 2 temp_cookies
@@ -78,10 +83,11 @@ class SessionBase(ABC):
         # should not be present
         request_long_term_cookie_id_exists = has_long_term_cookie(request)
         request_session_token_exists = has_session_token(request)
-        need_temp_cookie = (not request_session_token_exists) and (request_long_term_cookie_id_exists)
+        need_temp_cookie = (not request_session_token_exists) and (
+            request_long_term_cookie_id_exists
+        )
         if need_temp_cookie:
             return self.generate_token(request, response)
-
 
     def determine_event(self, request):
         url_route = request.path
@@ -97,10 +103,12 @@ class SessionBase(ABC):
             return "upload-profile-pic"
         elif url_route == "/remove-profile-pic":
             return "remove-profile-pic"
-    
+
     @post_load_session_hook
     def load_session(self, request, response, results):
-        results["session_token"] = self.handle_new_temp_session(request, response) or self.TOKEN
+        results["session_token"] = (
+            self.handle_new_temp_session(request, response) or self.TOKEN
+        )
 
     def handle_request(self, request, response):
         print(f"\n\n self.TOKEN -- handle_request: {self.TOKEN}  \n\n")
@@ -111,16 +119,16 @@ class SessionBase(ABC):
             case "load_session":
                 self.load_session(request, response, results)
             case "watch_video":
-                self.VIDEO = Video(request, response, self.DEPLOYMENT, self.STORAGE)
+                self.VIDEO = Video(request, response, self.STORAGE)
                 video_data = self.VIDEO.open_video(request, response)
                 results["video_data"] = video_data
             case "get_comments":
                 comment_data = self.VIDEO.comments.get_comments(request, response)
                 results["comment_data"] = comment_data
             case "video_upload":
-                self.VIDEO_UPLOAD = VideoUpload(request, response, self.DEPLOYMENT, self.STORAGE)
+                self.VIDEO_UPLOAD = VideoUpload(request, response, self.STORAGE)
             case "home":
-                self.HOME = Home(request, response, self.DEPLOYMENT, self.STORAGE)
+                self.HOME = Home(request, response, self.STORAGE)
                 video_list_data = self.HOME.get_video_list(request, response)
                 results["video_list"] = video_list_data
             case "upload-profile-pic":
@@ -128,7 +136,7 @@ class SessionBase(ABC):
             case "remove-profile-pic":
                 results["pic_data"] = self.remove_profile_pic(request, response)
         print(f"\n\n resultsL {results} \n\n")
-        
+
         attach_data_to_payload(response, results)
         return response
 
@@ -139,6 +147,7 @@ class SessionBase(ABC):
     @property
     def token(self) -> str:
         return self.TOKEN
+
     @token.setter
     def token(self, new_value) -> str:
         self.TOKEN = new_value
@@ -147,14 +156,13 @@ class SessionBase(ABC):
         _uuid = str(uuid.uuid4())
         return _uuid
 
-
     def generate_token(self, request, response):
         token = self.generate_uuid()
         self.TOKEN = token
         attach_data_to_payload(response, {"session_token": token})
         self.refresh_state()
         return token
-    
+
     def refresh_state(self):
         # use case: user reloads webpage
         pass

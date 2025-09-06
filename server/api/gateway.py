@@ -40,13 +40,15 @@ Some of these responsibilities can be delegated to other sub-programs within thi
 load_dotenv()
 load_dotenv(dotenv_path="../cloud/providers/azure/.env")
 load_dotenv(dotenv_path="env/azure/.env")
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     # Base configs that should hold true no matter what
     app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        SECRET_KEY="dev",
+        DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )
 
     # TODO: maybe need to update this host for cloud build
@@ -54,7 +56,7 @@ def create_app(test_config=None):
     CORS(
         app,
         resources={r"/*": {"origins": ["http://localhost:3000", client_url]}},
-        supports_credentials=True
+        supports_credentials=True,
     )
 
     # different optional start-up configs
@@ -62,7 +64,7 @@ def create_app(test_config=None):
     # specific instance
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
+        app.config.from_pyfile("config.py", silent=True)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
@@ -92,14 +94,12 @@ def create_app(test_config=None):
     just list out like in docs, but can store all the logic in Routes,
     and keep this file as managing state of whole micro-service/gateway-process
     """
-    #TODO: properly setup things for the DEPOYMENT ENV Variable
-    deployment = os.getenv("DEPLOYMENT")
-    orchestrator = Orchestrator(deployment=deployment)
+    orchestrator = Orchestrator()
 
-    client_router = ClientRouter(app=app, deployment=deployment, orchestrator=orchestrator, request=request)
+    client_router = ClientRouter(app=app, orchestrator=orchestrator, request=request)
     app.client_router = client_router
 
-    admin_router = AdminRouter(app=app, deployment=deployment, orchestrator=orchestrator, request=request)
+    admin_router = AdminRouter(app=app, orchestrator=orchestrator, request=request)
     app.admin_router = admin_router
     """
     @app.route("/getcomments", methods=["POST"])
@@ -107,13 +107,10 @@ def create_app(test_config=None):
         return router.read_comments()
     """
 
-
     """
     Maybe should make 2 Separate Router Classes
     One for video-stream Client APIs
     a separate one for Admin util cmd APIs
     """
-    
-    
 
     return app
