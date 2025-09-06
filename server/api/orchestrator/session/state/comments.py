@@ -12,8 +12,8 @@ class Comments(StateModule):
     limit: int = COMMENTS_FIRST_PAGE_SIZE
     video_id: int = None
 
-    def __init__(self, request, response, storage, video_id):
-        super().__init__(request, response, storage)
+    def __init__(self, request, response, video_id):
+        super().__init__(request, response)
         # self.on_event("load_first_page_of_comments", self.load_first_page)
         self.video_id = video_id
 

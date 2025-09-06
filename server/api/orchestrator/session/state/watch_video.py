@@ -3,6 +3,7 @@ from sqlalchemy import select
 from api.orchestrator.session.state.comments import Comments
 from api.orchestrator.session.state.state_module import StateModule
 from api.util.request_data import extract_video_info
+from api.orchestrator.storage import STORAGE
 
 
 class Video(StateModule):
@@ -10,12 +11,12 @@ class Video(StateModule):
     timestamp: str
     comments: Comments
 
-    def __init__(self, request, response, storage):
-        super().__init__(request, response, storage)
+    def __init__(self, request, response):
+        super().__init__(request, response)
         video_info = extract_video_info(request=request)
         self.id = video_info["id"]
         self.timestamp = (0,)
-        self.comments = Comments(request, response, self.STORAGE, self.id)
+        self.comments = Comments(request, response, self.id)
         return
 
     def get_video_data(self, request, response):
@@ -58,7 +59,7 @@ class Video(StateModule):
                 data["file_dir"] = row[1]
                 data["user_name"] = row[2]
 
-        video_url = self.STORAGE.get_video_url(data["file_dir"], data["file_name"])
+        video_url = STORAGE.get_video_url(data["file_dir"], data["file_name"])
         data["video_url"] = video_url
         return data
 

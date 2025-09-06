@@ -13,6 +13,7 @@ from api.util.request_data import (
 )
 from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
+from api.orchestrator.storage import STORAGE
 
 
 class UserSession(SessionBase, DataBaseEngine):
@@ -28,9 +29,8 @@ class UserSession(SessionBase, DataBaseEngine):
         native_auth,
         request,
         response,
-        storage,
     ):
-        SessionBase.__init__(self, request, response, storage)
+        SessionBase.__init__(self, request, response)
         self.USER_INSTANCE = user_instance
         self.NATIVE_AUTH = native_auth
         if old_cookie:
@@ -85,7 +85,7 @@ class UserSession(SessionBase, DataBaseEngine):
         return False
 
     def post_load_session(self, request, response, results):
-        profile_icon_sas_url = self.STORAGE.get_image_url(
+        profile_icon_sas_url = STORAGE.get_image_url(
             self.USER_INSTANCE.id, self.USER_INSTANCE.profile_icon
         )
         results["user_data"] = {
@@ -132,7 +132,7 @@ class UserSession(SessionBase, DataBaseEngine):
         file_name = pic_info["file_name"]
         byte_stream = pic_info["byte_stream"]
         user_id = self.USER_INSTANCE.id
-        sas_url = self.STORAGE.store_image(user_id, file_name, byte_stream)
+        sas_url = STORAGE.store_image(user_id, file_name, byte_stream)
         succeeded = self.update_pic_db(file_name)
         if succeeded and sas_url:
             return {"profile_icon": file_name, "profile_icon_sas_url": sas_url}
