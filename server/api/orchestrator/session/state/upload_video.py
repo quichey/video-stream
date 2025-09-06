@@ -19,23 +19,21 @@ class VideoUpload(StateModule):
 
     manager: VideoFileManager
 
-    def __init__(self, request, response, deployment, storage):
-        super().__init__(request, response, deployment, storage)
+    def __init__(self, request, response, storage):
+        super().__init__(request, response, storage)
         video_file_info = extract_video_file_info(request=request)
         self.name = video_file_info["name"]
         self.byte_stream = video_file_info["byte_stream"]
         self.is_done = video_file_info["is_done"]
         user_info = extract_user_info(request)
-        if user_info and user_info.get('id'):
-            self.user_id = user_info.get('id')
+        if user_info and user_info.get("id"):
+            self.user_id = user_info.get("id")
         else:
-            #TODO: think of what to do for anonymous users
+            # TODO: think of what to do for anonymous users
             self.user_id = 1
 
-        
         self.manager = VideoFileManager()
         return
-
 
     """
     as of now, largest sample video works w/one server request
@@ -84,7 +82,7 @@ class VideoUpload(StateModule):
         return user_state.video_upload
         return
     """
-    
+
     def store_video(self, request, response):
         """
         check if user has started a VideoUpload session
@@ -93,14 +91,14 @@ class VideoUpload(StateModule):
 
         if reached 0 bytes, store the video
         """
-        #video_upload_session = self.session_manager.video_upload(
+        # video_upload_session = self.session_manager.video_upload(
         #    session_info,
         #    video_upload_info=video_file_info
-        #)
-        #if not video_upload_session.is_done:
+        # )
+        # if not video_upload_session.is_done:
         #    return video_upload_session.is_done
 
-        #TODO: copy to client/public/videos folder
+        # TODO: copy to client/public/videos folder
         video = Video(
             user_id=self.user_id,
             file_dir=self.user_id,
@@ -109,14 +107,12 @@ class VideoUpload(StateModule):
             date_updated=datetime.now(),
         )
         self.manager.store_video(
-            video_record=video,
-            seeding_db=False,
-            byte_stream=self.byte_stream
+            video_record=video, seeding_db=False, byte_stream=self.byte_stream
         )
         # also save to mysql db
         with Session(self.engine) as session:
             session.add(video)
             session.commit()
-            
-        #return self.is_done
+
+        # return self.is_done
         return True
