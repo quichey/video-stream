@@ -45,3 +45,19 @@ This feels like a monumental amount of code for basic features of a web-app. As 
 Are there basic boilerplate libraries or flask tools that I could have used to make these files simpler?
 Perhaps even basic behaviour of modern web-apps like Youtube are more complex than they seem. Making things seamless
 is not seamless to do.
+
+# Summary of features (both currently and planned in the future)
+- Anonymous sessions
+- User sessions
+- able to handle multiple tabs open and view different videos and comments
+- Register/login via 3rd party authorizors
+- Production app is able to gracefully handle updates without breaking current user's sessions
+- Upload profile pictures
+- Upload videos
+- Create Playlists
+- View recommended lists of videos
+- Comment on videos
+- Be logged in on multiple devices simulateneously
+
+# Next things to implement
+- To make the app more interesting from a user's perspective, I would like to add Video Uploading. Concern here is large costs with storing heavy videos.
