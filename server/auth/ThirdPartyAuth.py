@@ -33,9 +33,6 @@ Rather leave all User database updates and reads to here
 class ThirdPartyAuth(Auth, ABC):
     PROVIDER = None
 
-    def __init__(self, deployment, *args, **kwargs):
-        super().__init__(deployment, args, **kwargs)
-
     @property
     def oauth_client(self):
         return self._oauth_client

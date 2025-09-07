@@ -1,3 +1,4 @@
+from typing import override
 from authlib.integrations.flask_client import OAuth
 
 from auth.ThirdPartyAuth import ThirdPartyAuth
@@ -8,8 +9,7 @@ class GoogleAuth(ThirdPartyAuth):
     GOOGLE_CLIENT_ID = ""
     GOOGLE_CLIENT_SECRET = ""
 
-    def __init__(self, app, deployment, *args, **kwargs):
-        super().__init__(deployment, args, **kwargs)
+    def __init__(self, app, *args, **kwargs):
         self.oauth = OAuth(app)
         self.oauth_client = self.oauth.register(
             name="google",
@@ -22,6 +22,7 @@ class GoogleAuth(ThirdPartyAuth):
         )
         return
 
+    @override
     def authorize(self):
         token = self.oauth_client.authorize_access_token()
         resp = self.oauth_client.get("userinfo")
@@ -31,6 +32,7 @@ class GoogleAuth(ThirdPartyAuth):
             user_info: user_info,
         }
 
+    @override
     def get_authorize_url(self, redirect_uri):
         # Returns the URL to redirect the user for Google OAuth
         return self.oauth_client.authorize_redirect(redirect_uri)
