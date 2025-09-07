@@ -9,6 +9,7 @@ from api.orchestrator.session.UserSession import UserSession
 from api.util.request_data import (
     has_user_session_cookie,
     extract_user_session_cookie,
+    attach_data_to_payload,
 )
 
 from db.Schema.Models import User, UserCookie
@@ -70,4 +71,71 @@ class SessionPair(DataBaseEngine):
             cookie_record = session.query(UserCookie).filter_by(cookie=cookie).first()
             return cookie_record
 
+        return False
+
+    def do_registration(self, request, response) -> UserSession:
+        new_user_instance = self.NATIVE_AUTH.register(request, response)
+        if new_user_instance:
+            self.user_session = UserSession(
+                None,
+                new_user_instance,
+                self.NATIVE_AUTH,
+                request,
+                response,
+            )
+            response.status_code = 201
+            return self.user_session
+        else:
+            # conflict (ex. duplicate username)
+            response.status_code = 409
+
+    def do_login(self, request, response) -> UserSession:
+        user_instance = self.NATIVE_AUTH.login(request, response)
+        if user_instance:
+            self.user_session = UserSession(
+                None,
+                user_instance,
+                self.NATIVE_AUTH,
+                request,
+                response,
+            )
+            response.status_code = 200
+            return self.user_session
+        else:
+            # invalid credentials
+            response.status_code = 401
+
+    def do_logout(self, request, response) -> UserSession:
+        user_session = self.user_session
+        # self.NATIVE_AUTH.logout(request, response)
+        if not user_session.authenticate_cookies(request, response):
+            # Invalid credentials
+            response.status_code = 401
+            return "error"
+
+        user_session.clear_cookie(request, response)
+        self.user_session = None
+        response.status_code = 200
+        # TODO: do i ever need to make a new Anonymous Session?
+        results = {}
+        results["session_token"] = self.anonymous_session.token
+        attach_data_to_payload(response, results)
+        return self.anonymous_session
+
+    def needs_registration(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/register":
+            return True
+        return False
+
+    def needs_login(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/login":
+            return True
+        return False
+
+    def needs_logout(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/logout":
+            return True
         return False
