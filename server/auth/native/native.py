@@ -68,3 +68,6 @@ class NativeAuth(Auth):
         with Session(self.engine) as session:
             user_record = session.query(User).filter_by(name=user_name).first()
         return user_record is None
+
+
+NATIVE_AUTH = NativeAuth()
