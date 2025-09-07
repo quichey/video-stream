@@ -7,6 +7,7 @@ from flask_cors import CORS
 from api.orchestrator import Orchestrator
 from api.Routers import AdminRouter
 from api.Routers import ClientRouter
+from auth.google_auth.google_auth import GOOGLE_AUTH
 
 """
 Inject Router functions into this file
@@ -95,6 +96,7 @@ def create_app(test_config=None):
     and keep this file as managing state of whole micro-service/gateway-process
     """
     orchestrator = Orchestrator()
+    GOOGLE_AUTH.init_app(app)
 
     client_router = ClientRouter(app=app, orchestrator=orchestrator, request=request)
     app.client_router = client_router

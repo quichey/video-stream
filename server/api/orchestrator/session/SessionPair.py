@@ -15,6 +15,7 @@ from api.util.request_data import (
 from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
 from auth.native.native import NATIVE_AUTH, NativeAuth
+from auth.google_auth.google_auth import GOOGLE_AUTH, GoogleAuth
 
 
 class SessionPair(DataBaseEngine):
@@ -22,6 +23,7 @@ class SessionPair(DataBaseEngine):
     user_session: Optional[UserSession] = None
     LONG_TERM_COOKIE_ID: str = None
     NATIVE_AUTH: NativeAuth = NATIVE_AUTH
+    GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
 
     def __init__(self, request, response):
         self.anonymous_session = AnonymousSession(request, response)
@@ -125,6 +127,22 @@ class SessionPair(DataBaseEngine):
         attach_data_to_payload(response, results)
         return self.anonymous_session
 
+    def do_google_login(self, request, response) -> UserSession:
+        user_instance = self.GOOGLE_AUTH.login(request, response)
+        if user_instance:
+            self.user_session = UserSession(
+                None,
+                user_instance,
+                self.NATIVE_AUTH,
+                request,
+                response,
+            )
+            response.status_code = 200
+            return self.user_session
+        else:
+            # invalid credentials
+            response.status_code = 401
+
     def needs_registration(self, request, response) -> bool:
         url_route = request.path
         if url_route == "/register":
@@ -140,6 +158,12 @@ class SessionPair(DataBaseEngine):
     def needs_logout(self, request, response) -> bool:
         url_route = request.path
         if url_route == "/logout":
+            return True
+        return False
+
+    def needs_google_login(self, request, response) -> bool:
+        url_route = request.path
+        if url_route == "/google/login":
             return True
         return False
 
@@ -161,5 +185,9 @@ class SessionPair(DataBaseEngine):
             # change to anonymous session
             current_session = self.do_logout(request, response)
             return "loggedout?"
+        elif self.needs_google_login(request, response):
+            # change to anonymous session
+            current_session = self.do_google_login(request, response)
+            return "google-login?"
         current_session = self.get_session(request, response)
         current_session.handle_request(request, response)
