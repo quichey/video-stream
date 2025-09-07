@@ -6,15 +6,15 @@ from util.deployment import Deployment
 
 def init_engine(deployment="local"):
     if deployment == "local":
-        database_specs = database_specs
+        db_specs = database_specs
     elif deployment == "cloud":
-        database_specs = database_specs_cloud_sql
+        db_specs = database_specs_cloud_sql
     # temporary hotfix based off reading cloud run error logs
     else:
-        database_specs = database_specs_cloud_sql
+        db_specs = database_specs_cloud_sql
     deployment = deployment
-    print(f"\n\n database_specs: {database_specs} \n\n")
-    return construct_engine(database_specs, deployment)
+    print(f"\n\n database_specs: {db_specs} \n\n")
+    return construct_engine(db_specs, deployment)
 
 
 def construct_engine(database_specs, deployment):
