@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from typing import Literal
 from sqlalchemy.orm import Session
 from typing import Optional
 from api.util.cookie import generate_cookie
 
+from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
 from api.orchestrator.session.UserSession import UserSession
 from api.util.request_data import (
@@ -17,12 +17,15 @@ from api.util.db_engine import DataBaseEngine
 from auth.native.native import NATIVE_AUTH, NativeAuth
 
 
-@dataclass
 class SessionPair(DataBaseEngine):
     anonymous_session: AnonymousSession
     user_session: Optional[UserSession] = None
-    LONG_TERM_COOKIE_ID: Optional[str] = None
-    NATIVE_AUTH: Optional[NativeAuth] = NATIVE_AUTH
+    LONG_TERM_COOKIE_ID: str = None
+    NATIVE_AUTH: NativeAuth = NATIVE_AUTH
+
+    def __init__(self, request, response):
+        self.anonymous_session = AnonymousSession(request, response)
+        self.create_cookie(request, response)
 
     def create_cookie(self, request, response):
         return self.generate_long_term_cookie(request, response)
@@ -139,3 +142,24 @@ class SessionPair(DataBaseEngine):
         if url_route == "/logout":
             return True
         return False
+
+    def get_session(self, request, response) -> SessionBase:
+        has_user_cookie = has_user_session_cookie(request)
+        if has_user_cookie:
+            return self.restore_lost_user_session(request, response)
+        else:
+            return self.anonymous_session
+
+    def on_request(self, request, response):
+        if self.needs_registration(request, response):
+            current_session = self.do_registration(request, response)
+            return "registered?"
+        elif self.needs_login(request, response):
+            current_session = self.do_login(request, response)
+            return "login?"
+        elif self.needs_logout(request, response):
+            # change to anonymous session
+            current_session = self.do_logout(request, response)
+            return "loggedout?"
+        current_session = self.get_session(request, response)
+        current_session.handle_request(request, response)

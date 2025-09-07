@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 
-from api.orchestrator.session.Session import SessionBase
-from api.orchestrator.session.AnonymousSession import AnonymousSession
 from api.orchestrator.session.SessionPair import SessionPair
 from api.util.request_data import (
     has_user_info,
     extract_long_term_cookie,
-    has_user_session_cookie,
 )
 
 
@@ -26,21 +23,12 @@ class SessionManagement:
     def __init__(self):
         self.SESSION_REGISTRY = SessionRegistry(sessions={})
 
-    def add_session(self, request, response):
-        new_session = AnonymousSession(request, response)
-        print(f"\n\n new_session: {new_session} \n\n")
-        session_pair = SessionPair(anonymous_session=new_session)
-        session_uuid = session_pair.create_cookie(request, response)
-        self.SESSION_REGISTRY.sessions[session_uuid] = session_pair
-        # TODO: add check for user's auth cookie
-        # COOKIE does not have info that can translate to user-id
-        # TODO: add auth cookies to DB?
-        print(f"\n\n new_session: {new_session} \n\n")
-        has_user_cookie = has_user_session_cookie(request)
-        if has_user_cookie:
-            return session_pair.restore_lost_user_session(request, response)
-        else:
-            return new_session
+    def add_session_pair(self, request, response) -> SessionPair:
+        new_session_pair = SessionPair(request, response)
+        self.SESSION_REGISTRY.sessions[new_session_pair.LONG_TERM_COOKIE_ID] = (
+            new_session_pair
+        )
+        return new_session_pair
 
     def end_session(self, request):
         pass
@@ -50,14 +38,6 @@ class SessionManagement:
         # print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         session_pair = self.SESSION_REGISTRY.sessions.get(long_term_cookie_id)
         return session_pair
-
-    def get_session(self, request, response) -> SessionBase:
-        session_pair = self.get_session_pair(request)
-        has_user_cookie = has_user_session_cookie(request)
-        if has_user_cookie:
-            return session_pair.restore_lost_user_session(request, response)
-        else:
-            return session_pair.anonymous_session
 
     def needs_restore_lost_session(self, request):
         long_term_cookie_id = extract_long_term_cookie(request)
@@ -101,26 +81,15 @@ class SessionManagement:
         )
         if needs_create_session:
             print("reached if needs_create_session")
-            current_session = self.add_session(request, response)
+            session_pair = self.add_session_pair(request, response)
         else:
             print("reached else")
-            current_session = self.get_session(request, response)
-
-        if self.needs_registration(request, response):
-            current_session = self.do_registration(request, response)
-            return "registered?"
-        elif self.needs_login(request, response):
-            current_session = self.do_login(request, response)
-            return "login?"
-        elif self.needs_logout(request, response):
-            # change to anonymous session
-            current_session = self.do_logout(request, response)
-            return "loggedout?"
+            session_pair = self.get_session_pair(request, response)
 
         print(
             f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}"
         )
-        return current_session.handle_request(request, response)
+        return session_pair.on_request(request, response)
 
     def exit_session(self, user_info, session_info):
         self.authenticate_user(user_info, session_info)
