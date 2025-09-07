@@ -1,9 +1,10 @@
 # Example using Flask and SQLite
-from flask import make_response
+from flask import make_response, redirect
 import json
 
 from .Router import Router
 from auth.native.native import NativeAuth, NATIVE_AUTH
+from auth.google_auth.google_auth import GoogleAuth, GOOGLE_AUTH
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -24,6 +25,7 @@ soo.. either get video_id from payload or query_str
 
 class ClientRouter(Router):
     NATIVE_AUTH: NativeAuth = NATIVE_AUTH
+    GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
     """
     don't yet know what i would want in 
     here for ClientRouter, but i'm sure something
@@ -150,8 +152,15 @@ class ClientRouter(Router):
         @app.route("/google/login", methods=["POST"])
         def google_login():
             response = make_response("Initial body")
-            self.orchestrator.handle_request(request, response)
+            redirect_uri = pass
+            auth_url = GOOGLE_AUTH.get_authorize_url(redirect_uri)
             return response
+
+        @app.route("/auth/google/callback")
+        def google_callback():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return redirect("/")  # send user to React page after login
 
         # Route to create a new item
         @app.route("/comments", methods=["POST"])
