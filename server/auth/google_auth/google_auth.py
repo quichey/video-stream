@@ -9,7 +9,7 @@ class GoogleAuth(ThirdPartyAuth):
     GOOGLE_CLIENT_ID = ""
     GOOGLE_CLIENT_SECRET = ""
 
-    def __init__(self, app, *args, **kwargs):
+    def init_app(self, app):
         self.oauth = OAuth(app)
         self.oauth_client = self.oauth.register(
             name="google",
@@ -36,3 +36,6 @@ class GoogleAuth(ThirdPartyAuth):
     def get_authorize_url(self, redirect_uri):
         # Returns the URL to redirect the user for Google OAuth
         return self.oauth_client.authorize_redirect(redirect_uri)
+
+
+GOOGLE_AUTH = GoogleAuth()

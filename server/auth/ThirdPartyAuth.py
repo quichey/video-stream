@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import wraps
 from typing import override
+from typing import Literal
 
 from sqlalchemy.orm import Session
 
@@ -79,7 +80,7 @@ class ThirdPartyAuth(Auth, ABC):
 
     @override
     @needs_authorization
-    def register(self, request, response) -> User:
+    def register(self, request, response) -> User | Literal[False]:
         user_info = extract_registration_info(request)
         user = self.create_user(user_info=user_info)
 
@@ -93,7 +94,7 @@ class ThirdPartyAuth(Auth, ABC):
 
     @override
     @needs_authorization
-    def login(self, request, response) -> User:
+    def login(self, request, response) -> User | Literal[False]:
         user_info = extract_login_info(request)
         user = self.get_user_info(user_info["id"])
         return user

@@ -147,6 +147,12 @@ class ClientRouter(Router):
             self.orchestrator.handle_request(request, response)
             return response
 
+        @app.route("/google/login", methods=["POST"])
+        def google_login():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
         # Route to create a new item
         @app.route("/comments", methods=["POST"])
         def create_item():
