@@ -163,7 +163,7 @@ class SessionPair(DataBaseEngine):
 
     def needs_google_login(self, request, response) -> bool:
         url_route = request.path
-        if url_route == "/google/login":
+        if url_route == "/auth/google/callback":
             return True
         return False
 

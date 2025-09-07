@@ -47,6 +47,22 @@ class ThirdPartyAuth(Auth, ABC):
         """Return URL to redirect user for login"""
         pass
 
+    """
+    Can i make this not an abstract-method?
+    Can most 3rd party authorizors follow the same basic flow of the callback
+    - If user exists in ThirdPartyAuth table, don't create new record
+    """
+
+    @abstractmethod
+    def handle_callback(self, request, response) -> User | Literal[False]:
+        """Handle User 3rd party credentials"""
+        user_exists = pass
+        if user_exists:
+            return self.login(request, response)
+        else:
+            return self.register(request, response)
+
+
     def needs_authorization(self, func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -79,7 +95,6 @@ class ThirdPartyAuth(Auth, ABC):
         pass
 
     @override
-    @needs_authorization
     def register(self, request, response) -> User | Literal[False]:
         user_info = extract_registration_info(request)
         user = self.create_user(user_info=user_info)
@@ -93,7 +108,6 @@ class ThirdPartyAuth(Auth, ABC):
         return user
 
     @override
-    @needs_authorization
     def login(self, request, response) -> User | Literal[False]:
         user_info = extract_login_info(request)
         user = self.get_user_info(user_info["id"])
