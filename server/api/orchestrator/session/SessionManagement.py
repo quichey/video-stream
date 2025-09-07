@@ -2,16 +2,12 @@ from dataclasses import dataclass
 
 from api.orchestrator.session.Session import SessionBase
 from api.orchestrator.session.AnonymousSession import AnonymousSession
-from api.orchestrator.session.UserSession import UserSession
 from api.orchestrator.session.SessionPair import SessionPair
 from api.util.request_data import (
     has_user_info,
     extract_long_term_cookie,
     has_user_session_cookie,
-    attach_data_to_payload,
 )
-from auth.native.native import NATIVE_AUTH
-from api.util.db_engine import DataBaseEngine
 
 
 class SecurityError(Exception):
@@ -24,12 +20,10 @@ class SessionRegistry:
     sessions: dict[str, SessionPair]
 
 
-class SessionManagement(DataBaseEngine):
+class SessionManagement:
     SESSION_REGISTRY = None
-    NATIVE_AUTH = None
 
     def __init__(self):
-        self.NATIVE_AUTH = NATIVE_AUTH
         self.SESSION_REGISTRY = SessionRegistry(sessions={})
 
     def add_session(self, request, response):
@@ -44,7 +38,7 @@ class SessionManagement(DataBaseEngine):
         print(f"\n\n new_session: {new_session} \n\n")
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
-            return self.restore_lost_user_session(session_pair, request, response)
+            return session_pair.restore_lost_user_session(request, response)
         else:
             return new_session
 
@@ -61,7 +55,7 @@ class SessionManagement(DataBaseEngine):
         session_pair = self.get_session_pair(request)
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
-            return self.restore_lost_user_session(session_pair, request, response)
+            return session_pair.restore_lost_user_session(request, response)
         else:
             return session_pair.anonymous_session
 
@@ -127,76 +121,6 @@ class SessionManagement(DataBaseEngine):
             f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}"
         )
         return current_session.handle_request(request, response)
-
-    def needs_registration(self, request, response) -> bool:
-        url_route = request.path
-        if url_route == "/register":
-            return True
-        return False
-
-    def do_registration(self, request, response) -> UserSession:
-        session_pair = self.get_session_pair(request)
-        new_user_instance = self.NATIVE_AUTH.register(request, response)
-        if new_user_instance:
-            session_pair.user_session = UserSession(
-                None,
-                new_user_instance,
-                self.NATIVE_AUTH,
-                request,
-                response,
-            )
-            response.status_code = 201
-            return session_pair.user_session
-        else:
-            # conflict (ex. duplicate username)
-            response.status_code = 409
-
-    def needs_login(self, request, response) -> bool:
-        url_route = request.path
-        if url_route == "/login":
-            return True
-        return False
-
-    def do_login(self, request, response) -> UserSession:
-        session_pair = self.get_session_pair(request)
-        user_instance = self.NATIVE_AUTH.login(request, response)
-        if user_instance:
-            session_pair.user_session = UserSession(
-                None,
-                user_instance,
-                self.NATIVE_AUTH,
-                request,
-                response,
-            )
-            response.status_code = 200
-            return session_pair.user_session
-        else:
-            # invalid credentials
-            response.status_code = 401
-
-    def needs_logout(self, request, response) -> bool:
-        url_route = request.path
-        if url_route == "/logout":
-            return True
-        return False
-
-    def do_logout(self, request, response) -> UserSession:
-        session_pair = self.get_session_pair(request)
-        user_session = session_pair.user_session
-        # self.NATIVE_AUTH.logout(request, response)
-        if not user_session.authenticate_cookies(request, response):
-            # Invalid credentials
-            response.status_code = 401
-            return "error"
-
-        user_session.clear_cookie(request, response)
-        session_pair.user_session = None
-        response.status_code = 200
-        # TODO: do i ever need to make a new Anonymous Session?
-        results = {}
-        results["session_token"] = session_pair.anonymous_session.token
-        attach_data_to_payload(response, results)
-        return session_pair.anonymous_session
 
     def exit_session(self, user_info, session_info):
         self.authenticate_user(user_info, session_info)
