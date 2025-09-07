@@ -84,7 +84,7 @@ class SessionManagement:
             session_pair = self.add_session_pair(request, response)
         else:
             print("reached else")
-            session_pair = self.get_session_pair(request, response)
+            session_pair = self.get_session_pair(request)
 
         print(
             f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}"
