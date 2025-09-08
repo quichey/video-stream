@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from server.api.orchestrator.session.BrowserSession import BrowserSession
+from server.api.orchestrator.session.browser_session.BrowserSession import (
+    BrowserSession,
+)
 from api.util.request_data import (
     has_user_info,
     extract_long_term_cookie,
