@@ -1,9 +1,6 @@
-from typing import Literal
-from sqlalchemy.orm import Session
-from typing import Optional, Union
+from typing import Optional
 from api.util.cookie import generate_cookie
 
-from api.util.error_handling import SecurityError
 from server.api.orchestrator.session.tab_session.TabSession import TabSession
 from server.api.orchestrator.session.tab_session.AnonymousTabSession import (
     AnonymousTabSession,
@@ -15,30 +12,21 @@ from api.util.request_data import (
     attach_data_to_payload,
 )
 
-from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
-from auth.native.native import NATIVE_AUTH, NativeAuth
-from auth.google_auth.google_auth import GOOGLE_AUTH, GoogleAuth
+from auth.google_auth.google_auth import GoogleAuth
+from auth.native.native import NativeAuth
+from auth.authorizor.Authorizor import Authorizor
 
 
 class BrowserSession(DataBaseEngine):
     anonymous_tab_session: AnonymousTabSession
     user_tab_session: Optional[UserTabSession] = None
     LONG_TERM_COOKIE_ID: str = None
-    NATIVE_AUTH: NativeAuth = NATIVE_AUTH
-    GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
-    AUTHORIZOR: Optional[Union[NativeAuth, GoogleAuth]] = None
-    COOKIE_RECORD_ID = None  # TODO: does this belong in Auth class?
+    AUTHORIZOR: Authorizor = None
 
     def __init__(self, request, response):
         self.anonymous_tab_session = AnonymousTabSession(request, response)
         self.create_cookie(request, response)
-
-    def pre_authenticate_session(self, request, response) -> Literal[True]:
-        authorizor_passed = self.AUTHORIZOR.authorize(request, response)
-        if not authorizor_passed:
-            raise SecurityError(f"Authorizor failed: {self.AUTHORIZOR}")
-        return self.authenticate_cookies(request, response)
 
     def create_cookie(self, request, response):
         return self.generate_long_term_cookie(request, response)
@@ -72,25 +60,9 @@ class BrowserSession(DataBaseEngine):
 
             return self.user_tab_session
 
-    def fetch_user_record(self, cookie) -> User | Literal[False]:
-        cookie_record = self.fetch_user_cookie_record(cookie)
-        # also save to mysql db
-        with Session(self.engine) as session:
-            user_record = session.get(User, cookie_record.user_id)
-            return user_record
-
-        return False
-
-    def fetch_user_cookie_record(self, cookie) -> UserCookie | Literal[False]:
-        # also save to mysql db
-        with Session(self.engine) as session:
-            cookie_record = session.query(UserCookie).filter_by(cookie=cookie).first()
-            return cookie_record
-
-        return False
-
     def do_registration(self, request, response) -> UserTabSession:
-        new_user_instance = self.NATIVE_AUTH.register(request, response)
+        self.AUTHORIZOR = Authorizor(NativeAuth)
+        new_user_instance = self.AUTHORIZOR.handle_register(request, response)
         if new_user_instance:
             self.user_tab_session = UserTabSession(
                 None,
@@ -106,7 +78,8 @@ class BrowserSession(DataBaseEngine):
             response.status_code = 409
 
     def do_login(self, request, response) -> UserTabSession:
-        user_instance = self.NATIVE_AUTH.login(request, response)
+        self.AUTHORIZOR = Authorizor(NativeAuth)
+        user_instance = self.AUTHORIZOR.handle_login(request, response)
         if user_instance:
             self.user_tab_session = UserTabSession(
                 None,
@@ -124,7 +97,7 @@ class BrowserSession(DataBaseEngine):
     def do_logout(self, request, response) -> UserTabSession:
         user_tab_session = self.user_tab_session
         # self.NATIVE_AUTH.logout(request, response)
-        if not user_tab_session.authenticate_cookies(request, response):
+        if not self.AUTHORIZOR.authenticate(request, response):
             # Invalid credentials
             response.status_code = 401
             return "error"
@@ -139,7 +112,8 @@ class BrowserSession(DataBaseEngine):
         return self.anonymous_tab_session
 
     def do_google_login(self, request, response) -> UserTabSession:
-        user_instance = self.GOOGLE_AUTH.login(request, response)
+        self.AUTHORIZOR = Authorizor(GoogleAuth)
+        user_instance = self.AUTHORIZOR.handle_third_party_auth(request, response)
         if user_instance:
             self.user_tab_session = UserTabSession(
                 None,
@@ -201,43 +175,6 @@ class BrowserSession(DataBaseEngine):
             current_session = self.do_google_login(request, response)
             return "google-login?"
         current_session = self.get_session(request, response)
+        if self.AUTHORIZOR is not None:
+            self.AUTHORIZOR.authenticate(request, response)
         current_session.handle_request(request, response)
-
-    def delete_cookie_record(self) -> bool:
-        with Session(self.engine) as session:
-            rows_deleted = (
-                session.query(UserCookie)
-                .filter(UserCookie.id == self.COOKIE_RECORD_ID)
-                .delete()
-            )
-            session.commit()
-
-            if rows_deleted > 0:
-                return True
-            else:
-                rows_deleted = (
-                    session.query(UserCookie)
-                    .filter(UserCookie.cookie == self.AUTH_COOKIE)
-                    .delete()
-                )
-                session.commit()
-                if rows_deleted > 0:
-                    return True
-                else:
-                    return False
-        return False
-
-    def store_cookie_record(self) -> UserCookie | Literal[False]:
-        # also save to mysql db
-        with Session(self.engine) as session:
-            cookie_record = UserCookie(
-                user_id=self.USER_INSTANCE.id,
-                cookie=self.AUTH_COOKIE,
-            )
-            session.add(cookie_record)
-            session.commit()
-            if cookie_record.id is not None:
-                self.COOKIE_RECORD_ID = cookie_record.id
-                return cookie_record
-
-        return False
