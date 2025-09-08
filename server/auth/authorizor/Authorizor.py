@@ -30,6 +30,7 @@ class Authorizor(DataBaseEngine):
         return self.AUTH_COOKIE.authenticate_cookies(request, response)
 
     def fetch_user_record(self, cookie) -> User | Literal[False]:
+        # TODO: classmethod on AUTH_COOKIE?
         cookie_record = self.AUTH_COOKIE.fetch_user_cookie_record(cookie)
         # also save to mysql db
         with Session(self.engine) as session:
