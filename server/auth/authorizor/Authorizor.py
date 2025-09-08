@@ -2,7 +2,8 @@ from typing import Optional, Union, Literal
 from sqlalchemy.orm import Session
 
 from auth.native.native import NATIVE_AUTH, NativeAuth
-from auth.google_auth.google_auth import GOOGLE_AUTH, GoogleAuth
+from auth.ThirdPartyAuth import ThirdPartyAuth
+from auth.google_auth.google_auth import GOOGLE_AUTH
 
 from api.util.error_handling import SecurityError
 from db.Schema.Models import User
@@ -17,13 +18,15 @@ from api.util.request_data import (
 
 class Authorizor(DataBaseEngine):
     AUTH_COOKIE: AuthCookie = None  # TODO: does this belong in Auth class?
-    AUTH_INSTANCE: Optional[Union[NativeAuth, GoogleAuth]] = None
+    AUTH_INSTANCE: Optional[Union[NativeAuth, ThirdPartyAuth]] = None
 
-    def __init__(self, auth_type: Optional[Union[NativeAuth, GoogleAuth]] = NativeAuth):
+    def __init__(
+        self, auth_type: Optional[Union[NativeAuth, ThirdPartyAuth]] = NativeAuth
+    ):
         if auth_type == NativeAuth:
             self.AUTH_INSTANCE = NATIVE_AUTH
-        elif auth_type == GoogleAuth:
-            self.AUTH_INSTANCE = GOOGLE_AUTH
+        elif auth_type == ThirdPartyAuth:
+            self.AUTH_INSTANCE = None
 
     def restore_lost_session(self, request, response):
         user_cookie = extract_user_session_cookie(request)
@@ -77,5 +80,9 @@ class Authorizor(DataBaseEngine):
         self.AUTH_COOKIE = AuthCookie(user_instance)
         return user_instance
 
-    def handle_third_party_auth(self, request, response):
-        pass
+    def handle_third_party_auth(self, request, response) -> User | Literal[False]:
+        url_route = request.path
+        if url_route == "/auth/google/callback":
+            self.AUTH_INSTANCE = GOOGLE_AUTH
+        user_instance = self.AUTH_INSTANCE.handle_callback(request, response)
+        return user_instance
