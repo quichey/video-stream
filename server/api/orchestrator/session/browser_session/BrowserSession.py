@@ -52,7 +52,6 @@ class BrowserSession(DataBaseEngine):
                 self.AUTHORIZOR = Authorizor(NativeAuth)
                 user_record = self.AUTHORIZOR.fetch_user_record(user_cookie)
                 self.user_tab_session = UserTabSession(
-                    user_cookie,
                     user_record,
                     request,
                     response,

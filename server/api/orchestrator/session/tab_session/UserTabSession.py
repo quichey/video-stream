@@ -16,17 +16,13 @@ class UserTabSession(TabSession, DataBaseEngine):
 
     def __init__(
         self,
-        old_cookie: str,  # TODO: this is for restart server, move?
         user_instance: User,
         request,
         response,
     ):
         TabSession.__init__(self, request, response)
         self.USER_INSTANCE = user_instance
-        if old_cookie:
-            self.AUTH_COOKIE = old_cookie
-        else:
-            self.return_user_data(request, response)
+        self.return_user_data(request, response)
 
     # return user data
     def return_user_data(self, request, response):
