@@ -49,11 +49,11 @@ class BrowserSession(DataBaseEngine):
             if not self.user_tab_session:
                 print("\n\n got here: if not session_pair.user_tab_session \n\n")
                 user_cookie = extract_user_session_cookie(request)
-                user_record = self.fetch_user_record(user_cookie)
+                self.AUTHORIZOR = Authorizor(NativeAuth)
+                user_record = self.AUTHORIZOR.fetch_user_record(user_cookie)
                 self.user_tab_session = UserTabSession(
                     user_cookie,
                     user_record,
-                    self.NATIVE_AUTH,
                     request,
                     response,
                 )
@@ -67,7 +67,6 @@ class BrowserSession(DataBaseEngine):
             self.user_tab_session = UserTabSession(
                 None,
                 new_user_instance,
-                self.NATIVE_AUTH,
                 request,
                 response,
             )
@@ -84,7 +83,6 @@ class BrowserSession(DataBaseEngine):
             self.user_tab_session = UserTabSession(
                 None,
                 user_instance,
-                self.NATIVE_AUTH,
                 request,
                 response,
             )
@@ -95,21 +93,16 @@ class BrowserSession(DataBaseEngine):
             response.status_code = 401
 
     def do_logout(self, request, response) -> UserTabSession:
-        user_tab_session = self.user_tab_session
-        # self.NATIVE_AUTH.logout(request, response)
-        if not self.AUTHORIZOR.authenticate(request, response):
-            # Invalid credentials
-            response.status_code = 401
-            return "error"
-
-        user_tab_session.clear_cookie(request, response)
-        self.user_tab_session = None
-        response.status_code = 200
-        # TODO: do i ever need to make a new Anonymous Session?
-        results = {}
-        results["session_token"] = self.anonymous_tab_session.token
-        attach_data_to_payload(response, results)
-        return self.anonymous_tab_session
+        succeeded = self.AUTHORIZOR.handle_logout(request, response)
+        if succeeded:
+            self.AUTHORIZOR = None
+            self.user_tab_session = None
+            response.status_code = 200
+            # TODO: do i ever need to make a new Anonymous Session?
+            results = {}
+            results["session_token"] = self.anonymous_tab_session.token
+            attach_data_to_payload(response, results)
+            return self.anonymous_tab_session
 
     def do_google_login(self, request, response) -> UserTabSession:
         self.AUTHORIZOR = Authorizor(GoogleAuth)

@@ -24,10 +24,10 @@ class Authorizor(DataBaseEngine):
         return self.AUTH_COOKIE.authenticate_cookies(request, response)
 
     def pre_authenticate_session(self, request, response) -> Literal[True]:
-        authorizor_passed = self.AUTHORIZOR.authorize(request, response)
+        authorizor_passed = self.authorize(request, response)
         if not authorizor_passed:
-            raise SecurityError(f"Authorizor failed: {self.AUTHORIZOR}")
-        return self.authenticate_cookies(request, response)
+            raise SecurityError(f"Authorizor failed: {self}")
+        return self.AUTH_COOKIE.authenticate_cookies(request, response)
 
     def fetch_user_record(self, cookie) -> User | Literal[False]:
         cookie_record = self.AUTH_COOKIE.fetch_user_cookie_record(cookie)
@@ -39,13 +39,24 @@ class Authorizor(DataBaseEngine):
         return False
 
     def handle_login(self, request, response):
-        return self.AUTH_INSTANCE.login()
+        user_instance = self.AUTH_INSTANCE.login()
+        self.AUTH_COOKIE = AuthCookie(user_instance)
+        return user_instance
 
-    def handle_logout(self, request, response):
-        return self.AUTH_INSTANCE.logout()
+    def handle_logout(self, request, response) -> Literal[True]:
+        # self.NATIVE_AUTH.logout(request, response)
+        if not self.authenticate(request, response):
+            # Invalid credentials
+            response.status_code = 401
+            raise SecurityError(f"Authorizor failed: {self}")
+
+        self.AUTH_COOKIE.clear_cookie(request, response)
+        return True
 
     def handle_register(self, request, response):
-        return self.AUTH_INSTANCE.register()
+        user_instance = self.AUTH_INSTANCE.register()
+        self.AUTH_COOKIE = AuthCookie(user_instance)
+        return user_instance
 
     def handle_third_party_auth(self, request, response):
         pass

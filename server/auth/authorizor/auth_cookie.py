@@ -70,7 +70,7 @@ class AuthCookie(DataBaseEngine):
         if not has_user_session_cookie(request):
             raise SecurityError("No User Session Cookie")
         cookie = extract_user_session_cookie(request)
-        if cookie != self.AUTH_COOKIE:
+        if cookie != self.COOKIE_VALUE:
             raise SecurityError("Auth Cookie does not Match")
         return True
 
