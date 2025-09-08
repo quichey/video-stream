@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 
 from db.Schema.Models import User, ThirdPartyAuth
 from auth import Auth
+from api.util.cookie import set_auth_cookie, expire_cookie
+from api.util.request_data import extract_user_session_cookie
 
 """
 What is a reasonalbe Interface for this base class?
@@ -88,10 +90,28 @@ class ThirdPartyAuth(Auth, ABC):
         """Handle User 3rd party credentials"""
         creds = self.extract_authorizor_creds(request, response)
         user_exists = self.check_user_exists(request, response, creds)
+        set_auth_cookie(response, creds.access_token)
         if user_exists:
             return self.login(request, response)
         else:
             return self.register(request, response)
+
+    @override
+    def authorize(self, request, response) -> bool:
+        client_token = extract_user_session_cookie(request)
+        with Session(self.engine) as session:
+            # TODO: handle refresh
+            result = (
+                session.query(ThirdPartyAuth)
+                .filter_by(
+                    access_token=client_token,
+                )
+                .first()
+            )
+            if result:
+                return True
+
+        return None
 
     def needs_authorization(self, func):
         @wraps(func)
@@ -126,6 +146,12 @@ class ThirdPartyAuth(Auth, ABC):
     @override
     @needs_authorization
     def logout(self, request, response):
+        expire_cookie("auth_cookie", response)
+        # TODO: remove auth_token?
+        # should I have another table
+        # I think separate linking table
+        # from users.id to google_provider_id
+        # and then thirdpartytokens table
         pass
 
     def create_user(self, creds) -> User:

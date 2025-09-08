@@ -2,7 +2,7 @@ import uuid
 
 from util.deployment import Deployment
 
-deployment = Deployment()
+deployment = Deployment().deployment
 
 
 def generate_uuid():
@@ -25,6 +25,22 @@ def generate_cookie(name, response):
         path="/",
     )
     return cookie_id
+
+
+def set_auth_cookie(response, access_token):
+    IS_PRODUCTION = deployment == "cloud"
+    response.set_cookie(
+        "auth_cookie",
+        access_token,
+        max_age=30 * 24 * 60 * 60,  # 30 days
+        httponly=True,
+        secure=IS_PRODUCTION,  # True in production (HTTPS), False locally
+        samesite="None"
+        if IS_PRODUCTION
+        else "Lax",  # None for cross-site in prod, Lax for local
+        path="/",
+    )
+    return access_token
 
 
 def expire_cookie(name, response):
