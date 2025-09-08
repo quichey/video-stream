@@ -46,6 +46,91 @@ class Cred:
 class ThirdPartyAuth(Auth, ABC):
     PROVIDER = None
 
+    def handle_callback(self, request, response) -> User | Literal[False]:
+        """Handle User 3rd party credentials"""
+        creds = self._extract_authorizor_creds(request, response)
+        user_exists = self._check_user_exists(request, response, creds)
+        if user_exists:
+            user_record = self.login(request, response)
+        else:
+            user_record = self.register(request, response)
+        set_auth_cookie(response, creds.access_token)
+        return user_record
+
+    @override
+    def authorize(self, request, response) -> bool:
+        client_token = extract_user_session_cookie(request)
+        with Session(self.engine) as session:
+            # TODO: handle refresh
+            result = (
+                session.query(ThirdPartyAuthToken)
+                .filter_by(
+                    access_token=client_token,
+                )
+                .first()
+            )
+            if result:
+                return True
+
+        return None
+
+    @override
+    def register(self, request, response) -> User | Literal[False]:
+        creds = self._extract_authorizor_creds(request, response)
+        # TODO: create record in ThirdPartyAuthUser
+        # also create record in User table
+        # also create record in ThirdPartyAuthToken table
+        with Session(self.engine) as session:
+            user = self._create_user(creds, session)
+            third_party_user_record = self._create_third_party_user_record(
+                creds, user, session
+            )
+            self._initialize_auth_record(creds, third_party_user_record, session)
+            session.commit()
+            return user
+
+    @override
+    def login(self, request, response) -> User | Literal[False]:
+        creds = self._extract_authorizor_creds(request, response)
+        third_party_user_record = self._get_third_party_user_record(creds)
+        # TODO:
+        # get record in ThirdPartyAuthUser belonging to cred
+        # also get record in User belonging to cred
+        # also create record in ThirdPartyAuthToken table
+        with Session(self.engine) as session:
+            self._initialize_auth_record(creds, third_party_user_record, session)
+            session.commit()
+        user = self._get_user_info(third_party_user_record)
+        return user
+
+    def _needs_authorization(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Step 1: call child-specific authorization (expected to be defined in child)
+            if hasattr(self, "authorize"):
+                self.authorize()
+
+            # Step 2: base-class predefined steps
+            print("Base class step: logging or validation")
+
+            # Step 3: run the original function
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    @override
+    @_needs_authorization
+    def logout(self, request, response):
+        expire_cookie("auth_cookie", response)
+        # TODO: remove auth_token?
+        # should I have another table
+        # I think separate linking table
+        # from users.id to google_provider_id
+        # and then thirdpartytokens table
+
+        # TODO: remove record from ThirdPartyAuthToken
+        pass
+
     @property
     def oauth_client(self):
         return self._oauth_client
@@ -89,64 +174,6 @@ class ThirdPartyAuth(Auth, ABC):
 
         return None
 
-    def handle_callback(self, request, response) -> User | Literal[False]:
-        """Handle User 3rd party credentials"""
-        creds = self._extract_authorizor_creds(request, response)
-        user_exists = self._check_user_exists(request, response, creds)
-        if user_exists:
-            user_record = self.login(request, response)
-        else:
-            user_record = self.register(request, response)
-        set_auth_cookie(response, creds.access_token)
-        return user_record
-
-    @override
-    def authorize(self, request, response) -> bool:
-        client_token = extract_user_session_cookie(request)
-        with Session(self.engine) as session:
-            # TODO: handle refresh
-            result = (
-                session.query(ThirdPartyAuthToken)
-                .filter_by(
-                    access_token=client_token,
-                )
-                .first()
-            )
-            if result:
-                return True
-
-        return None
-
-    def _needs_authorization(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            # Step 1: call child-specific authorization (expected to be defined in child)
-            if hasattr(self, "authorize"):
-                self.authorize()
-
-            # Step 2: base-class predefined steps
-            print("Base class step: logging or validation")
-
-            # Step 3: run the original function
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    @override
-    def register(self, request, response) -> User | Literal[False]:
-        creds = self._extract_authorizor_creds(request, response)
-        # TODO: create record in ThirdPartyAuthUser
-        # also create record in User table
-        # also create record in ThirdPartyAuthToken table
-        with Session(self.engine) as session:
-            user = self._create_user(creds, session)
-            third_party_user_record = self._create_third_party_user_record(
-                creds, user, session
-            )
-            self._initialize_auth_record(creds, third_party_user_record, session)
-            session.commit()
-            return user
-
     def _create_third_party_user_record(
         self, creds: Cred, user: User, session: Session
     ) -> ThirdPartyAuthUser:
@@ -177,33 +204,6 @@ class ThirdPartyAuth(Auth, ABC):
                 return result
 
         return None
-
-    @override
-    def login(self, request, response) -> User | Literal[False]:
-        creds = self._extract_authorizor_creds(request, response)
-        third_party_user_record = self._get_third_party_user_record(creds)
-        # TODO:
-        # get record in ThirdPartyAuthUser belonging to cred
-        # also get record in User belonging to cred
-        # also create record in ThirdPartyAuthToken table
-        with Session(self.engine) as session:
-            self._initialize_auth_record(creds, third_party_user_record, session)
-            session.commit()
-        user = self._get_user_info(third_party_user_record)
-        return user
-
-    @override
-    @_needs_authorization
-    def logout(self, request, response):
-        expire_cookie("auth_cookie", response)
-        # TODO: remove auth_token?
-        # should I have another table
-        # I think separate linking table
-        # from users.id to google_provider_id
-        # and then thirdpartytokens table
-
-        # TODO: remove record from ThirdPartyAuthToken
-        pass
 
     def _create_user(self, creds, session: Session) -> User:
         user = User(
