@@ -33,7 +33,12 @@ class Authorizor(DataBaseEngine):
         return self.fetch_user_record(user_cookie)
 
     def authenticate(self, request, response) -> Literal[True]:
-        return self.AUTH_COOKIE.authenticate_cookies(request, response)
+        # TODO: Think i want to merge the user_cookies table with third_party_auths table to
+        # make the schema cleaner
+        if self.AUTH_INSTANCE == NATIVE_AUTH:
+            return self.AUTH_COOKIE.authenticate_cookies(request, response)
+        elif self.AUTH_INSTANCE == ThirdPartyAuth:
+            return self.AUTH_INSTANCE.authorize(request, response)
 
     def pre_authenticate_session(self, request, response) -> Literal[True]:
         authorizor_passed = self.authorize(request, response)
