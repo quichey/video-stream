@@ -19,14 +19,14 @@ from auth.google_auth.google_auth import GOOGLE_AUTH, GoogleAuth
 
 
 class BrowserSession(DataBaseEngine):
-    anonymous_session: AnonymousTabSession
-    user_session: Optional[UserTabSession] = None
+    anonymous_tab_session: AnonymousTabSession
+    user_tab_session: Optional[UserTabSession] = None
     LONG_TERM_COOKIE_ID: str = None
     NATIVE_AUTH: NativeAuth = NATIVE_AUTH
     GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
 
     def __init__(self, request, response):
-        self.anonymous_session = AnonymousTabSession(request, response)
+        self.anonymous_tab_session = AnonymousTabSession(request, response)
         self.create_cookie(request, response)
 
     def create_cookie(self, request, response):
@@ -36,22 +36,22 @@ class BrowserSession(DataBaseEngine):
         self.LONG_TERM_COOKIE_ID = generate_cookie("long_term_session", response)
         return self.LONG_TERM_COOKIE_ID
 
-    def create_user_session(self, request, response):
-        self.user_session = UserTabSession(request, response)
-        return self.user_session
+    def create_user_tab_session(self, request, response):
+        self.user_tab_session = UserTabSession(request, response)
+        return self.user_tab_session
 
-    def restore_lost_user_session(self, request, response) -> UserTabSession:
+    def restore_lost_user_tab_session(self, request, response) -> UserTabSession:
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
-            # TODO: what if user_session is empty? create user_session
+            # TODO: what if user_tab_session is empty? create user_tab_session
             # need to return session_token, i think already handled
             # TODO: return user's info on /load-session api
             # ----- name, profile pic info
-            if not self.user_session:
-                print("\n\n got here: if not session_pair.user_session \n\n")
+            if not self.user_tab_session:
+                print("\n\n got here: if not session_pair.user_tab_session \n\n")
                 user_cookie = extract_user_session_cookie(request)
                 user_record = self.fetch_user_record(user_cookie)
-                self.user_session = UserTabSession(
+                self.user_tab_session = UserTabSession(
                     user_cookie,
                     user_record,
                     self.NATIVE_AUTH,
@@ -59,7 +59,7 @@ class BrowserSession(DataBaseEngine):
                     response,
                 )
 
-            return self.user_session
+            return self.user_tab_session
 
     def fetch_user_record(self, cookie) -> User | Literal[False]:
         cookie_record = self.fetch_user_cookie_record(cookie)
@@ -81,7 +81,7 @@ class BrowserSession(DataBaseEngine):
     def do_registration(self, request, response) -> UserTabSession:
         new_user_instance = self.NATIVE_AUTH.register(request, response)
         if new_user_instance:
-            self.user_session = UserTabSession(
+            self.user_tab_session = UserTabSession(
                 None,
                 new_user_instance,
                 self.NATIVE_AUTH,
@@ -89,7 +89,7 @@ class BrowserSession(DataBaseEngine):
                 response,
             )
             response.status_code = 201
-            return self.user_session
+            return self.user_tab_session
         else:
             # conflict (ex. duplicate username)
             response.status_code = 409
@@ -97,7 +97,7 @@ class BrowserSession(DataBaseEngine):
     def do_login(self, request, response) -> UserTabSession:
         user_instance = self.NATIVE_AUTH.login(request, response)
         if user_instance:
-            self.user_session = UserTabSession(
+            self.user_tab_session = UserTabSession(
                 None,
                 user_instance,
                 self.NATIVE_AUTH,
@@ -105,32 +105,32 @@ class BrowserSession(DataBaseEngine):
                 response,
             )
             response.status_code = 200
-            return self.user_session
+            return self.user_tab_session
         else:
             # invalid credentials
             response.status_code = 401
 
     def do_logout(self, request, response) -> UserTabSession:
-        user_session = self.user_session
+        user_tab_session = self.user_tab_session
         # self.NATIVE_AUTH.logout(request, response)
-        if not user_session.authenticate_cookies(request, response):
+        if not user_tab_session.authenticate_cookies(request, response):
             # Invalid credentials
             response.status_code = 401
             return "error"
 
-        user_session.clear_cookie(request, response)
-        self.user_session = None
+        user_tab_session.clear_cookie(request, response)
+        self.user_tab_session = None
         response.status_code = 200
         # TODO: do i ever need to make a new Anonymous Session?
         results = {}
-        results["session_token"] = self.anonymous_session.token
+        results["session_token"] = self.anonymous_tab_session.token
         attach_data_to_payload(response, results)
-        return self.anonymous_session
+        return self.anonymous_tab_session
 
     def do_google_login(self, request, response) -> UserTabSession:
         user_instance = self.GOOGLE_AUTH.login(request, response)
         if user_instance:
-            self.user_session = UserTabSession(
+            self.user_tab_session = UserTabSession(
                 None,
                 user_instance,
                 self.NATIVE_AUTH,
@@ -138,7 +138,7 @@ class BrowserSession(DataBaseEngine):
                 response,
             )
             response.status_code = 200
-            return self.user_session
+            return self.user_tab_session
         else:
             # invalid credentials
             response.status_code = 401
@@ -170,9 +170,9 @@ class BrowserSession(DataBaseEngine):
     def get_session(self, request, response) -> TabSession:
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
-            return self.restore_lost_user_session(request, response)
+            return self.restore_lost_user_tab_session(request, response)
         else:
-            return self.anonymous_session
+            return self.anonymous_tab_session
 
     def on_request(self, request, response):
         if self.needs_registration(request, response):
