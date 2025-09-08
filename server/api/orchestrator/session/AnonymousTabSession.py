@@ -1,6 +1,7 @@
-from api.orchestrator.session.Session import SessionBase
+from server.api.orchestrator.session.TabSession import TabSession
 
-class AnonymousSession(SessionBase):
+
+class AnonymousTabSession(TabSession):
     """
     def __init__(self, server_session_id: str):
         self.token = server_session_id

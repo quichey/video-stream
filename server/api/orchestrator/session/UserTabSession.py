@@ -1,7 +1,7 @@
 from typing import Literal
 from sqlalchemy.orm import Session
 
-from api.orchestrator.session.Session import SessionBase
+from server.api.orchestrator.session.TabSession import TabSession
 
 from api.util.cookie import generate_cookie, expire_cookie
 from api.util.error_handling import SecurityError
@@ -17,7 +17,7 @@ from api.orchestrator.storage import STORAGE
 from auth.auth import Auth
 
 
-class UserSession(SessionBase, DataBaseEngine):
+class UserTabSession(TabSession, DataBaseEngine):
     AUTH_COOKIE = None
     COOKIE_RECORD_ID = None
     AUTHORIZOR: Auth = None
@@ -31,7 +31,7 @@ class UserSession(SessionBase, DataBaseEngine):
         request,
         response,
     ):
-        SessionBase.__init__(self, request, response)
+        TabSession.__init__(self, request, response)
         self.USER_INSTANCE = user_instance
         self.AUTHORIZOR = authorizor
         if old_cookie:
