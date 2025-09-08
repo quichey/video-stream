@@ -1,7 +1,7 @@
 from typing import override
 from authlib.integrations.flask_client import OAuth
 
-from auth.ThirdPartyAuth import ThirdPartyAuth
+from auth.ThirdPartyAuth import ThirdPartyAuth, Cred
 
 
 class GoogleAuth(ThirdPartyAuth):
@@ -38,7 +38,7 @@ class GoogleAuth(ThirdPartyAuth):
         return self.oauth_client.authorize_redirect(redirect_uri)
 
     @override
-    def extract_authorizor_creds(self, request, response):
+    def extract_authorizor_creds(self, request, response) -> Cred:
         # Exchange 'code' from query params for an access token
         token = self.oauth_client.authorize_access_token()
 
@@ -47,26 +47,9 @@ class GoogleAuth(ThirdPartyAuth):
         user_info = resp.json()
 
         # Example: user_info contains 'email', 'name', 'picture', etc.
-        return {
-            "user_info": user_info,
-            "token": token,
-        }
-
-    @override
-    def get_user_id(self, creds):
-        pass
-
-    @override
-    def get_provider_user_id(self, creds):
-        pass
-
-    @override
-    def get_access_token(self, creds):
-        pass
-
-    @override
-    def get_metadata(self, creds):
-        pass
+        return Cred(
+            provider_user_id=user_info["id"], access_token=token["access_token"]
+        )
 
 
 GOOGLE_AUTH = GoogleAuth()

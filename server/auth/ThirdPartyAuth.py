@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from functools import wraps
-from typing import override
+from typing import Optional, override
 from typing import Literal
 
 from sqlalchemy.orm import Session
@@ -31,6 +32,15 @@ Rather leave all User database updates and reads to here
 """
 
 
+@dataclass
+class Cred:
+    provider_user_id: str = None
+    access_token: str = None
+    refresh_token: Optional[str] = None
+    expires_at: Optional[str] = None
+    metadata: Optional[str] = None
+
+
 class ThirdPartyAuth(Auth, ABC):
     PROVIDER = None
 
@@ -54,10 +64,10 @@ class ThirdPartyAuth(Auth, ABC):
     """
 
     @abstractmethod
-    def extract_authorizor_creds(self, request, response):
+    def extract_authorizor_creds(self, request, response) -> Cred:
         pass
 
-    def check_user_exists(self, request, response, creds) -> bool:
+    def check_user_exists(self, request, response, creds: Cred) -> bool:
         pass
 
     def handle_callback(self, request, response) -> User | Literal[False]:
@@ -83,22 +93,6 @@ class ThirdPartyAuth(Auth, ABC):
             return func(*args, **kwargs)
 
         return wrapper
-
-    @abstractmethod
-    def get_user_id(self, creds):
-        pass
-
-    @abstractmethod
-    def get_provider_user_id(self, creds):
-        pass
-
-    @abstractmethod
-    def get_access_token(self, creds):
-        pass
-
-    @abstractmethod
-    def get_metadata(self, creds):
-        pass
 
     @override
     def register(self, request, response) -> User | Literal[False]:
@@ -142,28 +136,24 @@ class ThirdPartyAuth(Auth, ABC):
             user = session.get(User, user_id)
         return user
 
-    def map_creds_to_auth_record(self, creds) -> ThirdPartyAuth:
-        user_id = self.get_user_id(creds)
-        provider_user_id = self.get_provider_user_id(creds)
-        access_token = self.get_access_token(creds)
-        metadata = self.get_metadata(creds)
+    def map_creds_to_auth_record(self, creds: Cred) -> ThirdPartyAuth:
         record = ThirdPartyAuth(
-            user_id=user_id,
+            user_id=creds.user_id,
             provider=self.PROVIDER,
-            provider_user_id=provider_user_id,
-            access_token=access_token,
-            metadata=metadata,
+            provider_user_id=creds.provider_user_id,
+            access_token=creds.access_token,
+            metadata=creds.metadata,
         )
         return record
 
-    def initialize_auth_record(self, creds) -> ThirdPartyAuth:
+    def initialize_auth_record(self, creds: Cred) -> ThirdPartyAuth:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             session.add(record)
             session.commit()
         return record
 
-    def get_auth_record(self, creds) -> ThirdPartyAuth:
+    def get_auth_record(self, creds: Cred) -> ThirdPartyAuth:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             # TODO: use session.filter on PROVIDER and provider_user_id
