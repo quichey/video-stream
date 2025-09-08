@@ -134,22 +134,32 @@ class ThirdPartyAuth(Auth, ABC):
     @override
     def register(self, request, response) -> User | Literal[False]:
         creds = self.extract_authorizor_creds(request, response)
-        user = self.create_user(creds)
         # TODO: create record in ThirdPartyAuthUser
         # also create record in User table
         # also create record in ThirdPartyAuthToken table
-        self.initialize_auth_record(creds)
+        user = self.create_user(creds)
+        third_party_user_record = self.create_third_party_user_record(creds, user)
+        self.initialize_auth_record(creds, third_party_user_record)
         return user
+
+    def create_third_party_user_record(
+        self, creds: Cred, user: User
+    ) -> ThirdPartyAuthUser:
+        pass
+
+    def get_third_party_user_record(self, creds: Cred) -> ThirdPartyAuthUser:
+        pass
 
     @override
     def login(self, request, response) -> User | Literal[False]:
         creds = self.extract_authorizor_creds(request, response)
-        auth_record = self.get_auth_record(creds)
+        third_party_user_record = self.get_third_party_user_record(creds)
         # TODO:
         # get record in ThirdPartyAuthUser belonging to cred
         # also get record in User belonging to cred
         # also create record in ThirdPartyAuthToken table
-        user = self.get_user_info(auth_record)
+        self.initialize_auth_record(creds, third_party_user_record)
+        user = self.get_user_info(third_party_user_record)
         return user
 
     @override
@@ -177,10 +187,12 @@ class ThirdPartyAuth(Auth, ABC):
 
         return user
 
-    def get_user_info(self, auth_record) -> User:
+    def get_user_info(self, third_party_user_record: ThirdPartyAuthUser) -> User:
         with Session(self.engine) as session:
-            user = session.get(User, auth_record.user_id)
-        return user
+            user = session.get(User, third_party_user_record.user_id)
+            if user:
+                return user
+        raise Exception(f"Unable to get user record: {third_party_user_record}")
 
     def map_creds_to_auth_record(self, creds: Cred) -> ThirdPartyAuthToken:
         record = ThirdPartyAuthToken(
@@ -192,7 +204,9 @@ class ThirdPartyAuth(Auth, ABC):
         )
         return record
 
-    def initialize_auth_record(self, creds: Cred) -> ThirdPartyAuthToken:
+    def initialize_auth_record(
+        self, creds: Cred, third_party_user_record: ThirdPartyAuthUser
+    ) -> ThirdPartyAuthToken:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             session.add(record)
