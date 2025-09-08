@@ -4,9 +4,11 @@ from typing import Optional, Union
 from api.util.cookie import generate_cookie
 
 from api.util.error_handling import SecurityError
-from server.api.orchestrator.session.TabSession import TabSession
-from server.api.orchestrator.session.AnonymousTabSession import AnonymousTabSession
-from server.api.orchestrator.session.UserTabSession import UserTabSession
+from server.api.orchestrator.session.tab_session.TabSession import TabSession
+from server.api.orchestrator.session.tab_session.AnonymousTabSession import (
+    AnonymousTabSession,
+)
+from server.api.orchestrator.session.tab_session.UserTabSession import UserTabSession
 from api.util.request_data import (
     has_user_session_cookie,
     extract_user_session_cookie,
@@ -26,7 +28,7 @@ class BrowserSession(DataBaseEngine):
     NATIVE_AUTH: NativeAuth = NATIVE_AUTH
     GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
     AUTHORIZOR: Optional[Union[NativeAuth, GoogleAuth]] = None
-    COOKIE_RECORD_ID = None
+    COOKIE_RECORD_ID = None  # TODO: does this belong in Auth class?
 
     def __init__(self, request, response):
         self.anonymous_tab_session = AnonymousTabSession(request, response)
