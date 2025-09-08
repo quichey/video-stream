@@ -37,5 +37,36 @@ class GoogleAuth(ThirdPartyAuth):
         # Returns the URL to redirect the user for Google OAuth
         return self.oauth_client.authorize_redirect(redirect_uri)
 
+    @override
+    def extract_authorizor_creds(self, request, response):
+        # Exchange 'code' from query params for an access token
+        token = self.oauth_client.authorize_access_token()
+
+        # Use the token to get user info
+        resp = self.oauth_client.get("userinfo")
+        user_info = resp.json()
+
+        # Example: user_info contains 'email', 'name', 'picture', etc.
+        return {
+            "user_info": user_info,
+            "token": token,
+        }
+
+    @override
+    def get_user_id(self, creds):
+        pass
+
+    @override
+    def get_provider_user_id(self, creds):
+        pass
+
+    @override
+    def get_access_token(self, creds):
+        pass
+
+    @override
+    def get_metadata(self, creds):
+        pass
+
 
 GOOGLE_AUTH = GoogleAuth()
