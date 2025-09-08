@@ -93,11 +93,12 @@ class ThirdPartyAuth(Auth, ABC):
         """Handle User 3rd party credentials"""
         creds = self.extract_authorizor_creds(request, response)
         user_exists = self.check_user_exists(request, response, creds)
-        set_auth_cookie(response, creds.access_token)
         if user_exists:
-            return self.login(request, response)
+            user_record = self.login(request, response)
         else:
-            return self.register(request, response)
+            user_record = self.register(request, response)
+        set_auth_cookie(response, creds.access_token)
+        return user_record
 
     @override
     def authorize(self, request, response) -> bool:
@@ -137,22 +138,24 @@ class ThirdPartyAuth(Auth, ABC):
         # TODO: create record in ThirdPartyAuthUser
         # also create record in User table
         # also create record in ThirdPartyAuthToken table
-        user = self.create_user(creds)
-        third_party_user_record = self.create_third_party_user_record(creds, user)
-        self.initialize_auth_record(creds, third_party_user_record)
-        return user
+        with Session(self.engine) as session:
+            user = self.create_user(creds, session)
+            third_party_user_record = self.create_third_party_user_record(
+                creds, user, session
+            )
+            self.initialize_auth_record(creds, third_party_user_record, session)
+            session.commit()
+            return user
 
     def create_third_party_user_record(
-        self, creds: Cred, user: User
+        self, creds: Cred, user: User, session: Session
     ) -> ThirdPartyAuthUser:
         record = ThirdPartyAuthUser(
             user_id=user.id,
             provider=self.PROVIDER,
             provider_user_id=creds.provider_user_id,
         )
-        with Session(self.engine) as session:
-            session.add(record)
-            session.commit()
+        session.add(record)
         return record
 
     def get_third_party_user_record(self, creds: Cred) -> ThirdPartyAuthUser | None:
@@ -183,7 +186,9 @@ class ThirdPartyAuth(Auth, ABC):
         # get record in ThirdPartyAuthUser belonging to cred
         # also get record in User belonging to cred
         # also create record in ThirdPartyAuthToken table
-        self.initialize_auth_record(creds, third_party_user_record)
+        with Session(self.engine) as session:
+            self.initialize_auth_record(creds, third_party_user_record, session)
+            session.commit()
         user = self.get_user_info(third_party_user_record)
         return user
 
@@ -200,17 +205,15 @@ class ThirdPartyAuth(Auth, ABC):
         # TODO: remove record from ThirdPartyAuthToken
         pass
 
-    def create_user(self, creds) -> User:
+    def create_user(self, creds, session: Session) -> User:
         user = User(
             name=creds.email,  # TODO: gen random name
             email=creds.email,
         )
         # also save to mysql db
-        with Session(self.engine) as session:
-            session.add(user)
-            session.commit()
+        user_record = session.add(user)
 
-        return user
+        return user_record
 
     def get_user_info(self, third_party_user_record: ThirdPartyAuthUser) -> User:
         with Session(self.engine) as session:
@@ -231,10 +234,8 @@ class ThirdPartyAuth(Auth, ABC):
         return record
 
     def initialize_auth_record(
-        self, creds: Cred, third_party_user_record: ThirdPartyAuthUser
+        self, creds: Cred, third_party_user_record: ThirdPartyAuthUser, session: Session
     ) -> ThirdPartyAuthToken:
         record = self.map_creds_to_auth_record(creds, third_party_user_record)
-        with Session(self.engine) as session:
-            session.add(record)
-            session.commit()
+        record = session.add(record)
         return record
