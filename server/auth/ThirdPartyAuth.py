@@ -145,10 +145,35 @@ class ThirdPartyAuth(Auth, ABC):
     def create_third_party_user_record(
         self, creds: Cred, user: User
     ) -> ThirdPartyAuthUser:
-        pass
+        record = ThirdPartyAuthUser(
+            user_id=user.id,
+            provider=self.PROVIDER,
+            provider_user_id=creds.provider_user_id,
+        )
+        with Session(self.engine) as session:
+            session.add(record)
+            session.commit()
+        return record
 
-    def get_third_party_user_record(self, creds: Cred) -> ThirdPartyAuthUser:
-        pass
+    def get_third_party_user_record(self, creds: Cred) -> ThirdPartyAuthUser | None:
+        record = ThirdPartyAuthUser(
+            provider=self.PROVIDER,
+            provider_user_id=creds.provider_user_id,
+        )
+        with Session(self.engine) as session:
+            # TODO: use session.filter on PROVIDER and provider_user_id
+            result = (
+                session.query(ThirdPartyAuthUser)
+                .filter_by(
+                    provider_user_id=record.provider_user_id,
+                    provider=self.PROVIDER,
+                )
+                .first()
+            )
+            if result:
+                return result
+
+        return None
 
     @override
     def login(self, request, response) -> User | Literal[False]:
@@ -194,12 +219,13 @@ class ThirdPartyAuth(Auth, ABC):
                 return user
         raise Exception(f"Unable to get user record: {third_party_user_record}")
 
-    def map_creds_to_auth_record(self, creds: Cred) -> ThirdPartyAuthToken:
+    def map_creds_to_auth_record(
+        self, creds: Cred, third_party_user_record: ThirdPartyAuthUser
+    ) -> ThirdPartyAuthToken:
         record = ThirdPartyAuthToken(
-            user_id=creds.user_id,
-            provider=self.PROVIDER,
-            provider_user_id=creds.provider_user_id,
+            third_party_auth_user_id=third_party_user_record.id,
             access_token=creds.access_token,
+            refresh_token=creds.refresh_token,
             metadata=creds.metadata,
         )
         return record
@@ -207,26 +233,8 @@ class ThirdPartyAuth(Auth, ABC):
     def initialize_auth_record(
         self, creds: Cred, third_party_user_record: ThirdPartyAuthUser
     ) -> ThirdPartyAuthToken:
-        record = self.map_creds_to_auth_record(creds)
+        record = self.map_creds_to_auth_record(creds, third_party_user_record)
         with Session(self.engine) as session:
             session.add(record)
             session.commit()
         return record
-
-    def get_auth_record(self, creds: Cred) -> ThirdPartyAuthToken | None:
-        record = self.map_creds_to_auth_record(creds)
-        with Session(self.engine) as session:
-            # TODO: use session.filter on PROVIDER and provider_user_id
-            result = (
-                session.query(ThirdPartyAuthToken)
-                .filter_by(
-                    provider_user_id=record.provider_user_id,
-                    provider=self.PROVIDER,
-                    access_token=record.access_token,
-                )
-                .first()
-            )
-            if result:
-                return result
-
-        return None
