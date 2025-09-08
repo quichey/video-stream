@@ -58,6 +58,7 @@ class AuthCookie(DataBaseEngine):
                     return False
         return False
 
+    @classmethod
     def fetch_user_cookie_record(self, cookie) -> UserCookie | Literal[False]:
         # also save to mysql db
         with Session(self.engine) as session:
