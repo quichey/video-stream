@@ -161,19 +161,17 @@ class UserCookie(Base):
         return f"UserCookie(id={self.id!r}, user_id={self.user_id!r}, cookie={self.cookie!r})"
 
 
-class ThirdPartyAuth(Base):
-    __tablename__ = "third_party_auth"
+class ThirdPartyAuthUser(Base):
+    __tablename__ = "third_party_auth_users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     provider: Mapped[str] = mapped_column(String(50))
     provider_user_id: Mapped[str] = mapped_column(String(255))
-    access_token: Mapped[str] = mapped_column(String(500))
-    refresh_token: Mapped[Optional[str]] = mapped_column(String(500))
-    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime)  # type: ignore
-    metadata: Mapped[dict] = mapped_column(JSON)
 
-    user = relationship("User", back_populates="third_party_accounts")
+    user = relationship(
+        "User", back_populates="third_party_accounts"
+    )  # TODO: what is this?
 
     __table_args__ = (
         # Enforce uniqueness of provider + provider_user_id
@@ -182,6 +180,23 @@ class ThirdPartyAuth(Base):
         Index("idx_user_id", "user_id"),
         Index("idx_provider", "provider"),
     )
+
+
+class ThirdPartyAuthToken(Base):
+    __tablename__ = "third_party_auth_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    third_party_auth_user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("third_party_auth_users.id")
+    )
+    access_token: Mapped[str] = mapped_column(String(500))
+    refresh_token: Mapped[Optional[str]] = mapped_column(String(500))
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime)  # type: ignore
+    metadata: Mapped[dict] = mapped_column(JSON)
+
+    user = relationship(
+        "User", back_populates="third_party_accounts"
+    )  # TODO: what is this?
 
 
 class Video(Base):

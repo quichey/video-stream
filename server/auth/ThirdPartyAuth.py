@@ -6,7 +6,7 @@ from typing import Literal
 
 from sqlalchemy.orm import Session
 
-from db.Schema.Models import User, ThirdPartyAuth
+from db.Schema.Models import User, ThirdPartyAuthUser, ThirdPartyAuthToken
 from auth import Auth
 from api.util.cookie import set_auth_cookie, expire_cookie
 from api.util.request_data import extract_user_session_cookie
@@ -69,12 +69,15 @@ class ThirdPartyAuth(Auth, ABC):
     def extract_authorizor_creds(self, request, response) -> Cred:
         pass
 
+    # TODO: change to get_user? and return None if doesn't exist?
+    # should everything be in one Session object? these should all be
+    # wrapped up into one transaction
     def check_user_exists(self, request, response, creds: Cred) -> bool:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             # TODO: use session.filter on PROVIDER and provider_user_id
             result = (
-                session.query(ThirdPartyAuth)
+                session.query(ThirdPartyAuthUser)
                 .filter_by(
                     provider_user_id=record.provider_user_id,
                     provider=self.PROVIDER,
@@ -102,7 +105,7 @@ class ThirdPartyAuth(Auth, ABC):
         with Session(self.engine) as session:
             # TODO: handle refresh
             result = (
-                session.query(ThirdPartyAuth)
+                session.query(ThirdPartyAuthToken)
                 .filter_by(
                     access_token=client_token,
                 )
@@ -132,7 +135,9 @@ class ThirdPartyAuth(Auth, ABC):
     def register(self, request, response) -> User | Literal[False]:
         creds = self.extract_authorizor_creds(request, response)
         user = self.create_user(creds)
-
+        # TODO: create record in ThirdPartyAuthUser
+        # also create record in User table
+        # also create record in ThirdPartyAuthToken table
         self.initialize_auth_record(creds)
         return user
 
@@ -140,6 +145,10 @@ class ThirdPartyAuth(Auth, ABC):
     def login(self, request, response) -> User | Literal[False]:
         creds = self.extract_authorizor_creds(request, response)
         auth_record = self.get_auth_record(creds)
+        # TODO:
+        # get record in ThirdPartyAuthUser belonging to cred
+        # also get record in User belonging to cred
+        # also create record in ThirdPartyAuthToken table
         user = self.get_user_info(auth_record)
         return user
 
@@ -152,6 +161,8 @@ class ThirdPartyAuth(Auth, ABC):
         # I think separate linking table
         # from users.id to google_provider_id
         # and then thirdpartytokens table
+
+        # TODO: remove record from ThirdPartyAuthToken
         pass
 
     def create_user(self, creds) -> User:
@@ -171,8 +182,8 @@ class ThirdPartyAuth(Auth, ABC):
             user = session.get(User, auth_record.user_id)
         return user
 
-    def map_creds_to_auth_record(self, creds: Cred) -> ThirdPartyAuth:
-        record = ThirdPartyAuth(
+    def map_creds_to_auth_record(self, creds: Cred) -> ThirdPartyAuthToken:
+        record = ThirdPartyAuthToken(
             user_id=creds.user_id,
             provider=self.PROVIDER,
             provider_user_id=creds.provider_user_id,
@@ -181,19 +192,19 @@ class ThirdPartyAuth(Auth, ABC):
         )
         return record
 
-    def initialize_auth_record(self, creds: Cred) -> ThirdPartyAuth:
+    def initialize_auth_record(self, creds: Cred) -> ThirdPartyAuthToken:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             session.add(record)
             session.commit()
         return record
 
-    def get_auth_record(self, creds: Cred) -> ThirdPartyAuth | None:
+    def get_auth_record(self, creds: Cred) -> ThirdPartyAuthToken | None:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             # TODO: use session.filter on PROVIDER and provider_user_id
             result = (
-                session.query(ThirdPartyAuth)
+                session.query(ThirdPartyAuthToken)
                 .filter_by(
                     provider_user_id=record.provider_user_id,
                     provider=self.PROVIDER,
