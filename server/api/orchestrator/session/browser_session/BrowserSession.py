@@ -134,7 +134,8 @@ class BrowserSession(DataBaseEngine):
 
     def needs_third_party_login(self, request, response) -> bool:
         url_route = request.path
-        if url_route == "/auth/google/callback":
+        third_party_auth_routes = ["/auth/google/callback", "/auth/facebook/callback"]
+        if url_route in third_party_auth_routes:
             return True
         return False
 
