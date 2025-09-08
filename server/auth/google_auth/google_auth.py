@@ -48,7 +48,9 @@ class GoogleAuth(ThirdPartyAuth):
 
         # Example: user_info contains 'email', 'name', 'picture', etc.
         return Cred(
-            provider_user_id=user_info["id"], access_token=token["access_token"]
+            provider_user_id=user_info["id"],
+            access_token=token["access_token"],
+            email=user_info["email"],
         )
 
 

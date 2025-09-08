@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from db.Schema.Models import User, ThirdPartyAuth
 from auth import Auth
-from api.util.request_data import extract_registration_info
 
 """
 What is a reasonalbe Interface for this base class?
@@ -35,6 +34,7 @@ Rather leave all User database updates and reads to here
 @dataclass
 class Cred:
     provider_user_id: str = None
+    email: Optional[str] = None
     access_token: str = None
     refresh_token: Optional[str] = None
     expires_at: Optional[str] = None
@@ -68,7 +68,21 @@ class ThirdPartyAuth(Auth, ABC):
         pass
 
     def check_user_exists(self, request, response, creds: Cred) -> bool:
-        pass
+        record = self.map_creds_to_auth_record(creds)
+        with Session(self.engine) as session:
+            # TODO: use session.filter on PROVIDER and provider_user_id
+            result = (
+                session.query(ThirdPartyAuth)
+                .filter_by(
+                    provider_user_id=record.provider_user_id,
+                    provider=self.PROVIDER,
+                )
+                .first()
+            )
+            if result:
+                return True
+
+        return None
 
     def handle_callback(self, request, response) -> User | Literal[False]:
         """Handle User 3rd party credentials"""
@@ -96,15 +110,10 @@ class ThirdPartyAuth(Auth, ABC):
 
     @override
     def register(self, request, response) -> User | Literal[False]:
-        user_info = extract_registration_info(request)
-        user = self.create_user(user_info=user_info)
+        creds = self.extract_authorizor_creds(request, response)
+        user = self.create_user(creds)
 
-        self.initialize_auth_record(
-            user_id=user.id,
-            provider_user_id=self.get_provider_user_id(user),
-            access_token=self.get_access_token(user),
-            metadata=self.get_metadata(user),
-        )
+        self.initialize_auth_record(creds)
         return user
 
     @override
@@ -119,10 +128,10 @@ class ThirdPartyAuth(Auth, ABC):
     def logout(self, request, response):
         pass
 
-    def create_user(self, user_info) -> User:
+    def create_user(self, creds) -> User:
         user = User(
-            name=user_info.name,
-            email=user_info.email,
+            name=creds.email,  # TODO: gen random name
+            email=creds.email,
         )
         # also save to mysql db
         with Session(self.engine) as session:
@@ -131,9 +140,9 @@ class ThirdPartyAuth(Auth, ABC):
 
         return user
 
-    def get_user_info(self, user_id) -> User:
+    def get_user_info(self, auth_record) -> User:
         with Session(self.engine) as session:
-            user = session.get(User, user_id)
+            user = session.get(User, auth_record.user_id)
         return user
 
     def map_creds_to_auth_record(self, creds: Cred) -> ThirdPartyAuth:
@@ -153,10 +162,20 @@ class ThirdPartyAuth(Auth, ABC):
             session.commit()
         return record
 
-    def get_auth_record(self, creds: Cred) -> ThirdPartyAuth:
+    def get_auth_record(self, creds: Cred) -> ThirdPartyAuth | None:
         record = self.map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             # TODO: use session.filter on PROVIDER and provider_user_id
-            session.add(record)
-            session.commit()
-        return record
+            result = (
+                session.query(ThirdPartyAuth)
+                .filter_by(
+                    provider_user_id=record.provider_user_id,
+                    provider=self.PROVIDER,
+                    access_token=record.access_token,
+                )
+                .first()
+            )
+            if result:
+                return result
+
+        return None
