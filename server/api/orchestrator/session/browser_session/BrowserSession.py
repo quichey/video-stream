@@ -8,7 +8,6 @@ from server.api.orchestrator.session.tab_session.AnonymousTabSession import (
 from server.api.orchestrator.session.tab_session.UserTabSession import UserTabSession
 from api.util.request_data import (
     has_user_session_cookie,
-    extract_user_session_cookie,
     attach_data_to_payload,
 )
 
@@ -48,9 +47,8 @@ class BrowserSession(DataBaseEngine):
             # ----- name, profile pic info
             if not self.user_tab_session:
                 print("\n\n got here: if not session_pair.user_tab_session \n\n")
-                user_cookie = extract_user_session_cookie(request)
                 self.AUTHORIZOR = Authorizor(NativeAuth)
-                user_record = self.AUTHORIZOR.fetch_user_record(user_cookie)
+                user_record = self.AUTHORIZOR.restore_lost_session(request, response)
                 self.user_tab_session = UserTabSession(
                     user_record,
                     request,
@@ -64,7 +62,6 @@ class BrowserSession(DataBaseEngine):
         new_user_instance = self.AUTHORIZOR.handle_register(request, response)
         if new_user_instance:
             self.user_tab_session = UserTabSession(
-                None,
                 new_user_instance,
                 request,
                 response,
@@ -80,7 +77,6 @@ class BrowserSession(DataBaseEngine):
         user_instance = self.AUTHORIZOR.handle_login(request, response)
         if user_instance:
             self.user_tab_session = UserTabSession(
-                None,
                 user_instance,
                 request,
                 response,
@@ -108,9 +104,7 @@ class BrowserSession(DataBaseEngine):
         user_instance = self.AUTHORIZOR.handle_third_party_auth(request, response)
         if user_instance:
             self.user_tab_session = UserTabSession(
-                None,
                 user_instance,
-                self.NATIVE_AUTH,
                 request,
                 response,
             )

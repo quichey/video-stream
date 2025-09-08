@@ -16,8 +16,9 @@ class AuthCookie(DataBaseEngine):
     COOKIE_VALUE = None
     USER_INSTANCE: User = None
 
-    def __init__(self, user_instance: User):
+    def __init__(self, user_instance: User, request, response):
         self.USER_INSTANCE = user_instance
+        self.generate_auth_cookie(request, response)
 
     def store_cookie_record(self) -> UserCookie | Literal[False]:
         # also save to mysql db
@@ -58,15 +59,6 @@ class AuthCookie(DataBaseEngine):
                     return False
         return False
 
-    @classmethod
-    def fetch_user_cookie_record(self, cookie) -> UserCookie | Literal[False]:
-        # also save to mysql db
-        with Session(self.engine) as session:
-            cookie_record = session.query(UserCookie).filter_by(cookie=cookie).first()
-            return cookie_record
-
-        return False
-
     def authenticate_cookies(self, request, response) -> Literal[True]:
         if not has_user_session_cookie(request):
             raise SecurityError("No User Session Cookie")
@@ -76,11 +68,11 @@ class AuthCookie(DataBaseEngine):
         return True
 
     def generate_auth_cookie(self, request, response):
-        self.AUTH_COOKIE = generate_cookie("auth_cookie", response)
+        self.COOKIE_VALUE = generate_cookie("auth_cookie", response)
         self.store_cookie_record()
-        return self.AUTH_COOKIE
+        return self.COOKIE_VALUE
 
     def clear_cookie(self, request, response):
         expire_cookie("auth_cookie", response)
         self.delete_cookie_record()
-        self.AUTH_COOKIE = None
+        self.COOKIE_VALUE = None
