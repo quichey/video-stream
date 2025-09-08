@@ -4,8 +4,14 @@ from typing import Literal
 
 from sqlalchemy.orm import Session
 
+from api.util.cookie import generate_cookie, expire_cookie
 from auth.Auth import Auth
-from api.util.request_data import extract_registration_info, extract_login_info
+from api.util.request_data import (
+    extract_registration_info,
+    extract_login_info,
+    extract_user_session_cookie,
+    has_user_session_cookie,
+)
 from db.Schema.Models import User
 
 
@@ -68,6 +74,24 @@ class NativeAuth(Auth):
         with Session(self.engine) as session:
             user_record = session.query(User).filter_by(name=user_name).first()
         return user_record is None
+
+    def generate_auth_cookie(self, request, response):
+        self.AUTH_COOKIE = generate_cookie("auth_cookie", response)
+        self.store_cookie_record()
+        return self.AUTH_COOKIE
+
+    def clear_cookie(self, request, response):
+        expire_cookie("auth_cookie", response)
+        self.delete_cookie_record()
+        self.AUTH_COOKIE = None
+
+    def authenticate_cookies(self, request, response) -> Literal[True]:
+        if not has_user_session_cookie(request):
+            raise SecurityError("No User Session Cookie")
+        cookie = extract_user_session_cookie(request)
+        if cookie != self.AUTH_COOKIE:
+            raise SecurityError("Auth Cookie does not Match")
+        return True
 
 
 NATIVE_AUTH = NativeAuth()
