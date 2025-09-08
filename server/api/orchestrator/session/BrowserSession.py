@@ -18,7 +18,7 @@ from auth.native.native import NATIVE_AUTH, NativeAuth
 from auth.google_auth.google_auth import GOOGLE_AUTH, GoogleAuth
 
 
-class SessionPair(DataBaseEngine):
+class BrowserSession(DataBaseEngine):
     anonymous_session: AnonymousSession
     user_session: Optional[UserSession] = None
     LONG_TERM_COOKIE_ID: str = None

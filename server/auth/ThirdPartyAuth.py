@@ -79,10 +79,6 @@ class ThirdPartyAuth(Auth, ABC):
         return wrapper
 
     @abstractmethod
-    def authorize(self, user_info):
-        pass
-
-    @abstractmethod
     def get_provider_user_id(self, user):
         pass
 

@@ -14,25 +14,26 @@ from api.util.request_data import (
 from db.Schema.Models import User, UserCookie
 from api.util.db_engine import DataBaseEngine
 from api.orchestrator.storage import STORAGE
+from auth.auth import Auth
 
 
 class UserSession(SessionBase, DataBaseEngine):
     AUTH_COOKIE = None
     COOKIE_RECORD_ID = None
-    NATIVE_AUTH = None
-    USER_INSTANCE = None
+    AUTHORIZOR: Auth = None
+    USER_INSTANCE: User = None
 
     def __init__(
         self,
         old_cookie: str,
         user_instance: User,
-        native_auth,
+        authorizor: Auth,
         request,
         response,
     ):
         SessionBase.__init__(self, request, response)
         self.USER_INSTANCE = user_instance
-        self.NATIVE_AUTH = native_auth
+        self.AUTHORIZOR = authorizor
         if old_cookie:
             self.AUTH_COOKIE = old_cookie
         else:
@@ -112,6 +113,9 @@ class UserSession(SessionBase, DataBaseEngine):
         # persist to DB
 
     def pre_authenticate_session(self, request, response) -> Literal[True]:
+        authorizor_passed = self.AUTHORIZOR.authorize(request, response)
+        if not authorizor_passed:
+            raise SecurityError(f"Authorizor failed: {self.AUTHORIZOR}")
         return self.authenticate_cookies(request, response)
 
     def authenticate_cookies(self, request, response) -> Literal[True]:
