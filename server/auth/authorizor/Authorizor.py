@@ -8,6 +8,11 @@ from api.util.error_handling import SecurityError
 from db.Schema.Models import User
 from api.util.db_engine import DataBaseEngine
 from auth.authorizor.auth_cookie import AuthCookie
+from db.Schema.Models import UserCookie
+
+from api.util.request_data import (
+    extract_user_session_cookie,
+)
 
 
 class Authorizor(DataBaseEngine):
@@ -20,6 +25,10 @@ class Authorizor(DataBaseEngine):
         elif auth_type == GoogleAuth:
             self.AUTH_INSTANCE = GOOGLE_AUTH
 
+    def restore_lost_session(self, request, response):
+        user_cookie = extract_user_session_cookie(request)
+        return self.fetch_user_record(user_cookie)
+
     def authenticate(self, request, response) -> Literal[True]:
         return self.AUTH_COOKIE.authenticate_cookies(request, response)
 
@@ -29,9 +38,17 @@ class Authorizor(DataBaseEngine):
             raise SecurityError(f"Authorizor failed: {self}")
         return self.AUTH_COOKIE.authenticate_cookies(request, response)
 
+    def fetch_user_cookie_record(self, cookie) -> UserCookie | Literal[False]:
+        # also save to mysql db
+        with Session(self.engine) as session:
+            cookie_record = session.query(UserCookie).filter_by(cookie=cookie).first()
+            return cookie_record
+
+        return False
+
     def fetch_user_record(self, cookie) -> User | Literal[False]:
         # TODO: classmethod on AUTH_COOKIE?
-        cookie_record = AuthCookie.fetch_user_cookie_record(cookie)
+        cookie_record = self.fetch_user_cookie_record(cookie)
         # also save to mysql db
         with Session(self.engine) as session:
             user_record = session.get(User, cookie_record.user_id)
