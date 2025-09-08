@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from db.Schema.Models import User, ThirdPartyAuth
 from auth import Auth
-from api.util.request_data import extract_login_info, extract_registration_info
+from api.util.request_data import extract_registration_info
 
 """
 What is a reasonalbe Interface for this base class?
@@ -54,14 +54,20 @@ class ThirdPartyAuth(Auth, ABC):
     """
 
     @abstractmethod
+    def extract_authorizor_creds(self, request, response):
+        pass
+
+    def check_user_exists(self, request, response) -> bool:
+        pass
+
     def handle_callback(self, request, response) -> User | Literal[False]:
         """Handle User 3rd party credentials"""
-        user_exists = pass
+        creds = self.extract_authorizor_creds(request, response)
+        user_exists = self.check_user_exists(request, response)
         if user_exists:
             return self.login(request, response)
         else:
             return self.register(request, response)
-
 
     def needs_authorization(self, func):
         @wraps(func)
@@ -105,8 +111,9 @@ class ThirdPartyAuth(Auth, ABC):
 
     @override
     def login(self, request, response) -> User | Literal[False]:
-        user_info = extract_login_info(request)
-        user = self.get_user_info(user_info["id"])
+        creds = self.extract_authorizor_creds(request, response)
+        auth_record = self.get_auth_record(creds)
+        user = self.get_user_info(auth_record)
         return user
 
     @override
@@ -142,6 +149,23 @@ class ThirdPartyAuth(Auth, ABC):
             metadata=metadata,
         )
         with Session(self.engine) as session:
+            session.add(record)
+            session.commit()
+        return record
+
+    def get_auth_record(
+        self, user_id, provider_user_id, access_token, metadata
+    ) -> ThirdPartyAuth:
+        # TODO: fix
+        record = ThirdPartyAuth(
+            user_id=user_id,
+            provider=self.PROVIDER,
+            provider_user_id=provider_user_id,
+            access_token=access_token,
+            metadata=metadata,
+        )
+        with Session(self.engine) as session:
+            # TODO: use session.filter
             session.add(record)
             session.commit()
         return record

@@ -12,7 +12,7 @@ from api.util.request_data import (
 )
 
 from api.util.db_engine import DataBaseEngine
-from auth.google_auth.google_auth import GoogleAuth
+from auth.ThirdPartyAuth import ThirdPartyAuth
 from auth.native.native import NativeAuth
 from auth.authorizor.Authorizor import Authorizor
 
@@ -99,8 +99,8 @@ class BrowserSession(DataBaseEngine):
             attach_data_to_payload(response, results)
             return self.anonymous_tab_session
 
-    def do_google_login(self, request, response) -> UserTabSession:
-        self.AUTHORIZOR = Authorizor(GoogleAuth)
+    def do_third_party_login(self, request, response) -> UserTabSession:
+        self.AUTHORIZOR = Authorizor(ThirdPartyAuth)
         user_instance = self.AUTHORIZOR.handle_third_party_auth(request, response)
         if user_instance:
             self.user_tab_session = UserTabSession(
@@ -132,7 +132,7 @@ class BrowserSession(DataBaseEngine):
             return True
         return False
 
-    def needs_google_login(self, request, response) -> bool:
+    def needs_third_party_login(self, request, response) -> bool:
         url_route = request.path
         if url_route == "/auth/google/callback":
             return True
@@ -156,9 +156,9 @@ class BrowserSession(DataBaseEngine):
             # change to anonymous session
             current_session = self.do_logout(request, response)
             return "loggedout?"
-        elif self.needs_google_login(request, response):
+        elif self.needs_third_party_login(request, response):
             # change to anonymous session
-            current_session = self.do_google_login(request, response)
+            current_session = self.do_third_party_login(request, response)
             return "google-login?"
         current_session = self.get_session(request, response)
         if self.AUTHORIZOR is not None:
