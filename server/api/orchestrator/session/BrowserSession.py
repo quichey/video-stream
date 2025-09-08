@@ -1,8 +1,9 @@
 from typing import Literal
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, Union
 from api.util.cookie import generate_cookie
 
+from api.util.error_handling import SecurityError
 from server.api.orchestrator.session.TabSession import TabSession
 from server.api.orchestrator.session.AnonymousTabSession import AnonymousTabSession
 from server.api.orchestrator.session.UserTabSession import UserTabSession
@@ -24,10 +25,18 @@ class BrowserSession(DataBaseEngine):
     LONG_TERM_COOKIE_ID: str = None
     NATIVE_AUTH: NativeAuth = NATIVE_AUTH
     GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
+    AUTHORIZOR: Optional[Union[NativeAuth, GoogleAuth]] = None
+    COOKIE_RECORD_ID = None
 
     def __init__(self, request, response):
         self.anonymous_tab_session = AnonymousTabSession(request, response)
         self.create_cookie(request, response)
+
+    def pre_authenticate_session(self, request, response) -> Literal[True]:
+        authorizor_passed = self.AUTHORIZOR.authorize(request, response)
+        if not authorizor_passed:
+            raise SecurityError(f"Authorizor failed: {self.AUTHORIZOR}")
+        return self.authenticate_cookies(request, response)
 
     def create_cookie(self, request, response):
         return self.generate_long_term_cookie(request, response)
@@ -191,3 +200,42 @@ class BrowserSession(DataBaseEngine):
             return "google-login?"
         current_session = self.get_session(request, response)
         current_session.handle_request(request, response)
+
+    def delete_cookie_record(self) -> bool:
+        with Session(self.engine) as session:
+            rows_deleted = (
+                session.query(UserCookie)
+                .filter(UserCookie.id == self.COOKIE_RECORD_ID)
+                .delete()
+            )
+            session.commit()
+
+            if rows_deleted > 0:
+                return True
+            else:
+                rows_deleted = (
+                    session.query(UserCookie)
+                    .filter(UserCookie.cookie == self.AUTH_COOKIE)
+                    .delete()
+                )
+                session.commit()
+                if rows_deleted > 0:
+                    return True
+                else:
+                    return False
+        return False
+
+    def store_cookie_record(self) -> UserCookie | Literal[False]:
+        # also save to mysql db
+        with Session(self.engine) as session:
+            cookie_record = UserCookie(
+                user_id=self.USER_INSTANCE.id,
+                cookie=self.AUTH_COOKIE,
+            )
+            session.add(cookie_record)
+            session.commit()
+            if cookie_record.id is not None:
+                self.COOKIE_RECORD_ID = cookie_record.id
+                return cookie_record
+
+        return False

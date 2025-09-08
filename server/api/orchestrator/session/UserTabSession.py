@@ -1,43 +1,31 @@
-from typing import Literal
 from sqlalchemy.orm import Session
 
 from server.api.orchestrator.session.TabSession import TabSession
 
-from api.util.cookie import generate_cookie, expire_cookie
-from api.util.error_handling import SecurityError
 from api.util.request_data import (
-    extract_user_session_cookie,
-    has_user_session_cookie,
     attach_data_to_payload,
     extract_profile_pic_info,
 )
-from db.Schema.Models import User, UserCookie
+from db.Schema.Models import User
 from api.util.db_engine import DataBaseEngine
 from api.orchestrator.storage import STORAGE
-from auth.auth import Auth
 
 
 class UserTabSession(TabSession, DataBaseEngine):
-    AUTH_COOKIE = None
-    COOKIE_RECORD_ID = None
-    AUTHORIZOR: Auth = None
     USER_INSTANCE: User = None
 
     def __init__(
         self,
-        old_cookie: str,
+        old_cookie: str,  # TODO: this is for restart server, move?
         user_instance: User,
-        authorizor: Auth,
         request,
         response,
     ):
         TabSession.__init__(self, request, response)
         self.USER_INSTANCE = user_instance
-        self.AUTHORIZOR = authorizor
         if old_cookie:
             self.AUTH_COOKIE = old_cookie
         else:
-            self.generate_auth_cookie(request, response)
             self.return_user_data(request, response)
 
     # return user data
@@ -45,45 +33,6 @@ class UserTabSession(TabSession, DataBaseEngine):
         results = {}
         self.post_load_session(request, response, results)
         attach_data_to_payload(response, results)
-
-    def store_cookie_record(self) -> UserCookie | Literal[False]:
-        # also save to mysql db
-        with Session(self.engine) as session:
-            cookie_record = UserCookie(
-                user_id=self.USER_INSTANCE.id,
-                cookie=self.AUTH_COOKIE,
-            )
-            session.add(cookie_record)
-            session.commit()
-            if cookie_record.id is not None:
-                self.COOKIE_RECORD_ID = cookie_record.id
-                return cookie_record
-
-        return False
-
-    def delete_cookie_record(self) -> bool:
-        with Session(self.engine) as session:
-            rows_deleted = (
-                session.query(UserCookie)
-                .filter(UserCookie.id == self.COOKIE_RECORD_ID)
-                .delete()
-            )
-            session.commit()
-
-            if rows_deleted > 0:
-                return True
-            else:
-                rows_deleted = (
-                    session.query(UserCookie)
-                    .filter(UserCookie.cookie == self.AUTH_COOKIE)
-                    .delete()
-                )
-                session.commit()
-                if rows_deleted > 0:
-                    return True
-                else:
-                    return False
-        return False
 
     def post_load_session(self, request, response, results):
         profile_icon_sas_url = STORAGE.get_image_url(
@@ -97,11 +46,6 @@ class UserTabSession(TabSession, DataBaseEngine):
             "profile_icon_sas_url": profile_icon_sas_url,
         }
 
-    def generate_auth_cookie(self, request, response):
-        self.AUTH_COOKIE = generate_cookie("auth_cookie", response)
-        self.store_cookie_record()
-        return self.AUTH_COOKIE
-
     def get_token(self):
         return self.token
 
@@ -111,25 +55,6 @@ class UserTabSession(TabSession, DataBaseEngine):
     def update_state(self, key, value):
         self.state[key] = value
         # persist to DB
-
-    def pre_authenticate_session(self, request, response) -> Literal[True]:
-        authorizor_passed = self.AUTHORIZOR.authorize(request, response)
-        if not authorizor_passed:
-            raise SecurityError(f"Authorizor failed: {self.AUTHORIZOR}")
-        return self.authenticate_cookies(request, response)
-
-    def authenticate_cookies(self, request, response) -> Literal[True]:
-        if not has_user_session_cookie(request):
-            raise SecurityError("No User Session Cookie")
-        cookie = extract_user_session_cookie(request)
-        if cookie != self.AUTH_COOKIE:
-            raise SecurityError("Auth Cookie does not Match")
-        return True
-
-    def clear_cookie(self, request, response):
-        expire_cookie("auth_cookie", response)
-        self.delete_cookie_record()
-        self.AUTH_COOKIE = None
 
     def upload_profile_pic(self, request, response):
         pic_info = extract_profile_pic_info(request)
