@@ -120,8 +120,7 @@ class ThirdPartyAuth(Auth, ABC):
 
     @override
     @_needs_authorization
-    def logout(self, request, response):
-        expire_cookie("auth_cookie", response)
+    def logout(self, request, response) -> bool:
         # TODO: remove auth_token?
         # should I have another table
         # I think separate linking table
@@ -129,7 +128,16 @@ class ThirdPartyAuth(Auth, ABC):
         # and then thirdpartytokens table
 
         # TODO: remove record from ThirdPartyAuthToken
-        pass
+        with Session(self.engine) as session:
+            access_token = extract_user_session_cookie(request)
+            record = session.filter_by(ThirdPartyAuthToken).where(
+                access_token=access_token
+            )
+            deleted_record = session.delete(record)
+            if deleted_record:
+                expire_cookie("auth_cookie", response)
+                return True
+        return False
 
     @property
     def oauth_client(self):
