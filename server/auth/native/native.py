@@ -35,6 +35,10 @@ class NativeAuth(Auth):
     def logout(self, request, response):
         pass
 
+    @override
+    def authorize(self, request, response):
+        return
+
     # User registers -> hash their password
     def hash_password(self, plain_password: str) -> bytes:
         # bcrypt automatically generates a random salt
