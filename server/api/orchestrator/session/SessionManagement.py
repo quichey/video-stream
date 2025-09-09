@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from server.api.orchestrator.session.browser_session.BrowserSession import (
+from api.orchestrator.session.browser_session.BrowserSession import (
     BrowserSession,
 )
 from api.util.request_data import (

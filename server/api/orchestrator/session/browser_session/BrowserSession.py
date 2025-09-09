@@ -1,11 +1,11 @@
 from typing import Optional
 from api.util.cookie import generate_cookie
 
-from server.api.orchestrator.session.tab_session.TabSession import TabSession
-from server.api.orchestrator.session.tab_session.AnonymousTabSession import (
+from api.orchestrator.session.tab_session.TabSession import TabSession
+from api.orchestrator.session.tab_session.AnonymousTabSession import (
     AnonymousTabSession,
 )
-from server.api.orchestrator.session.tab_session.UserTabSession import UserTabSession
+from api.orchestrator.session.tab_session.UserTabSession import UserTabSession
 from api.util.request_data import (
     has_user_session_cookie,
     attach_data_to_payload,
