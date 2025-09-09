@@ -1,4 +1,5 @@
 from typing import override
+import os
 from authlib.integrations.flask_client import OAuth
 
 from auth.ThirdPartyAuth import ThirdPartyAuth, Cred
@@ -6,8 +7,8 @@ from auth.ThirdPartyAuth import ThirdPartyAuth, Cred
 
 class GoogleAuth(ThirdPartyAuth):
     PROVIDER = "google"
-    GOOGLE_CLIENT_ID = ""
-    GOOGLE_CLIENT_SECRET = ""
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 
     def init_app(self, app):
         self.oauth = OAuth(app)
