@@ -157,6 +157,10 @@ class ClientRouter(Router):
 
         @app.route("/auth/google/callback")
         def google_callback():
+            # TODO: move make_reponse for giving user_context info
+            # to /load-session as make_response is causing CSRF error
+            # can still setup BrowserSession with the Authorizor with ThirdPartyAuth instance
+            # just cannot attach data to payload in this api
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
             return redirect("/")  # send user to React page after login

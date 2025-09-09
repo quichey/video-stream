@@ -168,13 +168,12 @@ class ThirdPartyAuth(Auth, ABC):
     # should everything be in one Session object? these should all be
     # wrapped up into one transaction
     def _check_user_exists(self, request, response, creds: Cred) -> bool:
-        record = self._map_creds_to_auth_record(creds)
         with Session(self.engine) as session:
             # TODO: use session.filter on PROVIDER and provider_user_id
             result = (
                 session.query(ThirdPartyAuthUser)
                 .filter_by(
-                    provider_user_id=record.provider_user_id,
+                    provider_user_id=creds.provider_user_id,
                     provider=self.PROVIDER,
                 )
                 .first()
