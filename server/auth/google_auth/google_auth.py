@@ -1,4 +1,4 @@
-from typing import override
+from typing_extensions import override
 import os
 from authlib.integrations.flask_client import OAuth
 
