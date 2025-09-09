@@ -22,8 +22,9 @@ class GoogleAuth(ThirdPartyAuth):
         )
         return
 
-    @override
-    def authorize(self):
+    # TODO: don't need this?
+    # previously was @override: authorize
+    def g_authorize(self):
         token = self.oauth_client.authorize_access_token()
         resp = self.oauth_client.get("userinfo")
         user_info = resp.json()
@@ -38,7 +39,7 @@ class GoogleAuth(ThirdPartyAuth):
         return self.oauth_client.authorize_redirect(redirect_uri)
 
     @override
-    def extract_authorizor_creds(self, request, response) -> Cred:
+    def _extract_authorizor_creds(self, request, response) -> Cred:
         # Exchange 'code' from query params for an access token
         token = self.oauth_client.authorize_access_token()
 
