@@ -1,5 +1,5 @@
 # Example using Flask and SQLite
-from flask import make_response, redirect, url_for
+from flask import make_response, render_template_string, url_for
 import json
 
 from .Router import Router
@@ -157,10 +157,41 @@ class ClientRouter(Router):
 
         @app.route("/auth/google/callback")
         def google_callback():
-            # TODO: figure put CSRF issue
-            response = make_response("Initial body")
+            # Initial empty response
+            response = make_response()  # can be updated in orchestrator
+
+            # Orchestrator handles request, updates headers/cookies, and sets payload in response.data
             self.orchestrator.handle_request(request, response)
-            return redirect("/")  # send user to React page after login
+
+            # Ensure response.data is a dict
+            if response.data:
+                try:
+                    payload = json.loads(response.data)
+                except (TypeError, ValueError):
+                    payload = {}
+            else:
+                payload = {}
+
+            # Render HTML into response body
+            html_body = render_template_string(
+                """
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <script>
+                    // Send full payload object to parent window safely
+                    window.opener.postMessage({payload: {{ payload | tojson }}}, "http://localhost:3000");
+                    window.close();
+                </script>
+                </body>
+                </html>
+                """,
+                payload=payload,  # pass payload dict to template
+            )
+
+            response.set_data(html_body)  # set rendered HTML as response body
+            response.headers["Content-Type"] = "text/html"  # ensure proper content-type
+            return response
 
         # Route to create a new item
         @app.route("/comments", methods=["POST"])
