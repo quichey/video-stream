@@ -68,14 +68,18 @@ class ThirdPartyAuth(Auth, ABC):
         """Return URL to redirect user for login"""
         pass
 
-    def handle_callback(self, request, response) -> User | Literal[False]:
+    def get_cred_info(self, request, response) -> Cred:
         """Handle User 3rd party credentials"""
         creds = self._extract_authorizor_creds(request, response)
+        return creds
+
+    def handle_callback(self, request, response, creds: Cred) -> User | Literal[False]:
+        """Handle User 3rd party credentials"""
         user_exists = self._check_user_exists(request, response, creds)
         if user_exists:
-            user_record = self.login(request, response)
+            user_record = self.login(request, response, creds)
         else:
-            user_record = self.register(request, response)
+            user_record = self.register(request, response, creds)
         set_auth_cookie(response, creds.access_token)
         return user_record
 
@@ -97,8 +101,7 @@ class ThirdPartyAuth(Auth, ABC):
         return None
 
     @override
-    def register(self, request, response) -> User | Literal[False]:
-        creds = self._extract_authorizor_creds(request, response)
+    def register(self, request, response, creds: Cred) -> User | Literal[False]:
         # TODO: create record in ThirdPartyAuthUser
         # also create record in User table
         # also create record in ThirdPartyAuthToken table
@@ -112,8 +115,7 @@ class ThirdPartyAuth(Auth, ABC):
             return user
 
     @override
-    def login(self, request, response) -> User | Literal[False]:
-        creds = self._extract_authorizor_creds(request, response)
+    def login(self, request, response, creds: Cred) -> User | Literal[False]:
         third_party_user_record = self._get_third_party_user_record(creds)
         # TODO:
         # get record in ThirdPartyAuthUser belonging to cred
