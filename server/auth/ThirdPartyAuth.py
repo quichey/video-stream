@@ -106,13 +106,17 @@ class ThirdPartyAuth(Auth, ABC):
         # also create record in User table
         # also create record in ThirdPartyAuthToken table
         with Session(self.engine) as session:
-            user = self._create_user(creds, session)
-            third_party_user_record = self._create_third_party_user_record(
-                creds, user, session
-            )
-            self._initialize_auth_record(creds, third_party_user_record, session)
-            session.commit()
-            return user
+            try:
+                user = self._create_user(creds, session)
+                third_party_user_record = self._create_third_party_user_record(
+                    creds, user, session
+                )
+                self._initialize_auth_record(creds, third_party_user_record, session)
+                session.commit()
+                return user
+            except Exception as e:
+                session.rollback()
+                raise e
 
     @override
     def login(self, request, response, creds: Cred) -> User | Literal[False]:
@@ -194,6 +198,7 @@ class ThirdPartyAuth(Auth, ABC):
             provider_user_id=creds.provider_user_id,
         )
         session.add(record)
+        session.flush()
         return record
 
     def _get_third_party_user_record(self, creds: Cred) -> ThirdPartyAuthUser | None:
@@ -223,7 +228,7 @@ class ThirdPartyAuth(Auth, ABC):
         )
         # also save to mysql db
         user_record = session.add(user)
-
+        session.flush()
         return user_record
 
     def _get_user_info(self, third_party_user_record: ThirdPartyAuthUser) -> User:
