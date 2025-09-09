@@ -73,13 +73,16 @@ class Authorizor(DataBaseEngine):
 
     def handle_logout(self, request, response) -> Literal[True]:
         # self.NATIVE_AUTH.logout(request, response)
-        if not self.authenticate(request, response):
-            # Invalid credentials
-            response.status_code = 401
-            raise SecurityError(f"Authorizor failed: {self}")
+        if self.AUTH_INSTANCE == NATIVE_AUTH:
+            if not self.authenticate(request, response):
+                # Invalid credentials
+                response.status_code = 401
+                raise SecurityError(f"Authorizor failed: {self}")
 
-        self.AUTH_COOKIE.clear_cookie(request, response)
-        return True
+            self.AUTH_COOKIE.clear_cookie(request, response)
+            return True
+        elif self.AUTH_INSTANCE == GOOGLE_AUTH:
+            self.AUTH_INSTANCE.logout(request, response)
 
     def handle_register(self, request, response):
         user_instance = self.AUTH_INSTANCE.register()
