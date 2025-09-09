@@ -2,7 +2,7 @@ from typing import Optional, Union, Literal
 from sqlalchemy.orm import Session
 
 from auth.native.native import NATIVE_AUTH, NativeAuth
-from auth.ThirdPartyAuth import ThirdPartyAuth
+from auth.ThirdPartyAuth import ThirdPartyAuth, Cred
 from auth.google_auth.google_auth import GOOGLE_AUTH
 
 from api.util.error_handling import SecurityError
@@ -19,6 +19,7 @@ from api.util.request_data import (
 class Authorizor(DataBaseEngine):
     AUTH_COOKIE: AuthCookie = None  # TODO: does this belong in Auth class?
     AUTH_INSTANCE: Optional[Union[NativeAuth, ThirdPartyAuth]] = None
+    THIRD_PARTY_AUTH_CRED: Cred = None
 
     def __init__(
         self, auth_type: Optional[Union[NativeAuth, ThirdPartyAuth]] = NativeAuth
@@ -94,5 +95,8 @@ class Authorizor(DataBaseEngine):
         url_route = request.path
         if url_route == "/auth/google/callback":
             self.AUTH_INSTANCE = GOOGLE_AUTH
-        user_instance = self.AUTH_INSTANCE.handle_callback(request, response)
+        self.THIRD_PARTY_AUTH_CRED = self.AUTH_INSTANCE.get_cred_info(request, response)
+        user_instance = self.AUTH_INSTANCE.handle_callback(
+            request, response, self.THIRD_PARTY_AUTH_CRED
+        )
         return user_instance
