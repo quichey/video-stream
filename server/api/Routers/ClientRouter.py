@@ -149,7 +149,7 @@ class ClientRouter(Router):
             self.orchestrator.handle_request(request, response)
             return response
 
-        @app.route("/google/login", methods=["POST"])
+        @app.route("/google/login", methods=["GET"])
         def google_login():
             redirect_uri = url_for("google_callback", _external=True)
             auth_url = GOOGLE_AUTH.get_authorize_url(redirect_uri)
