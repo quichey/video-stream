@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import wraps
-from typing import Optional, override
+from typing import Optional
 from typing import Literal
+from typing_extensions import override
 
 from sqlalchemy.orm import Session
 
 from db.Schema.Models import User, ThirdPartyAuthUser, ThirdPartyAuthToken
-from auth import Auth
+from auth.auth import Auth
 from api.util.cookie import set_auth_cookie, expire_cookie
 from api.util.request_data import extract_user_session_cookie
 
@@ -40,7 +41,7 @@ class Cred:
     access_token: str = None
     refresh_token: Optional[str] = None
     expires_at: Optional[str] = None
-    metadata: Optional[str] = None
+    auth_metadata: Optional[str] = None
 
 
 class ThirdPartyAuth(Auth, ABC):
@@ -237,7 +238,7 @@ class ThirdPartyAuth(Auth, ABC):
             third_party_auth_user_id=third_party_user_record.id,
             access_token=creds.access_token,
             refresh_token=creds.refresh_token,
-            metadata=creds.metadata,
+            auth_metadata=creds.auth_metadata,
         )
         return record
 

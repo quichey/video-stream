@@ -1,4 +1,4 @@
-from google.google_auth import GoogleAuth
+from .google_auth.google_auth import GoogleAuth
 
 # Map provider names to classes
 auth_providers = {
