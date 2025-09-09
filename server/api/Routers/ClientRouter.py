@@ -1,5 +1,5 @@
 # Example using Flask and SQLite
-from flask import make_response, redirect
+from flask import make_response, redirect, url_for
 import json
 
 from .Router import Router
@@ -151,10 +151,9 @@ class ClientRouter(Router):
 
         @app.route("/google/login", methods=["POST"])
         def google_login():
-            response = make_response("Initial body")
-            redirect_uri = pass
+            redirect_uri = url_for("google_callback", _external=True)
             auth_url = GOOGLE_AUTH.get_authorize_url(redirect_uri)
-            return response
+            return auth_url
 
         @app.route("/auth/google/callback")
         def google_callback():
