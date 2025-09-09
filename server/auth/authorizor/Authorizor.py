@@ -30,7 +30,7 @@ class Authorizor(DataBaseEngine):
 
     def restore_lost_session(self, request, response):
         user_cookie = extract_user_session_cookie(request)
-        return self.fetch_user_record(user_cookie)
+        return self.fetch_user_record(user_cookie, request, response)
 
     def authenticate(self, request, response) -> Literal[True]:
         # TODO: Think i want to merge the user_cookies table with third_party_auths table to
@@ -55,20 +55,20 @@ class Authorizor(DataBaseEngine):
 
         return False
 
-    def fetch_user_record(self, cookie) -> User | Literal[False]:
+    def fetch_user_record(self, cookie, request, response) -> User | Literal[False]:
         # TODO: classmethod on AUTH_COOKIE?
         cookie_record = self.fetch_user_cookie_record(cookie)
         # also save to mysql db
         with Session(self.engine) as session:
             user_record = session.get(User, cookie_record.user_id)
-            self.AUTH_COOKIE = AuthCookie(user_record)
+            self.AUTH_COOKIE = AuthCookie(user_record, request, response)
             return user_record
 
         return False
 
     def handle_login(self, request, response):
         user_instance = self.AUTH_INSTANCE.login()
-        self.AUTH_COOKIE = AuthCookie(user_instance)
+        self.AUTH_COOKIE = AuthCookie(user_instance, request, response)
         return user_instance
 
     def handle_logout(self, request, response) -> Literal[True]:
@@ -86,7 +86,7 @@ class Authorizor(DataBaseEngine):
 
     def handle_register(self, request, response):
         user_instance = self.AUTH_INSTANCE.register()
-        self.AUTH_COOKIE = AuthCookie(user_instance)
+        self.AUTH_COOKIE = AuthCookie(user_instance, request, response)
         return user_instance
 
     def handle_third_party_auth(self, request, response) -> User | Literal[False]:
