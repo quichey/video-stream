@@ -61,7 +61,8 @@ class Authorizor(DataBaseEngine):
         # also save to mysql db
         with Session(self.engine) as session:
             user_record = session.get(User, cookie_record.user_id)
-            self.AUTH_COOKIE = AuthCookie(user_record, request, response)
+            user_cookie = extract_user_session_cookie(request)
+            self.AUTH_COOKIE = AuthCookie(user_record, request, response, user_cookie)
             return user_record
 
         return False
