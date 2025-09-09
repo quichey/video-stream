@@ -16,9 +16,12 @@ class AuthCookie(DataBaseEngine):
     COOKIE_VALUE = None
     USER_INSTANCE: User = None
 
-    def __init__(self, user_instance: User, request, response):
+    def __init__(self, user_instance: User, request, response, old_cookie=None):
         self.USER_INSTANCE = user_instance
-        self.generate_auth_cookie(request, response)
+        if old_cookie is None:
+            self.generate_auth_cookie(request, response)
+        else:
+            self.COOKIE_VALUE = old_cookie
 
     def store_cookie_record(self) -> UserCookie | Literal[False]:
         # also save to mysql db
