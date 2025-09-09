@@ -46,6 +46,11 @@ class Cred:
 class ThirdPartyAuth(Auth, ABC):
     PROVIDER = None
 
+    @abstractmethod
+    def get_authorize_url(self, redirect_uri: str) -> str:
+        """Return URL to redirect user for login"""
+        pass
+
     def handle_callback(self, request, response) -> User | Literal[False]:
         """Handle User 3rd party credentials"""
         creds = self._extract_authorizor_creds(request, response)
@@ -146,11 +151,6 @@ class ThirdPartyAuth(Auth, ABC):
     @oauth_client.setter
     def oauth_client(self, new_value):
         self._oauth_client = new_value
-
-    @abstractmethod
-    def _get_authorize_url(self, redirect_uri: str) -> str:
-        """Return URL to redirect user for login"""
-        pass
 
     """
     Can i make this not an abstract-method?
