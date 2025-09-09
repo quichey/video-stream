@@ -19,7 +19,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 from typing import Optional
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy.orm import mapped_column
 
 from util.env import load_server_env, load_providers_env
 
@@ -169,9 +169,11 @@ class ThirdPartyAuthUser(Base):
     provider: Mapped[str] = mapped_column(String(50))
     provider_user_id: Mapped[str] = mapped_column(String(255))
 
+    """
     user = relationship(
         "User", back_populates="third_party_accounts"
     )  # TODO: what is this?
+    """
 
     __table_args__ = (
         # Enforce uniqueness of provider + provider_user_id
@@ -194,9 +196,11 @@ class ThirdPartyAuthToken(Base):
     expires_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)  # type: ignore
     auth_metadata: Mapped[dict] = mapped_column(JSON)
 
+    """
     user = relationship(
         "User", back_populates="third_party_accounts"
     )  # TODO: what is this?
+    """
 
 
 class Video(Base):
