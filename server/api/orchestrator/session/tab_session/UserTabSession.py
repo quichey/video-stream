@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from server.api.orchestrator.session.tab_session.TabSession import TabSession
+from api.orchestrator.session.tab_session.TabSession import TabSession
 
 from api.util.request_data import (
     attach_data_to_payload,

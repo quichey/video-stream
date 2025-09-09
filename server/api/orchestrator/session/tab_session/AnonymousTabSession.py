@@ -1,4 +1,4 @@
-from server.api.orchestrator.session.tab_session.TabSession import TabSession
+from api.orchestrator.session.tab_session.TabSession import TabSession
 
 
 class AnonymousTabSession(TabSession):
