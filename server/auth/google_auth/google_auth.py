@@ -16,23 +16,10 @@ class GoogleAuth(ThirdPartyAuth):
             name="google",
             client_id=self.GOOGLE_CLIENT_ID,
             client_secret=self.GOOGLE_CLIENT_SECRET,
-            access_token_url="https://accounts.google.com/o/oauth2/token",
-            authorize_url="https://accounts.google.com/o/oauth2/auth",
-            api_base_url="https://www.googleapis.com/oauth2/v1/",
+            server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
             client_kwargs={"scope": "openid email profile"},
         )
         return
-
-    # TODO: don't need this?
-    # previously was @override: authorize
-    def g_authorize(self):
-        token = self.oauth_client.authorize_access_token()
-        resp = self.oauth_client.get("userinfo")
-        user_info = resp.json()
-        return {
-            "token": token,
-            user_info: user_info,
-        }
 
     @override
     def get_authorize_url(self, redirect_uri):
@@ -44,8 +31,9 @@ class GoogleAuth(ThirdPartyAuth):
         # Exchange 'code' from query params for an access token
         token = self.oauth_client.authorize_access_token()
 
+        userinfo_endpoint = self.oauth_client.server_metadata["userinfo_endpoint"]
         # Use the token to get user info
-        resp = self.oauth_client.get("userinfo")
+        resp = self.oauth_client.get(userinfo_endpoint)
         user_info = resp.json()
 
         # Example: user_info contains 'email', 'name', 'picture', etc.
