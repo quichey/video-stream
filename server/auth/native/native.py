@@ -4,7 +4,7 @@ from typing import Literal
 
 from sqlalchemy.orm import Session
 
-from auth.Auth import Auth
+from auth.auth import Auth
 from api.util.request_data import (
     extract_registration_info,
     extract_login_info,

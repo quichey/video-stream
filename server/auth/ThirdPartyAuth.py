@@ -34,6 +34,22 @@ Rather leave all User database updates and reads to here
 """
 
 
+def needs_authorization(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        # Step 1: call child-specific authorization (expected to be defined in child)
+        if hasattr(self, "authorize"):
+            self.authorize(*args, **kwargs)
+
+        # Step 2: base-class predefined steps
+        print("Base class step: logging or validation")
+
+        # Step 3: run the original function
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 @dataclass
 class Cred:
     provider_user_id: str = None
@@ -109,23 +125,8 @@ class ThirdPartyAuth(Auth, ABC):
         user = self._get_user_info(third_party_user_record)
         return user
 
-    def _needs_authorization(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            # Step 1: call child-specific authorization (expected to be defined in child)
-            if hasattr(self, "authorize"):
-                self.authorize()
-
-            # Step 2: base-class predefined steps
-            print("Base class step: logging or validation")
-
-            # Step 3: run the original function
-            return func(*args, **kwargs)
-
-        return wrapper
-
     @override
-    @_needs_authorization
+    @needs_authorization
     def logout(self, request, response) -> bool:
         # TODO: remove auth_token?
         # should I have another table
