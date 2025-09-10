@@ -53,7 +53,21 @@ class SessionManagement:
         # TODO: is checking no_user_info important?
         return no_long_term_cookie and no_user_info
 
-    def on_request(self, request, response):
+    def on_request(self, request, response, SESSION_TOKEN_HACK=None):
+        if SESSION_TOKEN_HACK is not None:
+            browser_session_list = self.SESSION_REGISTRY.sessions.values()
+            TEMP_LONG_TERM_SESSION_HACK = None
+            for one_browser_session in browser_session_list:
+                anon_session = one_browser_session.anonymous_tab_session
+                if anon_session.token == SESSION_TOKEN_HACK:
+                    TEMP_LONG_TERM_SESSION_HACK = (
+                        one_browser_session.LONG_TERM_COOKIE_ID
+                    )
+                    break
+            browser_session = self.SESSION_REGISTRY.sessions.get(
+                TEMP_LONG_TERM_SESSION_HACK
+            )
+            return browser_session.on_request(request, response)
         # check the request for existing cookie
         # if no cookie present, and no User Id passed in, then...
         # generate a new Session Object and generate cookies

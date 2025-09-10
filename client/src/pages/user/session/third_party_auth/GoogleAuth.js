@@ -13,9 +13,9 @@ export default function GoogleAuth() {
       const height = 600;
       const left = (window.innerWidth - width) / 2;
       const top = (window.innerHeight - height) / 2;
-
+      const tempSessionToken = sessionStorage.getItem("tempSessionToken");
       const popup = window.open(
-        "http://127.0.0.1:5000/google/login",
+        `http://127.0.0.1:5000/google/login?session_token=${encodeURIComponent(tempSessionToken)}`,
         "google-login",
         `width=${width},height=${height},top=${top},left=${left}`,
       );

@@ -102,11 +102,15 @@ class BrowserSession(DataBaseEngine):
     def do_third_party_login(self, request, response) -> UserTabSession:
         self.AUTHORIZOR = Authorizor(ThirdPartyAuth)
         user_instance = self.AUTHORIZOR.handle_third_party_auth(request, response)
+        print(f"\n\n do_third_party_login user_instance: {user_instance} \n\n")
         if user_instance:
             self.user_tab_session = UserTabSession(
                 user_instance,
                 request,
                 response,
+            )
+            print(
+                f"\n\n do_third_party_login self.user_tab_session: {self.user_tab_session} \n\n"
             )
             response.status_code = 200
             return self.user_tab_session
@@ -142,7 +146,10 @@ class BrowserSession(DataBaseEngine):
     def get_session(self, request, response) -> TabSession:
         has_user_cookie = has_user_session_cookie(request)
         if has_user_cookie:
-            return self.restore_lost_user_tab_session(request, response)
+            if not self.user_tab_session:
+                return self.restore_lost_user_tab_session(request, response)
+            else:
+                return self.user_tab_session
         else:
             return self.anonymous_tab_session
 

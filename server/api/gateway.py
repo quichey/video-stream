@@ -46,6 +46,7 @@ load_dotenv(dotenv_path="env/azure/.env")
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    print(f"\n\n __name__: {__name__} \n\n")
     # Base configs that should hold true no matter what
     app.config.from_mapping(
         SECRET_KEY="dev",

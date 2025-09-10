@@ -151,6 +151,15 @@ class ClientRouter(Router):
 
         @app.route("/google/login", methods=["GET"])
         def google_login():
+            # Extract the session_token query parameter
+            session_token = request.args.get(
+                "session_token"
+            )  # Returns None if not present
+
+            if session_token:
+                # Use the value to look up the BrowserSession or do whatever you need
+                print("Received session_token:", session_token)
+                self.SESSION_TOKEN_HACK = session_token
             redirect_uri = url_for("google_callback", _external=True)
             auth_url = GOOGLE_AUTH.get_authorize_url(redirect_uri)
             return auth_url
@@ -159,9 +168,11 @@ class ClientRouter(Router):
         def google_callback():
             # Initial empty response
             response = make_response()  # can be updated in orchestrator
-
-            # Orchestrator handles request, updates headers/cookies, and sets payload in response.data
-            self.orchestrator.handle_request(request, response)
+            self.orchestrator.handle_request(
+                request,
+                response,
+                SESSION_TOKEN_HACK=self.SESSION_TOKEN_HACK,
+            )
 
             # Ensure response.data is a dict
             if response.data:
@@ -188,7 +199,7 @@ class ClientRouter(Router):
                 """,
                 payload=payload,  # pass payload dict to template
             )
-
+            self.SESSION_TOKEN_HACK = None
             response.set_data(html_body)  # set rendered HTML as response body
             response.headers["Content-Type"] = "text/html"  # ensure proper content-type
             return response
