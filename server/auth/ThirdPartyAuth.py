@@ -82,6 +82,7 @@ class ThirdPartyAuth(Auth, ABC):
         else:
             user_record = self.register(request, response, creds)
         set_auth_cookie(response, creds.access_token)
+        print(f"\n\n handle_callback user_record: {user_record} \n\n")
         return user_record
 
     @override

@@ -99,4 +99,5 @@ class Authorizor(DataBaseEngine):
         user_instance = self.AUTH_INSTANCE.handle_callback(
             request, response, self.THIRD_PARTY_AUTH_CRED
         )
+        print(f"\n\n handle_third_party_auth user_record: {user_instance} \n\n")
         return user_instance
