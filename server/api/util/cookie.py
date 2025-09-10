@@ -1,7 +1,7 @@
 import uuid
 
 from util.deployment import Deployment
-from util.request_data import attach_data_to_payload
+from api.util.request_data import attach_data_to_payload
 
 deployment = Deployment().deployment
 
