@@ -6,6 +6,7 @@ from typing import Literal
 from typing_extensions import override
 
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 from db.Schema.Models import User, ThirdPartyAuthUser, ThirdPartyAuthToken
 from auth.auth import Auth
@@ -105,7 +106,8 @@ class ThirdPartyAuth(Auth, ABC):
         # TODO: create record in ThirdPartyAuthUser
         # also create record in User table
         # also create record in ThirdPartyAuthToken table
-        with Session(self.engine) as session:
+        SessionLocal = sessionmaker(bind=self.engine, expire_on_commit=False)
+        with SessionLocal() as session:
             try:
                 user = self._create_user(creds, session)
                 third_party_user_record = self._create_third_party_user_record(
@@ -227,9 +229,9 @@ class ThirdPartyAuth(Auth, ABC):
             email=creds.email,
         )
         # also save to mysql db
-        user_record = session.add(user)
+        session.add(user)
         session.flush()
-        return user_record
+        return user
 
     def _get_user_info(self, third_party_user_record: ThirdPartyAuthUser) -> User:
         with Session(self.engine) as session:
@@ -253,5 +255,5 @@ class ThirdPartyAuth(Auth, ABC):
         self, creds: Cred, third_party_user_record: ThirdPartyAuthUser, session: Session
     ) -> ThirdPartyAuthToken:
         record = self._map_creds_to_auth_record(creds, third_party_user_record)
-        record = session.add(record)
+        session.add(record)
         return record
