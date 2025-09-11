@@ -9,7 +9,7 @@ from api.util.error_handling import SecurityError
 from db.Schema.Models import User
 from api.util.db_engine import DataBaseEngine
 from auth.authorizor.auth_cookie import AuthCookie
-from db.Schema.Models import UserCookie, ThirdPartyAuthToken
+from db.Schema.Models import UserCookie, ThirdPartyAuthToken, ThirdPartyAuthUser
 
 from api.util.request_data import (
     extract_user_session_cookie,
@@ -70,6 +70,20 @@ class Authorizor(DataBaseEngine):
 
         return False
 
+    def fetch_third_party_user_record(
+        self, cookie_record: ThirdPartyAuthToken
+    ) -> ThirdPartyAuthUser | Literal[False]:
+        # also save to mysql db
+        with Session(self.engine) as session:
+            third_party_user_record = (
+                session.query(ThirdPartyAuthUser)
+                .filter_by(access_token=cookie_record.third_party_auth_user_id)
+                .first()
+            )
+            return third_party_user_record
+
+        return False
+
     def fetch_user_record(self, cookie, request, response) -> User | Literal[False]:
         # TODO: classmethod on AUTH_COOKIE?
         cookie_record = self.fetch_user_cookie_record(cookie)
@@ -85,9 +99,9 @@ class Authorizor(DataBaseEngine):
         else:  # was ThirdPartyAuth
             cookie_record = self.fetch_third_party_cookie_record(cookie)
             # TODO: fetch third_party_auth_user record
+            third_party_auth_user = self.fetch_third_party_user_record(cookie)
             with Session(self.engine) as session:
-                user_record = session.get(User, cookie_record.user_id)
-                user_cookie = extract_user_session_cookie(request)
+                user_record = session.get(User, third_party_auth_user.user_id)
                 return user_record
 
         return False
