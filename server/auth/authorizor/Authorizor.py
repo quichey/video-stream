@@ -29,7 +29,7 @@ class Authorizor(DataBaseEngine):
         elif auth_type == ThirdPartyAuth:
             self.AUTH_INSTANCE = None
 
-    def restore_lost_session(self, request, response):
+    def restore_lost_session(self, request, response) -> User:
         user_cookie = extract_user_session_cookie(request)
         return self.fetch_user_record(user_cookie, request, response)
 
