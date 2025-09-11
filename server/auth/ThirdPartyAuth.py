@@ -146,14 +146,17 @@ class ThirdPartyAuth(Auth, ABC):
         # TODO: remove record from ThirdPartyAuthToken
         with Session(self.engine) as session:
             access_token = extract_user_session_cookie(request)
-            record = (
+            deleted_record = (
                 session.query(ThirdPartyAuthToken)
-                .filter_by(access_token=access_token)
-                .first()
+                .filter(ThirdPartyAuthToken.access_token == access_token)
+                .delete()
             )
-            deleted_record = session.delete(record)
+            # deleted_record = session.delete(record)
+            print(f"\n\n deleted_record: {deleted_record} \n\n")
             if deleted_record:
+                print("\n\n reached if deleted_record \n\n")
                 expire_cookie("auth_cookie", response)
+                session.commit()
                 return True
         return False
 
