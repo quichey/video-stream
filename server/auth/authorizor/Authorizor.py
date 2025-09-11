@@ -83,7 +83,7 @@ class Authorizor(DataBaseEngine):
         with Session(self.engine) as session:
             third_party_user_record = (
                 session.query(ThirdPartyAuthUser)
-                .filter_by(access_token=cookie_record.third_party_auth_user_id)
+                .filter_by(id=cookie_record.third_party_auth_user_id)
                 .first()
             )
             return third_party_user_record
@@ -105,7 +105,7 @@ class Authorizor(DataBaseEngine):
         else:  # was ThirdPartyAuth
             cookie_record = self.fetch_third_party_cookie_record(cookie)
             # TODO: fetch third_party_auth_user record
-            third_party_auth_user = self.fetch_third_party_user_record(cookie)
+            third_party_auth_user = self.fetch_third_party_user_record(cookie_record)
             with Session(self.engine) as session:
                 user_record = session.get(User, third_party_auth_user.user_id)
                 return user_record
