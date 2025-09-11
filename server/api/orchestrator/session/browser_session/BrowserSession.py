@@ -161,6 +161,7 @@ class BrowserSession(DataBaseEngine):
             current_session = self.do_login(request, response)
             return "login?"
         elif self.needs_logout(request, response):
+            print("\n\n reached elif self.needs_logout(request, response):\n\n")
             # change to anonymous session
             current_session = self.do_logout(request, response)
             return "loggedout?"

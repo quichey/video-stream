@@ -33,7 +33,7 @@ class Authorizor(DataBaseEngine):
         if auth_type == NativeAuth:
             self.AUTH_INSTANCE = NATIVE_AUTH
         elif auth_type == ThirdPartyAuth:
-            self.AUTH_INSTANCE = None
+            self.AUTH_INSTANCE = GOOGLE_AUTH
 
     def restore_lost_session(self, request, response) -> User:
         user_cookie = extract_user_session_cookie(request)
@@ -95,6 +95,7 @@ class Authorizor(DataBaseEngine):
         cookie_record = self.fetch_user_cookie_record(cookie)
         if cookie_record:  # if this exists, then it was NativeAuth
             # also save to mysql db
+            self.AUTH_INSTANCE = NATIVE_AUTH
             with Session(self.engine) as session:
                 user_record = session.get(User, cookie_record.user_id)
                 user_cookie = extract_user_session_cookie(request)
@@ -103,6 +104,7 @@ class Authorizor(DataBaseEngine):
                 )
                 return user_record
         else:  # was ThirdPartyAuth
+            self.AUTH_INSTANCE = GOOGLE_AUTH
             cookie_record = self.fetch_third_party_cookie_record(cookie)
             # TODO: fetch third_party_auth_user record
             third_party_auth_user = self.fetch_third_party_user_record(cookie_record)
@@ -118,8 +120,12 @@ class Authorizor(DataBaseEngine):
         return user_instance
 
     def handle_logout(self, request, response) -> Literal[True]:
+        print("\n\n reached handle_logout Authorizor.py\n\n")
         # self.NATIVE_AUTH.logout(request, response)
         if self.AUTH_INSTANCE == NATIVE_AUTH:
+            print(
+                "\n\n reached handle_logout if self.AUTH_INSTANCE == NATIVE_AUTH:\n\n"
+            )
             if not self.authenticate(request, response):
                 # Invalid credentials
                 response.status_code = 401
@@ -128,7 +134,10 @@ class Authorizor(DataBaseEngine):
             self.AUTH_COOKIE.clear_cookie(request, response)
             return True
         elif self.AUTH_INSTANCE == GOOGLE_AUTH:
-            self.AUTH_INSTANCE.logout(request, response)
+            print(
+                "\n\n reached handle_logout elif self.AUTH_INSTANCE == GOOGLE_AUTH:\n\n"
+            )
+            return self.AUTH_INSTANCE.logout(request, response)
 
     def handle_register(self, request, response):
         user_instance = self.AUTH_INSTANCE.register()
