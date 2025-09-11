@@ -41,7 +41,6 @@ class GoogleAuth(ThirdPartyAuth):
             provider_user_id=user_info["sub"],
             access_token=token["access_token"],
             expires_at=token["expires_at"],
-            refresh_token=token["refresh_token"],
             email=user_info["email"],
         )
 
