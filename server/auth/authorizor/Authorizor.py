@@ -9,7 +9,7 @@ from api.util.error_handling import SecurityError
 from db.Schema.Models import User
 from api.util.db_engine import DataBaseEngine
 from auth.authorizor.auth_cookie import AuthCookie
-from db.Schema.Models import UserCookie
+from db.Schema.Models import UserCookie, ThirdPartyAuthToken
 
 from api.util.request_data import (
     extract_user_session_cookie,
@@ -39,7 +39,7 @@ class Authorizor(DataBaseEngine):
         # OR just attach new cookie value within ThirdPartyAuthorizors
         if self.AUTH_INSTANCE == NATIVE_AUTH:
             return self.AUTH_COOKIE.authenticate_cookies(request, response)
-        elif self.AUTH_INSTANCE == ThirdPartyAuth:
+        elif type(self.AUTH_INSTANCE) is ThirdPartyAuth:
             return self.AUTH_INSTANCE.authorize(request, response)
 
     def pre_authenticate_session(self, request, response) -> Literal[True]:
@@ -56,15 +56,39 @@ class Authorizor(DataBaseEngine):
 
         return False
 
+    def fetch_third_party_cookie_record(
+        self, cookie
+    ) -> ThirdPartyAuthToken | Literal[False]:
+        # also save to mysql db
+        with Session(self.engine) as session:
+            cookie_record = (
+                session.query(ThirdPartyAuthToken)
+                .filter_by(access_token=cookie)
+                .first()
+            )
+            return cookie_record
+
+        return False
+
     def fetch_user_record(self, cookie, request, response) -> User | Literal[False]:
         # TODO: classmethod on AUTH_COOKIE?
         cookie_record = self.fetch_user_cookie_record(cookie)
-        # also save to mysql db
-        with Session(self.engine) as session:
-            user_record = session.get(User, cookie_record.user_id)
-            user_cookie = extract_user_session_cookie(request)
-            self.AUTH_COOKIE = AuthCookie(user_record, request, response, user_cookie)
-            return user_record
+        if cookie_record:  # if this exists, then it was NativeAuth
+            # also save to mysql db
+            with Session(self.engine) as session:
+                user_record = session.get(User, cookie_record.user_id)
+                user_cookie = extract_user_session_cookie(request)
+                self.AUTH_COOKIE = AuthCookie(
+                    user_record, request, response, user_cookie
+                )
+                return user_record
+        else:  # was ThirdPartyAuth
+            cookie_record = self.fetch_third_party_cookie_record(cookie)
+            # TODO: fetch third_party_auth_user record
+            with Session(self.engine) as session:
+                user_record = session.get(User, cookie_record.user_id)
+                user_cookie = extract_user_session_cookie(request)
+                return user_record
 
         return False
 
