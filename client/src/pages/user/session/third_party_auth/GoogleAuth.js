@@ -3,10 +3,11 @@ import GoogleIcon from "@mui/icons-material/Google";
 
 import IconButtonVS from "../../../../components/IconButton";
 import { UserContext } from "../../../../contexts/UserContext";
-
+import { HTTPContext } from "../../../../contexts/HTTPContext";
 export default function GoogleAuth() {
   const { setName, setID, setIconFileName, setIconSASURL } =
     React.useContext(UserContext);
+  const { serverURL } = React.useContext(HTTPContext);
   const handleClick = React.useCallback(
     (event) => {
       const width = 500;
@@ -15,14 +16,14 @@ export default function GoogleAuth() {
       const top = (window.innerHeight - height) / 2;
       const tempSessionToken = sessionStorage.getItem("tempSessionToken");
       const popup = window.open(
-        `http://127.0.0.1:5000/google/login?session_token=${encodeURIComponent(tempSessionToken)}`,
+        `${serverURL}/google/login?session_token=${encodeURIComponent(tempSessionToken)}`,
         "google-login",
         `width=${width},height=${height},top=${top},left=${left}`,
       );
 
       // Listen for the message from popup
       window.addEventListener("message", function handleMessage(event) {
-        if (event.origin !== "http://127.0.0.1:5000") return; // validate origin
+        if (event.origin !== serverURL) return; // validate origin
         const { payload } = event.data;
         if (payload) {
           const tempToken = payload.session_token;
@@ -40,7 +41,7 @@ export default function GoogleAuth() {
         }
       });
     },
-    [setID, setIconFileName, setIconSASURL, setName],
+    [setID, setIconFileName, setIconSASURL, setName, serverURL],
   );
 
   return (
