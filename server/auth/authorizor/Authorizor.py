@@ -18,12 +18,18 @@ from api.util.request_data import (
 
 class Authorizor(DataBaseEngine):
     AUTH_COOKIE: AuthCookie = None  # TODO: does this belong in Auth class?
-    AUTH_INSTANCE: Optional[Union[NativeAuth, ThirdPartyAuth]] = None
+    AUTH_INSTANCE: Optional[Union[NativeAuth, ThirdPartyAuth, Literal["TBD"]]] = None
     THIRD_PARTY_AUTH_CRED: Cred = None
 
     def __init__(
-        self, auth_type: Optional[Union[NativeAuth, ThirdPartyAuth]] = NativeAuth
+        self,
+        auth_type: Optional[
+            Union[NativeAuth, ThirdPartyAuth, Literal["TBD"]]
+        ] = NativeAuth,
+        old_cookie: bool = False,
     ):
+        if old_cookie:
+            return
         if auth_type == NativeAuth:
             self.AUTH_INSTANCE = NATIVE_AUTH
         elif auth_type == ThirdPartyAuth:
