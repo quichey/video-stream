@@ -46,7 +46,7 @@ def needs_authorization(func):
         print("Base class step: logging or validation")
 
         # Step 3: run the original function
-        return func(*args, **kwargs)
+        return func(self, *args, **kwargs)
 
     return wrapper
 
@@ -146,8 +146,10 @@ class ThirdPartyAuth(Auth, ABC):
         # TODO: remove record from ThirdPartyAuthToken
         with Session(self.engine) as session:
             access_token = extract_user_session_cookie(request)
-            record = session.filter_by(ThirdPartyAuthToken).where(
-                access_token=access_token
+            record = (
+                session.query(ThirdPartyAuthToken)
+                .filter_by(access_token=access_token)
+                .first()
             )
             deleted_record = session.delete(record)
             if deleted_record:
