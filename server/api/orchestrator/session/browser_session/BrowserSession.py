@@ -47,7 +47,8 @@ class BrowserSession(DataBaseEngine):
             # ----- name, profile pic info
             if not self.user_tab_session:
                 print("\n\n got here: if not session_pair.user_tab_session \n\n")
-                self.AUTHORIZOR = Authorizor(NativeAuth)
+                authorizor_type = self.determine_authorizor_type(request, response)
+                self.AUTHORIZOR = Authorizor(authorizor_type)
                 user_record = self.AUTHORIZOR.restore_lost_session(request, response)
                 self.user_tab_session = UserTabSession(
                     user_record,
