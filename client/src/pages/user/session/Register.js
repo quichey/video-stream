@@ -23,7 +23,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const fetchData = useServerCall();
-  const { setName: setUserName } = React.useContext(UserContext);
+  const { setName: setUserName, setID } = React.useContext(UserContext);
 
   const handleClick = React.useCallback((event) => {
     setOpen(true);
@@ -38,11 +38,12 @@ export default function Register() {
         const tempToken = json.session_token;
         sessionStorage.setItem("tempSessionToken", tempToken);
         setUserName(name);
+        setID(json?.user_data?.id);
         setOpen(false);
       },
       { user_name: name, email: email, password: password },
     );
-  }, [fetchData, name, email, password, setUserName]);
+  }, [fetchData, name, email, password, setUserName, setID]);
 
   const handleNameChange = React.useCallback((val) => {
     if (val !== undefined) {
