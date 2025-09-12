@@ -3,12 +3,25 @@ import os
 from authlib.integrations.flask_client import OAuth
 
 from auth.ThirdPartyAuth import ThirdPartyAuth, Cred
+from util.deployment import Deployment
+
+deployment_class = Deployment()
+if deployment_class.deployment == "local":
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+elif deployment_class.deployment == "cloud":
+    GOOGLE_CLIENT_ID = os.environ.get(
+        f"{deployment_class.deployment_env.upper()}_GOOGLE_CLIENT_ID"
+    )
+    GOOGLE_CLIENT_SECRET = os.environ.get(
+        f"{deployment_class.deployment_env.upper()}_GOOGLE_CLIENT_SECRET"
+    )
 
 
 class GoogleAuth(ThirdPartyAuth):
     PROVIDER = "google"
-    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+    GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET = GOOGLE_CLIENT_SECRET
 
     def init_app(self, app):
         self.oauth = OAuth(app)
