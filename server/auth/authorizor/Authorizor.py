@@ -141,6 +141,7 @@ class Authorizor(DataBaseEngine):
 
     def handle_register(self, request, response):
         user_instance = self.AUTH_INSTANCE.register(request, response)
+        print(f"\n\n Authorizor handle_register: {user_instance} \n\n")
         self.AUTH_COOKIE = AuthCookie(user_instance, request, response)
         return user_instance
 
