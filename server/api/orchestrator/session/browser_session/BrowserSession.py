@@ -61,6 +61,7 @@ class BrowserSession(DataBaseEngine):
         self.AUTHORIZOR = Authorizor(NativeAuth)
         new_user_instance = self.AUTHORIZOR.handle_register(request, response)
         if new_user_instance:
+            print(f"\n\n BrowserSession do_registration: {new_user_instance} \n\n")
             self.user_tab_session = UserTabSession(
                 new_user_instance,
                 request,
