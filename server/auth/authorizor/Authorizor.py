@@ -115,7 +115,7 @@ class Authorizor(DataBaseEngine):
         return False
 
     def handle_login(self, request, response):
-        user_instance = self.AUTH_INSTANCE.login()
+        user_instance = self.AUTH_INSTANCE.login(request, response)
         self.AUTH_COOKIE = AuthCookie(user_instance, request, response)
         return user_instance
 
@@ -140,7 +140,7 @@ class Authorizor(DataBaseEngine):
             return self.AUTH_INSTANCE.logout(request, response)
 
     def handle_register(self, request, response):
-        user_instance = self.AUTH_INSTANCE.register()
+        user_instance = self.AUTH_INSTANCE.register(request, response)
         self.AUTH_COOKIE = AuthCookie(user_instance, request, response)
         return user_instance
 
