@@ -4,6 +4,7 @@ import { Popover, MenuItem, Typography } from "@mui/material";
 import Login from "./Login";
 import Logout from "./Logout";
 import Register from "./Register";
+import ThirdPartyAuths from "./third_party_auth";
 
 import { UserContext } from "../../../contexts/UserContext";
 import ViewChannel from "./ViewChannel";
@@ -43,6 +44,7 @@ export default function SessionMenu({ handleClose, anchorEl }) {
             <MenuItem onClick={handleClose}>Settings</MenuItem>
             {!!userID && <Logout />}
             {!userID && <Register />}
+            {!userID && <ThirdPartyAuths />}
           </>
         )}
       </Popover>

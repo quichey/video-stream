@@ -1,8 +1,9 @@
 import uuid
 
 from util.deployment import Deployment
+from api.util.request_data import attach_data_to_payload
 
-deployment = Deployment()
+deployment = Deployment().deployment
 
 
 def generate_uuid():
@@ -25,6 +26,25 @@ def generate_cookie(name, response):
         path="/",
     )
     return cookie_id
+
+
+def set_auth_cookie(response, access_token):
+    IS_PRODUCTION = deployment == "cloud"
+    max_age = 30 * 24 * 60 * 60  # 30 days
+
+    auth_cookie_info = {
+        "name": "auth_cookie",
+        "value": access_token,
+        "max_age": max_age,
+        "httponly": True,
+        "secure": IS_PRODUCTION,
+        "samesite": "None" if IS_PRODUCTION else "Lax",
+        "path": "/",
+    }
+
+    # Attach the info to payload for React to set
+    attach_data_to_payload(response, {"auth_cookie_info": auth_cookie_info})
+    return access_token
 
 
 def expire_cookie(name, response):

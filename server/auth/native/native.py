@@ -4,8 +4,11 @@ from typing import Literal
 
 from sqlalchemy.orm import Session
 
-from auth.Auth import Auth
-from api.util.request_data import extract_registration_info, extract_login_info
+from auth.auth import Auth
+from api.util.request_data import (
+    extract_registration_info,
+    extract_login_info,
+)
 from db.Schema.Models import User
 
 
@@ -31,6 +34,10 @@ class NativeAuth(Auth):
     @override
     def logout(self, request, response):
         pass
+
+    @override
+    def authorize(self, request, response):
+        return
 
     # User registers -> hash their password
     def hash_password(self, plain_password: str) -> bytes:

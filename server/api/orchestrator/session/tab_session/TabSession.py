@@ -40,7 +40,7 @@ def post_load_session_hook(func):
     return wrapper
 
 
-class SessionBase(ABC):
+class TabSession(ABC):
     TOKEN = None
 
     VIDEO = None

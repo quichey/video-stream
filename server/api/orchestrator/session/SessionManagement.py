@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from api.orchestrator.session.SessionPair import SessionPair
+from api.orchestrator.session.browser_session.BrowserSession import (
+    BrowserSession,
+)
 from api.util.request_data import (
     has_user_info,
     extract_long_term_cookie,
@@ -14,7 +16,7 @@ class SecurityError(Exception):
 @dataclass
 class SessionRegistry:
     # str should be LONG_TERM_COOKIE_ID
-    sessions: dict[str, SessionPair]
+    sessions: dict[str, BrowserSession]
 
 
 class SessionManagement:
@@ -23,8 +25,8 @@ class SessionManagement:
     def __init__(self):
         self.SESSION_REGISTRY = SessionRegistry(sessions={})
 
-    def add_session_pair(self, request, response) -> SessionPair:
-        new_session_pair = SessionPair(request, response)
+    def add_browser_session(self, request, response) -> BrowserSession:
+        new_session_pair = BrowserSession(request, response)
         self.SESSION_REGISTRY.sessions[new_session_pair.LONG_TERM_COOKIE_ID] = (
             new_session_pair
         )
@@ -33,7 +35,7 @@ class SessionManagement:
     def end_session(self, request):
         pass
 
-    def get_session_pair(self, request) -> SessionPair:
+    def get_browser_session(self, request) -> BrowserSession:
         long_term_cookie_id = extract_long_term_cookie(request)
         # print(f"\n\n self.SESSIONS: {self.SESSIONS}")
         session_pair = self.SESSION_REGISTRY.sessions.get(long_term_cookie_id)
@@ -51,7 +53,21 @@ class SessionManagement:
         # TODO: is checking no_user_info important?
         return no_long_term_cookie and no_user_info
 
-    def on_request(self, request, response):
+    def on_request(self, request, response, SESSION_TOKEN_HACK=None):
+        if SESSION_TOKEN_HACK is not None:
+            browser_session_list = self.SESSION_REGISTRY.sessions.values()
+            TEMP_LONG_TERM_SESSION_HACK = None
+            for one_browser_session in browser_session_list:
+                anon_session = one_browser_session.anonymous_tab_session
+                if anon_session.token == SESSION_TOKEN_HACK:
+                    TEMP_LONG_TERM_SESSION_HACK = (
+                        one_browser_session.LONG_TERM_COOKIE_ID
+                    )
+                    break
+            browser_session = self.SESSION_REGISTRY.sessions.get(
+                TEMP_LONG_TERM_SESSION_HACK
+            )
+            return browser_session.on_request(request, response)
         # check the request for existing cookie
         # if no cookie present, and no User Id passed in, then...
         # generate a new Session Object and generate cookies
@@ -81,15 +97,15 @@ class SessionManagement:
         )
         if needs_create_session:
             print("reached if needs_create_session")
-            session_pair = self.add_session_pair(request, response)
+            browser_session = self.add_browser_session(request, response)
         else:
             print("reached else")
-            session_pair = self.get_session_pair(request)
+            browser_session = self.get_browser_session(request)
 
         print(
             f"\n\n self.SESSION_REGISTRY.sessions -- on_request end: {self.SESSION_REGISTRY.sessions}"
         )
-        return session_pair.on_request(request, response)
+        return browser_session.on_request(request, response)
 
     def exit_session(self, user_info, session_info):
         self.authenticate_user(user_info, session_info)

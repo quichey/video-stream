@@ -3,10 +3,12 @@ from dotenv import load_dotenv
 
 from flask import Flask, request
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from api.orchestrator import Orchestrator
 from api.Routers import AdminRouter
 from api.Routers import ClientRouter
+from auth.google_auth.google_auth import GOOGLE_AUTH
 
 """
 Inject Router functions into this file
@@ -45,11 +47,13 @@ load_dotenv(dotenv_path="env/azure/.env")
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    print(f"\n\n __name__: {__name__} \n\n")
     # Base configs that should hold true no matter what
     app.config.from_mapping(
         SECRET_KEY="dev",
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # TODO: maybe need to update this host for cloud build
     client_url = os.environ.get("CLIENT_APP_URL")
@@ -95,6 +99,7 @@ def create_app(test_config=None):
     and keep this file as managing state of whole micro-service/gateway-process
     """
     orchestrator = Orchestrator()
+    GOOGLE_AUTH.init_app(app)
 
     client_router = ClientRouter(app=app, orchestrator=orchestrator, request=request)
     app.client_router = client_router
