@@ -1,6 +1,8 @@
 # Example using Flask and SQLite
 from flask import make_response, render_template_string, url_for
 import json
+import sys
+import os
 
 from .Router import Router
 from auth.native.native import NativeAuth, NATIVE_AUTH
@@ -160,8 +162,18 @@ class ClientRouter(Router):
                 # Use the value to look up the BrowserSession or do whatever you need
                 print("Received session_token:", session_token)
                 self.SESSION_TOKEN_HACK = session_token
+            """
+            if self.deployment == "local":
+                redirect_uri = url_for("google_callback", _external=True)
+            else:
+                redirect_uri = (
+                    f"{os.environ['REACT_APP_SERVER_APP_URL']}/auth/google/callback"
+                )
+            """
             redirect_uri = url_for("google_callback", _external=True)
+            print("DEBUG:", redirect_uri, file=sys.stderr, flush=True)
             auth_url = GOOGLE_AUTH.get_authorize_url(redirect_uri)
+            print("DEBUG:", auth_url, file=sys.stderr, flush=True)
             return auth_url
 
         @app.route("/auth/google/callback")
@@ -183,6 +195,11 @@ class ClientRouter(Router):
             else:
                 payload = {}
 
+            client_url = (
+                "http://localhost:3000"
+                if self.deployment == "local"
+                else os.environ.get("CLIENT_APP_URL")
+            )
             # Render HTML into response body
             html_body = render_template_string(
                 """
@@ -191,13 +208,14 @@ class ClientRouter(Router):
                 <body>
                 <script>
                     // Send full payload object to parent window safely
-                    window.opener.postMessage({payload: {{ payload | tojson }}}, "http://localhost:3000");
+                    window.opener.postMessage({payload: {{ payload | tojson }}}, "{{client_url}}");
                     window.close();
                 </script>
                 </body>
                 </html>
                 """,
                 payload=payload,  # pass payload dict to template
+                client_url=client_url,
             )
             self.SESSION_TOKEN_HACK = None
             response.set_data(html_body)  # set rendered HTML as response body

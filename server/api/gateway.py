@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 from flask import Flask, request
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from api.orchestrator import Orchestrator
 from api.Routers import AdminRouter
@@ -52,6 +53,7 @@ def create_app(test_config=None):
         SECRET_KEY="dev",
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # TODO: maybe need to update this host for cloud build
     client_url = os.environ.get("CLIENT_APP_URL")
