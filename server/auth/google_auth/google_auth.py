@@ -6,10 +6,14 @@ from auth.ThirdPartyAuth import ThirdPartyAuth, Cred
 from util.deployment import Deployment
 
 deployment_class = Deployment()
+print(f"\n\n deployment_class.deployment: {deployment_class.deployment} \n\n")
 if deployment_class.deployment == "local":
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 elif deployment_class.deployment == "cloud":
+    print(
+        f"\n\n deployment_class.deployment_env: {deployment_class.deployment_env} \n\n"
+    )
     GOOGLE_CLIENT_ID = os.environ.get(
         f"{deployment_class.deployment_env.upper()}_GOOGLE_CLIENT_ID"
     )
@@ -24,6 +28,8 @@ class GoogleAuth(ThirdPartyAuth):
     GOOGLE_CLIENT_SECRET = GOOGLE_CLIENT_SECRET
 
     def init_app(self, app):
+        print(f"\n\n self.GOOGLE_CLIENT_ID: {self.GOOGLE_CLIENT_ID} \n\n")
+        print(f"\n\n self.GOOGLE_CLIENT_SECRET: {self.GOOGLE_CLIENT_SECRET} \n\n")
         self.oauth = OAuth(app)
         self.oauth_client = self.oauth.register(
             name="google",
