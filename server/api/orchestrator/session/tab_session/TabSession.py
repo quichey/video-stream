@@ -1,5 +1,6 @@
 from abc import ABC
 import uuid
+import sys
 
 from api.orchestrator.session.state.upload_video import VideoUpload
 from api.orchestrator.session.state.watch_video import Video
@@ -59,8 +60,13 @@ class TabSession(ABC):
         request_session_token = extract_session_token(request)
         request_session_token_exists = has_session_token(request)
         if request_session_token_exists and (request_session_token != self.TOKEN):
-            print(f"\n\n request_session_token: {request_session_token}  \n\n")
-            print(f"\n\n self.TOKEN: {self.TOKEN}  \n\n")
+            print(
+                f"\n\n request_session_token: {request_session_token}  \n\n",
+                file=sys.stderr,
+                flush=True,
+            )
+            print(f"\n\n self.TOKEN: {self.TOKEN}  \n\n", file=sys.stderr, flush=True)
+            print(f"\n\n type(self): {type(self)}  \n\n", file=sys.stderr, flush=True)
             raise SecurityError("Hijacked Session Token")
 
         # Handle User refresh web-page

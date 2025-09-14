@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from db.Schema.Models import User, ThirdPartyAuthUser, ThirdPartyAuthToken
 from auth.auth import Auth
-from api.util.cookie import set_auth_cookie, expire_cookie
+from api.util.cookie import set_auth_cookie, expire_cookie, validate_one_time_token
 from api.util.request_data import extract_user_session_cookie
 
 """
@@ -63,6 +63,18 @@ class Cred:
 
 class ThirdPartyAuth(Auth, ABC):
     PROVIDER = None
+
+    def set_cookie(self, request, response):
+        token = request.args.get("token")
+        user_id = validate_one_time_token(token)
+        if not user_id:
+            return {"error": "invalid token"}, 401
+
+        # Get auth_cookie info from DB
+        access_token = pass
+        auth_cookie_info = set_auth_cookie(response, access_token=access_token)
+        return
+        
 
     @abstractmethod
     def get_authorize_url(self, redirect_uri: str) -> str:

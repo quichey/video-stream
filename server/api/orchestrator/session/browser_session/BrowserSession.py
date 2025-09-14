@@ -119,6 +119,10 @@ class BrowserSession(DataBaseEngine):
             # invalid credentials
             response.status_code = 401
 
+    def do_third_party_cookie_set(self, request, response):
+        self.AUTHORIZOR.set_cookie(request, response)
+        return
+
     def needs_registration(self, request, response) -> bool:
         url_route = request.path
         if url_route == "/register":
@@ -140,6 +144,13 @@ class BrowserSession(DataBaseEngine):
     def needs_third_party_login(self, request, response) -> bool:
         url_route = request.path
         third_party_auth_routes = ["/auth/google/callback", "/auth/facebook/callback"]
+        if url_route in third_party_auth_routes:
+            return True
+        return False
+
+    def needs_third_party_cookie(self, request, response) -> bool:
+        url_route = request.path
+        third_party_auth_routes = ["/auth/set_cookie"]
         if url_route in third_party_auth_routes:
             return True
         return False
@@ -169,6 +180,10 @@ class BrowserSession(DataBaseEngine):
         elif self.needs_third_party_login(request, response):
             # change to anonymous session
             current_session = self.do_third_party_login(request, response)
+            return "google-login?"
+        elif self.needs_third_party_cookie(request, response):
+            # change to anonymous session
+            current_session = self.do_third_party_cookie_set(request, response)
             return "google-login?"
         current_session = self.get_session(request, response)
         if self.AUTHORIZOR is not None:

@@ -155,3 +155,6 @@ class Authorizor(DataBaseEngine):
         )
         print(f"\n\n handle_third_party_auth user_record: {user_instance} \n\n")
         return user_instance
+
+    def set_cookie(self, request, response):
+        self.AUTH_INSTANCE.set_cookie(request, response)
