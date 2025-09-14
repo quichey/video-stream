@@ -106,7 +106,8 @@ class ThirdPartyAuth(Auth, ABC):
             user_record = self.login(request, response, creds)
         else:
             user_record = self.register(request, response, creds)
-        set_auth_cookie(response, creds.access_token)
+        # set_auth_cookie(response, creds.access_token)
+        # TODO: use set_one_time_cookie here
         print(f"\n\n handle_callback user_record: {user_record} \n\n")
         return user_record
 
