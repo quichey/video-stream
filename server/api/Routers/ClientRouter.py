@@ -222,6 +222,12 @@ class ClientRouter(Router):
             response.headers["Content-Type"] = "text/html"  # ensure proper content-type
             return response
 
+        @app.route("/auth/set_cookie")
+        def set_cookie():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
         # Route to create a new item
         @app.route("/comments", methods=["POST"])
         def create_item():

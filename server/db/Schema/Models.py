@@ -195,6 +195,7 @@ class ThirdPartyAuthToken(Base):
     refresh_token: Mapped[Optional[str]] = mapped_column(String(500))
     expires_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)  # type: ignore
     auth_metadata: Mapped[dict] = mapped_column(JSON)
+    one_time_token: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
     """
     user = relationship(

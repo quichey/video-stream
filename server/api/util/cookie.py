@@ -1,4 +1,5 @@
 import uuid
+import os
 
 from util.deployment import Deployment
 from api.util.request_data import attach_data_to_payload
@@ -32,6 +33,13 @@ def set_auth_cookie(response, access_token):
     IS_PRODUCTION = deployment == "cloud"
     max_age = 30 * 24 * 60 * 60  # 30 days
 
+    server_domain = (
+        "localhost"
+        if deployment == "local"
+        else os.environ.get("REACT_APP_SERVER_APP_URL")
+    )
+    if deployment == "cloud":
+        server_domain = server_domain[len("https://") :]
     auth_cookie_info = {
         "name": "auth_cookie",
         "value": access_token,
@@ -40,6 +48,38 @@ def set_auth_cookie(response, access_token):
         "secure": IS_PRODUCTION,
         "samesite": "None" if IS_PRODUCTION else "Lax",
         "path": "/",
+        "domain": server_domain,
+    }
+
+    # Attach the info to payload for React to set
+    attach_data_to_payload(response, {"auth_cookie_info": auth_cookie_info})
+    return access_token
+
+
+def validate_one_time_token(request):
+    pass
+
+
+def set_auth_cookie(response, access_token):
+    IS_PRODUCTION = deployment == "cloud"
+    max_age = 30 * 24 * 60 * 60  # 30 days
+
+    server_domain = (
+        "localhost"
+        if deployment == "local"
+        else os.environ.get("REACT_APP_SERVER_APP_URL")
+    )
+    if deployment == "cloud":
+        server_domain = server_domain[len("https://") :]
+    auth_cookie_info = {
+        "name": "auth_cookie",
+        "value": access_token,
+        "max_age": max_age,
+        "httponly": True,
+        "secure": IS_PRODUCTION,
+        "samesite": "None" if IS_PRODUCTION else "Lax",
+        "path": "/",
+        "domain": server_domain,
     }
 
     # Attach the info to payload for React to set
