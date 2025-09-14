@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from db.Schema.Models import User, ThirdPartyAuthUser, ThirdPartyAuthToken
 from auth.auth import Auth
-from api.util.cookie import set_auth_cookie, expire_cookie, validate_one_time_token
+from api.util.cookie import set_auth_cookie, expire_cookie, generate_uuid
 from api.util.request_data import extract_user_session_cookie
 
 """
@@ -66,15 +66,28 @@ class ThirdPartyAuth(Auth, ABC):
 
     def set_cookie(self, request, response):
         token = request.args.get("token")
-        user_id = validate_one_time_token(token)
-        if not user_id:
+        access_token = self._validate_one_time_token(token, request, response)
+        if not access_token:
             return {"error": "invalid token"}, 401
 
         # Get auth_cookie info from DB
-        access_token = pass
         auth_cookie_info = set_auth_cookie(response, access_token=access_token)
-        return
-        
+        return auth_cookie_info
+
+    def _validate_one_time_token(self, one_time_token) -> str:
+        with Session(self.engine) as session:
+            auth_token_record = (
+                session.query(ThirdPartyAuthToken)
+                .filter(ThirdPartyAuthToken.one_time_token == one_time_token)
+                .first()
+            )
+            # deleted_record = session.delete(record)
+            print(f"\n\n auth_token_record: {auth_token_record} \n\n")
+            if auth_token_record:
+                access_token = auth_token_record.access_token
+                session.delete(auth_token_record)
+                session.commit()
+                return access_token
 
     @abstractmethod
     def get_authorize_url(self, redirect_uri: str) -> str:
@@ -273,5 +286,6 @@ class ThirdPartyAuth(Auth, ABC):
         self, creds: Cred, third_party_user_record: ThirdPartyAuthUser, session: Session
     ) -> ThirdPartyAuthToken:
         record = self._map_creds_to_auth_record(creds, third_party_user_record)
+        record.one_time_token = generate_uuid()
         session.add(record)
         return record
