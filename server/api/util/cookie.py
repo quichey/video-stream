@@ -1,5 +1,4 @@
 import uuid
-import os
 
 from util.deployment import Deployment
 from api.util.request_data import attach_data_to_payload
@@ -12,8 +11,8 @@ def generate_uuid():
     return _uuid
 
 
-def generate_cookie(name, response):
-    cookie_id = generate_uuid()
+def generate_cookie(name, response, value="TBD"):
+    cookie_id = generate_uuid() if value == "TBD" else value
     IS_PRODUCTION = deployment == "cloud"
     response.set_cookie(
         name,
@@ -30,30 +29,13 @@ def generate_cookie(name, response):
 
 
 def set_auth_cookie(response, access_token):
-    IS_PRODUCTION = deployment == "cloud"
-    max_age = 30 * 24 * 60 * 60  # 30 days
+    return generate_cookie("auth_cookie", response, value=access_token)
 
-    server_domain = (
-        "localhost"
-        if deployment == "local"
-        else os.environ.get("REACT_APP_SERVER_APP_URL")
-    )
-    if deployment == "cloud":
-        server_domain = server_domain[len("https://") :]
-    auth_cookie_info = {
-        "name": "auth_cookie",
-        "value": access_token,
-        "max_age": max_age,
-        "httponly": True,
-        "secure": IS_PRODUCTION,
-        "samesite": "None" if IS_PRODUCTION else "Lax",
-        "path": "/",
-        "domain": server_domain,
-    }
 
+def set_one_time_token(response, one_time_token):
     # Attach the info to payload for React to set
-    attach_data_to_payload(response, {"auth_cookie_info": auth_cookie_info})
-    return access_token
+    attach_data_to_payload(response, {"one_time_token": one_time_token})
+    return one_time_token
 
 
 def expire_cookie(name, response):
