@@ -4,10 +4,13 @@ import GoogleIcon from "@mui/icons-material/Google";
 import IconButtonVS from "../../../../components/IconButton";
 import { UserContext } from "../../../../contexts/UserContext";
 import { HTTPContext } from "../../../../contexts/HTTPContext";
+import { useServerCall } from "../../../../customHooks/useServerCall";
+
 export default function GoogleAuth() {
   const { setName, setID, setIconFileName, setIconSASURL } =
     React.useContext(UserContext);
   const { serverURL } = React.useContext(HTTPContext);
+  const fetchData = useServerCall();
   const handleClick = React.useCallback(
     (event) => {
       const width = 500;
@@ -28,20 +31,25 @@ export default function GoogleAuth() {
         if (payload) {
           const tempToken = payload.session_token;
           sessionStorage.setItem("tempSessionToken", tempToken);
-          const { auth_cookie_info } = payload;
-          const { name, value, path, max_age, secure, samesite } =
-            auth_cookie_info;
-          window.document.cookie = `${name}=${encodeURIComponent(value)}; path=${path}; max-age=${max_age}; ${secure ? "Secure;" : ""} SameSite=${samesite}`;
-          setName(payload.user_data.name);
-          setID(payload.user_data.id);
-          setIconFileName(payload.user_data.profile_icon);
-          setIconSASURL(payload.user_data.profile_icon_sas_url);
+          const oneTimeToken = payload.one_time_token;
+          fetchData(
+            "auth/set_cookie",
+            (json) => {
+              const tempToken = json.session_token;
+              sessionStorage.setItem("tempSessionToken", tempToken);
+              setName(json.user_data.name);
+              setID(json.user_data.id);
+              setIconFileName(json.user_data.profile_icon);
+              setIconSASURL(json.user_data.profile_icon_sas_url);
+            },
+            { one_time_token: oneTimeToken },
+          );
           window.removeEventListener("message", handleMessage);
           popup.close();
         }
       });
     },
-    [setID, setIconFileName, setIconSASURL, setName, serverURL],
+    [setID, setIconFileName, setIconSASURL, setName, serverURL, fetchData],
   );
 
   return (
