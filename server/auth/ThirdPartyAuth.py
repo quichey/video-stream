@@ -10,7 +10,12 @@ from sqlalchemy.orm import sessionmaker
 
 from db.Schema.Models import User, ThirdPartyAuthUser, ThirdPartyAuthToken
 from auth.auth import Auth
-from api.util.cookie import set_auth_cookie, expire_cookie, generate_uuid
+from api.util.cookie import (
+    set_auth_cookie,
+    expire_cookie,
+    generate_uuid,
+    set_one_time_token,
+)
 from api.util.request_data import extract_user_session_cookie
 
 """
@@ -89,6 +94,29 @@ class ThirdPartyAuth(Auth, ABC):
                 session.commit()
                 return access_token
 
+    def _get_one_time_token(self, user_id) -> str:
+        with Session(self.engine) as session:
+            auth_user_record = (
+                session.query(ThirdPartyAuthUser)
+                .filter(ThirdPartyAuthUser.user_id == user_id)
+                .first()
+            )
+            if auth_user_record:
+                auth_token_record = (
+                    session.query(ThirdPartyAuthToken)
+                    .filter(
+                        ThirdPartyAuthToken.third_party_auth_user_id
+                        == auth_user_record.id
+                    )
+                    .first()
+                )
+
+                # deleted_record = session.delete(record)
+                print(f"\n\n auth_token_record: {auth_token_record} \n\n")
+                if auth_token_record:
+                    one_time_token = auth_token_record.one_time_token
+                    return one_time_token
+
     @abstractmethod
     def get_authorize_url(self, redirect_uri: str) -> str:
         """Return URL to redirect user for login"""
@@ -108,6 +136,8 @@ class ThirdPartyAuth(Auth, ABC):
             user_record = self.register(request, response, creds)
         # set_auth_cookie(response, creds.access_token)
         # TODO: use set_one_time_cookie here
+        one_time_token = self._get_one_time_token(user_id=user_record.id)
+        set_one_time_token(response, one_time_token)
         print(f"\n\n handle_callback user_record: {user_record} \n\n")
         return user_record
 
