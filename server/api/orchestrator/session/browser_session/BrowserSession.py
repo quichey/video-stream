@@ -121,6 +121,7 @@ class BrowserSession(DataBaseEngine):
 
     def do_third_party_cookie_set(self, request, response):
         self.AUTHORIZOR.set_cookie(request, response)
+        self.user_tab_session.return_user_data(request, response)
         return
 
     def needs_registration(self, request, response) -> bool:
