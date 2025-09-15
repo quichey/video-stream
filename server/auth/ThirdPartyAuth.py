@@ -16,7 +16,7 @@ from api.util.cookie import (
     generate_uuid,
     set_one_time_token,
 )
-from api.util.request_data import extract_user_session_cookie
+from api.util.request_data import extract_user_session_cookie, extract_one_time_token
 
 """
 What is a reasonalbe Interface for this base class?
@@ -70,7 +70,7 @@ class ThirdPartyAuth(Auth, ABC):
     PROVIDER = None
 
     def set_cookie(self, request, response):
-        token = request.args.get("token")
+        token = extract_one_time_token(request)
         access_token = self._validate_one_time_token(token, request, response)
         if not access_token:
             return {"error": "invalid token"}, 401
