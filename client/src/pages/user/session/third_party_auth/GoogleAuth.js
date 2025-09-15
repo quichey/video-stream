@@ -35,8 +35,6 @@ export default function GoogleAuth() {
           fetchData(
             "auth/set_cookie",
             (json) => {
-              const tempToken = json.session_token;
-              sessionStorage.setItem("tempSessionToken", tempToken);
               setName(json.user_data.name);
               setID(json.user_data.id);
               setIconFileName(json.user_data.profile_icon);
