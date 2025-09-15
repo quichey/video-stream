@@ -71,7 +71,7 @@ class ThirdPartyAuth(Auth, ABC):
 
     def set_cookie(self, request, response):
         token = extract_one_time_token(request)
-        access_token = self._validate_one_time_token(token, request, response)
+        access_token = self._validate_one_time_token(token)
         if not access_token:
             return {"error": "invalid token"}, 401
 
