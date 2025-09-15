@@ -90,7 +90,7 @@ class ThirdPartyAuth(Auth, ABC):
             print(f"\n\n auth_token_record: {auth_token_record} \n\n")
             if auth_token_record:
                 access_token = auth_token_record.access_token
-                session.delete(auth_token_record)
+                auth_token_record.one_time_token = None
                 session.commit()
                 return access_token
 
