@@ -222,7 +222,7 @@ class ClientRouter(Router):
             response.headers["Content-Type"] = "text/html"  # ensure proper content-type
             return response
 
-        @app.route("/auth/set_cookie")
+        @app.route("/auth/set_cookie", methods=["POST"])
         def set_cookie():
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
