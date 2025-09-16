@@ -20,6 +20,7 @@ Try the project live here: [Video Stream Demo](https://client-engine-app.blacksa
 - **Infinite scroll** for comments (efficient pagination & API design)  
 - **Profile Pictures** Upload profile pictures  
 - **Anonymous & session-based users** (cookie/session token system)  
+- **Google Auth sessions** Register and Login using Google Auth 
 - **Cloud-ready**: deployable client and server with Cloud services  
 
 ---
