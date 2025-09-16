@@ -32,10 +32,8 @@ export function registerUser({ username, password }) {
 export function openSessionMenu({ username, password }) {
   describe('session menu Tests', () => {
     it('should open', () => {
-      cy.get('input[name="username"]').type(username);
-      cy.get('input[name="password"]').type(password);
-      cy.get('button[type="submit"]').click();
-      cy.url().should('include', '/dashboard');
+      cy.get('[data-testid="session-menu-btn"]').click();
+      cy.get('[data-testid="session-menu-popover"]').should('be.visible');
     });
   });
 }
