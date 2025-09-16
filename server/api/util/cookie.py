@@ -1,8 +1,9 @@
 import uuid
 
 from util.deployment import Deployment
+from api.util.request_data import attach_data_to_payload
 
-deployment = Deployment()
+deployment = Deployment().deployment
 
 
 def generate_uuid():
@@ -10,8 +11,8 @@ def generate_uuid():
     return _uuid
 
 
-def generate_cookie(name, response):
-    cookie_id = generate_uuid()
+def generate_cookie(name, response, value="TBD"):
+    cookie_id = generate_uuid() if value == "TBD" else value
     IS_PRODUCTION = deployment == "cloud"
     response.set_cookie(
         name,
@@ -25,6 +26,16 @@ def generate_cookie(name, response):
         path="/",
     )
     return cookie_id
+
+
+def set_auth_cookie(response, access_token):
+    return generate_cookie("auth_cookie", response, value=access_token)
+
+
+def set_one_time_token(response, one_time_token):
+    # Attach the info to payload for React to set
+    attach_data_to_payload(response, {"one_time_token": one_time_token})
+    return one_time_token
 
 
 def expire_cookie(name, response):

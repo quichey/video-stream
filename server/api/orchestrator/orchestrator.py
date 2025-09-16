@@ -10,12 +10,14 @@ class Orchestrator:
         self.SESSION_MANAGEMENT = SessionManagement()
         self.CACHE = Cache()
 
-    def handle_request(self, request, response):
+    def handle_request(self, request, response, SESSION_TOKEN_HACK=None):
         use_cache = False
         if use_cache:
             result = self.CACHE.get_data(request, response)
         else:
-            result = self.SESSION_MANAGEMENT.on_request(request, response)
+            result = self.SESSION_MANAGEMENT.on_request(
+                request, response, SESSION_TOKEN_HACK
+            )
 
         cache_result = False
         if cache_result:
