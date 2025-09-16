@@ -29,6 +29,16 @@ export function registerUser({ username, password }) {
     });
   });
 }
+export function openSessionMenu({ username, password }) {
+  describe('session menu Tests', () => {
+    it('should open', () => {
+      cy.get('input[name="username"]').type(username);
+      cy.get('input[name="password"]').type(password);
+      cy.get('button[type="submit"]').click();
+      cy.url().should('include', '/dashboard');
+    });
+  });
+}
 describe('User can register', () => {
   const BASE_URL = 'http://localhost:3000'; // or your deployed URL
 

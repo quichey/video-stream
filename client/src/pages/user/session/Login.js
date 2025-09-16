@@ -67,7 +67,9 @@ export default function Login() {
 
   return (
     <div>
-      <MenuItem onClick={handleClick}>Login</MenuItem>
+      <MenuItem onClick={handleClick} data-testid="login-menu-item">
+        Login
+      </MenuItem>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Login</DialogTitle>
         <DialogContent>
