@@ -1,9 +1,12 @@
 # Example using Flask and SQLite
-from flask import make_response
+from flask import make_response, render_template_string, url_for
 import json
+import sys
+import os
 
 from .Router import Router
 from auth.native.native import NativeAuth, NATIVE_AUTH
+from auth.google_auth.google_auth import GoogleAuth, GOOGLE_AUTH
 
 """
 Read Flask docs on base code for starting up the Gateway
@@ -24,6 +27,7 @@ soo.. either get video_id from payload or query_str
 
 class ClientRouter(Router):
     NATIVE_AUTH: NativeAuth = NATIVE_AUTH
+    GOOGLE_AUTH: GoogleAuth = GOOGLE_AUTH
     """
     don't yet know what i would want in 
     here for ClientRouter, but i'm sure something
@@ -143,6 +147,83 @@ class ClientRouter(Router):
 
         @app.route("/logout", methods=["POST"])
         def logout():
+            response = make_response("Initial body")
+            self.orchestrator.handle_request(request, response)
+            return response
+
+        @app.route("/google/login", methods=["GET"])
+        def google_login():
+            # Extract the session_token query parameter
+            session_token = request.args.get(
+                "session_token"
+            )  # Returns None if not present
+
+            if session_token:
+                # Use the value to look up the BrowserSession or do whatever you need
+                print("Received session_token:", session_token)
+                self.SESSION_TOKEN_HACK = session_token
+            """
+            if self.deployment == "local":
+                redirect_uri = url_for("google_callback", _external=True)
+            else:
+                redirect_uri = (
+                    f"{os.environ['REACT_APP_SERVER_APP_URL']}/auth/google/callback"
+                )
+            """
+            redirect_uri = url_for("google_callback", _external=True)
+            print("DEBUG:", redirect_uri, file=sys.stderr, flush=True)
+            auth_url = GOOGLE_AUTH.get_authorize_url(redirect_uri)
+            print("DEBUG:", auth_url, file=sys.stderr, flush=True)
+            return auth_url
+
+        @app.route("/auth/google/callback")
+        def google_callback():
+            # Initial empty response
+            response = make_response()  # can be updated in orchestrator
+            self.orchestrator.handle_request(
+                request,
+                response,
+                SESSION_TOKEN_HACK=self.SESSION_TOKEN_HACK,
+            )
+
+            # Ensure response.data is a dict
+            if response.data:
+                try:
+                    payload = json.loads(response.data)
+                except (TypeError, ValueError):
+                    payload = {}
+            else:
+                payload = {}
+
+            client_url = (
+                "http://localhost:3000"
+                if self.deployment == "local"
+                else os.environ.get("CLIENT_APP_URL")
+            )
+            # Render HTML into response body
+            html_body = render_template_string(
+                """
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <script>
+                    // Send full payload object to parent window safely
+                    window.opener.postMessage({payload: {{ payload | tojson }}}, "{{client_url}}");
+                    window.close();
+                </script>
+                </body>
+                </html>
+                """,
+                payload=payload,  # pass payload dict to template
+                client_url=client_url,
+            )
+            self.SESSION_TOKEN_HACK = None
+            response.set_data(html_body)  # set rendered HTML as response body
+            response.headers["Content-Type"] = "text/html"  # ensure proper content-type
+            return response
+
+        @app.route("/auth/set_cookie", methods=["POST"])
+        def set_cookie():
             response = make_response("Initial body")
             self.orchestrator.handle_request(request, response)
             return response
