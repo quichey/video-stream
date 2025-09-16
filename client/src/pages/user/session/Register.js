@@ -67,7 +67,9 @@ export default function Register() {
 
   return (
     <div>
-      <MenuItem onClick={handleClick}>Register</MenuItem>
+      <MenuItem onClick={handleClick} data-testid="register-menu-item">
+        Register
+      </MenuItem>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
