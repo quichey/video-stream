@@ -1,6 +1,6 @@
 
-export function authTests({ username, password }) {
-  describe('Authentication Tests', () => {
+export function logInTests({ username, password }) {
+  describe('login Tests', () => {
     it('should login', () => {
       cy.get('input[name="username"]').type(username);
       cy.get('input[name="password"]').type(password);
@@ -9,7 +9,26 @@ export function authTests({ username, password }) {
     });
   });
 }
-
+export function logOut() {
+  describe('log Out', () => {
+    it('should logout', () => {
+      cy.get('input[name="username"]').type(username);
+      cy.get('input[name="password"]').type(password);
+      cy.get('button[type="submit"]').click();
+      cy.url().should('include', '/dashboard');
+    });
+  });
+}
+export function registerUser({ username, password }) {
+  describe('register Tests', () => {
+    it('should register', () => {
+      cy.get('input[name="username"]').type(username);
+      cy.get('input[name="password"]').type(password);
+      cy.get('button[type="submit"]').click();
+      cy.url().should('include', '/dashboard');
+    });
+  });
+}
 describe('User can register', () => {
   const BASE_URL = 'http://localhost:3000'; // or your deployed URL
 
