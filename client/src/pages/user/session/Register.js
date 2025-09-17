@@ -75,6 +75,7 @@ export default function Register() {
         onClose={() => setOpen(false)}
         maxWidth="sm"
         fullWidth
+        data-testid="register-dialogue"
       >
         <DialogTitle>Register</DialogTitle>
         <DialogContent>
@@ -84,6 +85,7 @@ export default function Register() {
               onChange={handleNameChange}
               error={nameError}
               setError={setNameError}
+              textFieldProps={{ "data-testid": "register-name" }}
             />
             <TextField
               autoFocus
@@ -99,6 +101,7 @@ export default function Register() {
               onChange={handlePasswordChange}
               error={passwordError}
               setError={setPasswordError}
+              textFieldProps={{ "data-testid": "register-password" }}
             />
           </Stack>
         </DialogContent>
@@ -108,6 +111,7 @@ export default function Register() {
             variant="contained"
             onClick={handleRegister}
             disabled={disabled}
+            data-testid="register-submit"
           >
             Register
           </Button>
