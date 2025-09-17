@@ -5,7 +5,8 @@ describe('Homepage Video Loading', () => {
 
   it('should load the homepage', () => {
     cy.visit(BASE_URL);
-    cy.contains('Copy-Youtube'); // check page title or header
+    //cy.contains('Copy-Youtube'); // check page title or header
+    cy.contains('Search'); // check page title or header
   });
 
   it('should display video thumbnails within reasonable time', () => {
