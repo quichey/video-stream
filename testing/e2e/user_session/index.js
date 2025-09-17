@@ -27,11 +27,19 @@ export function logOut() {
 }
 export function registerUser({ username, password }) {
   describe('register Tests', () => {
+    it('should open register dialogue', () => {
+      cy.get('[data-testid="register-menu-item"]').click();
+      cy.get('[data-testid="register-dialogue"]').should('be.visible');
+    });
     it('should register', () => {
-      cy.get('input[name="username"]').type(username);
-      cy.get('input[name="password"]').type(password);
-      cy.get('button[type="submit"]').click();
-      cy.url().should('include', '/dashboard');
+      cy.get('[data-testid="register-name"]').type(username);
+      cy.get('[data-testid="register-password"]').type(password);
+      cy.get('[data-testid="register-submit"]').click();
+      //cy.url().should('include', '/dashboard');
+      // TODO: check that user's name is visible in Session Popover
+      cy.get('[data-testid="view-channel-menu-item"]')
+        .should('be.visible')
+        .and('contain.text', username);
     });
   });
 }
