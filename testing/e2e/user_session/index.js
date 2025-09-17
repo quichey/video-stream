@@ -20,10 +20,8 @@ export function logInTests({ username, password }) {
 export function logOut() {
   describe('log Out', () => {
     it('should logout', () => {
-      cy.get('input[name="username"]').type(username);
-      cy.get('input[name="password"]').type(password);
-      cy.get('button[type="submit"]').click();
-      cy.url().should('include', '/dashboard');
+      cy.get('[data-testid="logout-menu-item"]').click();
+      cy.get('[data-testid="view-channel-menu-item"]').should('not.exist');
     });
   });
 }
