@@ -22,7 +22,7 @@ export default function ViewChannel() {
 
   return (
     <div>
-      <MenuItem>
+      <MenuItem data-testid="view-channel-menu-item">
         <NavLink to={`/channel/${id}`} end>
           <Typography onClick={handleClick}>View Channel</Typography>
         </NavLink>
