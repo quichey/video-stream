@@ -70,7 +70,11 @@ export default function Login() {
       <MenuItem onClick={handleClick} data-testid="login-menu-item">
         Login
       </MenuItem>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        data-testid="login-dialogue"
+      >
         <DialogTitle>Login</DialogTitle>
         <DialogContent>
           <TextField
@@ -81,6 +85,7 @@ export default function Login() {
             fullWidth
             value={name}
             onChange={handleNameChange}
+            data-testid="login-name"
           />
           <TextField
             margin="dense"
@@ -89,11 +94,16 @@ export default function Login() {
             fullWidth
             value={password}
             onChange={handlePasswordChange}
+            data-testid="login-password"
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleLogin}>
+          <Button
+            variant="contained"
+            onClick={handleLogin}
+            data-testid="login-submit"
+          >
             Login
           </Button>
         </DialogActions>

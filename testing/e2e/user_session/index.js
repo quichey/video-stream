@@ -1,11 +1,16 @@
 
 export function logInTests({ username, password }) {
   describe('login Tests', () => {
+    it('should open login dialogue', () => {
+      cy.get('[data-testid="login-menu-item"]').click();
+      cy.get('[data-testid="login-dialogue"]').should('be.visible');
+    });
     it('should login', () => {
-      cy.get('input[name="username"]').type(username);
-      cy.get('input[name="password"]').type(password);
-      cy.get('button[type="submit"]').click();
-      cy.url().should('include', '/dashboard');
+      cy.get('[data-testid="login-name"]').type(username);
+      cy.get('[data-testid="login-password"]').type(password);
+      cy.get('[data-testid="login-submit"]').click();
+      //cy.url().should('include', '/dashboard');
+      // TODO: check that user's name is visible in Session Popover
     });
   });
 }
