@@ -43,7 +43,7 @@ export function registerUser({ username, password }) {
     });
   });
 }
-export function openSessionMenu({ username, password }) {
+export function openSessionMenu() {
   describe('session menu Tests', () => {
     it('should open', () => {
       cy.get('[data-testid="session-menu-btn"]').click();
