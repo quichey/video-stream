@@ -27,4 +27,10 @@ class FirstLoad {
         expect(video.duration).to.be.greaterThan(0); // TODO: get precise duration of video?
     });
   };
+
+      runSuite() {
+        this.open()
+        this.loadVideos()
+        this.navigateToWatchVideo()
+      }
 }
