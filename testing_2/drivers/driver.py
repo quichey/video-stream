@@ -14,4 +14,4 @@ def create_driver():
     return webdriver.Chrome(options=chrome_options)
 
 
-driver = create_driver(profile_path="profiles/selenium_profile")
+driver = create_driver()
