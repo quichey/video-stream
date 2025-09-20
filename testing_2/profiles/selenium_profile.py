@@ -1,5 +1,6 @@
 import shutil
 import os
+from dotenv import load_dotenv
 
 # Path to the Chrome profile you created manually
 SELENIUM_PROFILE_PATH = "profiles/selenium_profile_folder"
@@ -8,9 +9,11 @@ SELENIUM_PROFILE_PATH = "profiles/selenium_profile_folder"
 HEADLESS = True  # whether to run tests headless
 WINDOW_SIZE = "1920,1080"
 
+load_dotenv()
+
 
 def borrow_creds():
-    SOURCE_PROFILE = r"C:\Users\<YourUser>\AppData\Local\Google\Chrome\User Data\SeleniumGoldenProfile"
+    SOURCE_PROFILE = os.environ.get("SOURCE_PROFILE")
     DEST_PROFILE = r"./profiles/selenium_profile_folder"
     # Remove old test profile
     if os.path.exists(DEST_PROFILE):
