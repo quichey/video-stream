@@ -53,10 +53,22 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         self.clean_up()
 
     def start(self):
-        pass
+        if self.is_cloud():
+            print(f"[BaseDeployer] Starting service {self.CONTEXT}")
+            self.cloud_mixin_instance.start()
+        else:
+            print(f"[BaseDeployer] Starting service {self.CONTEXT}")
+
+        return
 
     def stop(self):
-        pass
+        if self.is_cloud():
+            print(f"[BaseDeployer] Stopping service {self.CONTEXT}")
+            self.cloud_mixin_instance.stop()
+        else:
+            print(f"[BaseDeployer] Stopping service {self.CONTEXT}")
+
+        return
 
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""
