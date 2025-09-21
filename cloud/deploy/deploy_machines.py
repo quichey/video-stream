@@ -1,6 +1,8 @@
+import argparse
+
 from client.client_deployer import ClientDeployer
 from server.server_deployer import ServerDeployer
-from util.script_args import parse_common_args
+from util.script_args import get_common_parser
 
 
 def deploy_instances(machines):
@@ -9,7 +11,9 @@ def deploy_instances(machines):
 
 
 if __name__ == "__main__":
-    args = parse_common_args()
+    # Build parser using common args
+    parser = argparse.ArgumentParser(parents=[get_common_parser()])
+    args = parser.parse_args()
 
     print(f"Cloud-Provider: {args.cloud_provider}")
     print(f"Deployment Environment: {args.env}")
