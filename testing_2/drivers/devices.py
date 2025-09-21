@@ -24,9 +24,13 @@ SERVICE_LIFECYCLE_SCRIPT_NAME = "service_lifecycle.py"
 SERVICE_LIFECYCLE_SCRIPT_LOCATION = (
     f"{SERVICE_LIFECYCLE_SCRIPT_DIR}/{SERVICE_LIFECYCLE_SCRIPT_NAME}"
 )
+DEPLOY_SCRIPT_NAME = "deploy_machines.py"
 
 
 class TestInfraManager:
+    def deploy(self):
+        self._run_deploy_script("start")
+
     def start(self):
         self._run_lifecycle_script("start")
 
@@ -43,5 +47,16 @@ class TestInfraManager:
             "test",
             "--action",
             action,
+        ]
+        run_cmds(run_cmd, cwd=f"../../{SERVICE_LIFECYCLE_SCRIPT_DIR}")
+
+    def _run_deploy_script(self):
+        run_cmd = [
+            "poetry",
+            "run",
+            "python3",
+            DEPLOY_SCRIPT_NAME,
+            "--env",
+            "test",
         ]
         run_cmds(run_cmd, cwd=f"../../{SERVICE_LIFECYCLE_SCRIPT_DIR}")
