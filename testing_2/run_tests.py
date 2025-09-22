@@ -10,3 +10,5 @@ if __name__ == "__main__":
     driver.run_tests?()
 
     infra_manager.stop()
+
+    driver.quit()
