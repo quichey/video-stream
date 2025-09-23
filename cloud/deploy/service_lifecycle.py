@@ -23,13 +23,17 @@ class ServiceManager:
         for dep in self.deployers:
             dep.stop()
 
+    def restart(self):
+        for dep in self.deployers:
+            dep.restart()
+
 
 if __name__ == "__main__":
     # Extend the common parser with unique lifecycle args
     parser = argparse.ArgumentParser(parents=[get_common_parser()])
     parser.add_argument(
         "--action",
-        choices=["start", "stop"],
+        choices=["start", "stop", "restart"],
         required=True,
         help="Lifecycle action to perform",
     )
@@ -55,5 +59,7 @@ if __name__ == "__main__":
     service_manager = ServiceManager(machines)
     if args.action == "start":
         service_manager.start()
-    else:
+    elif args.action == "stop":
         service_manager.stop()
+    elif args.action == "restart":
+        service_manager.restart()

@@ -29,7 +29,7 @@ DEPLOY_SCRIPT_NAME = "deploy_machines.py"
 
 class TestInfraManager:
     def deploy(self):
-        self._run_deploy_script("start")
+        self._run_deploy_script()
 
     def start(self):
         self._run_lifecycle_script("start")
@@ -37,7 +37,10 @@ class TestInfraManager:
     def stop(self):
         self._run_lifecycle_script("stop")
 
-    def _run_lifecycle_script(self, action):
+    def restart(self):
+        self._run_lifecycle_script("restart", machines=["server"])
+
+    def _run_lifecycle_script(self, action, machines=None):
         run_cmd = [
             "poetry",
             "run",
@@ -48,6 +51,12 @@ class TestInfraManager:
             "--action",
             action,
         ]
+        if machines:
+            if "client" in machines:
+                run_cmd.append("--client")
+            if "server" in machines:
+                run_cmd.append("--server")
+
         run_cmds(run_cmd, cwd=f"../../{SERVICE_LIFECYCLE_SCRIPT_DIR}")
 
     def _run_deploy_script(self):
