@@ -56,3 +56,7 @@ class BaseCloudProvider(ABC):
     @abstractmethod
     def get_stop_cmd(self):
         pass
+
+    @abstractmethod
+    def get_restart_cmd(self):
+        pass
