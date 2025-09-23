@@ -70,6 +70,15 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
 
         return
 
+    def restart(self):
+        if self.is_cloud():
+            print(f"[BaseDeployer] Stopping service {self.CONTEXT}")
+            self.cloud_mixin_instance.restart()
+        else:
+            print(f"[BaseDeployer] Stopping service {self.CONTEXT}")
+
+        return
+
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""
         if self.PACKAGE_MANAGER == "npm":

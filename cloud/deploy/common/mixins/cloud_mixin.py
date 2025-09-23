@@ -85,3 +85,11 @@ class CloudMixin:
             cloud_cmd,
             check=True,
         )
+
+    def restart(self):
+        cloud_cmd = self.provider.get_restart_cmd()
+        print(f"[CloudMixin] Restarting {self.context}...")
+        run_cmd_with_retries(
+            cloud_cmd,
+            check=True,
+        )

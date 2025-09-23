@@ -42,6 +42,18 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         return
 
     @override
+    def get_restart_cmd(self):
+        return [
+            "az",
+            "container",
+            "restart",
+            "--name",
+            self.container_app_name,
+            "--resource-group",
+            self.resource_group,
+        ]
+
+    @override
     def get_stop_cmd(self):
         return [
             "az",
