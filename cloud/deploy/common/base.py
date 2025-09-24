@@ -46,6 +46,14 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
         self.bundle_packages()
+        # TODO: this step is the step that connects the machines
+        # to each other via FQDN
+        # requires the initial deployment
+        # USE BRAIN to THINK about the case where
+        # environment/machines are first deployed
+        # deployment requires the addresses caked in
+        # soooo on initial batch
+        # deploy twice?
         self.set_up_cloud_env()
         self.generate_image_name()
         self.build_docker_image()
