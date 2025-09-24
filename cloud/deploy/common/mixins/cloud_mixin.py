@@ -34,12 +34,11 @@ class CloudMixin:
         Returns "0.0.0" if no valid tags are found.
         """
         try:
-            latest_image_cmd = self.provider.get_latest_image_cmd()
-            result = run_cmds(latest_image_cmd, capture_output=True, text=True)
-            if len(result) > 0:
-                return False
-            else:
+            container_url_cmd_output = self.provider.get_container_url()
+            if container_url_cmd_output.stdout.strip("\n") == "":
                 return True
+            else:
+                return False
         except CloudError:
             return True
 
