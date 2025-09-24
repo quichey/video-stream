@@ -44,6 +44,16 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
 
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
+        if self.is_first_deployment():
+            self._do_deploy_cycle()
+            # TODO: some segmentation of steps
+            # with additional step of not using FQDN(s)
+            # first time around
+            self._do_deploy_cycle()
+        else:
+            self._do_deploy_cycle()
+
+    def _do_deploy_cycle(self):
         self.verify_os_env()
         self.bundle_packages()
         # TODO: this step is the step that connects the machines
