@@ -28,6 +28,21 @@ class CloudMixin:
         self.provider.set_up_env()
         return
 
+    def is_first_deployment(self):
+        """
+        Fetch the latest semantic version tag from ACR.
+        Returns "0.0.0" if no valid tags are found.
+        """
+        try:
+            latest_image_cmd = self.provider.get_latest_image_cmd()
+            result = run_cmds(latest_image_cmd, capture_output=True, text=True)
+            if len(result) > 0:
+                return False
+            else:
+                return True
+        except Exception:
+            return True
+
     def get_images_archives(self):
         """
         Fetch the latest semantic version tag from ACR.

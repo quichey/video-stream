@@ -42,10 +42,19 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
                 provider_name=provider_name, context=self.CONTEXT, env=env
             )
 
+    def _is_first_deployment(self):
+        if self.is_cloud():
+            print(f"[BaseDeployer] Checking if first deployment for {self.CONTEXT}")
+            return self.cloud_mixin_instance.is_first_deployment()
+        else:
+            print(f"[BaseDeployer] Checking if first deployment for {self.CONTEXT}")
+
+        return
+
     def deploy(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
-        if self.is_first_deployment():
-            self._do_deploy_cycle()
+        if self._is_first_deployment():
+            self._do_deploy_cycle(is_initial_deployment=True)
             # TODO: some segmentation of steps
             # with additional step of not using FQDN(s)
             # first time around
@@ -53,7 +62,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         else:
             self._do_deploy_cycle()
 
-    def _do_deploy_cycle(self):
+    def _do_deploy_cycle(self, is_initial_deployment=False):
         self.verify_os_env()
         self.bundle_packages()
         # TODO: this step is the step that connects the machines
@@ -64,7 +73,8 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         # deployment requires the addresses caked in
         # soooo on initial batch
         # deploy twice?
-        self.set_up_cloud_env()
+        if not is_initial_deployment:
+            self.set_up_cloud_env()
         self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
