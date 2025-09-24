@@ -96,21 +96,35 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
 
     @override
     def get_container_url(self):
-        cmd = [
-            "az",
-            "containerapp",
-            "show",
-            "--name",
-            self.container_app_name,
-            "--resource-group",
-            self.resource_group,
-            "--query",
-            "properties.configuration.ingress.fqdn",
-            "-o",
-            "tsv",
-        ]
-        app_url = run_cmd_with_retries(cmd)
-        return app_url
+        if self.ENV == "prod":
+            cmd = [
+                "az",
+                "containerapp",
+                "show",
+                "--name",
+                self.container_app_name,
+                "--resource-group",
+                self.resource_group,
+                "--query",
+                "properties.configuration.ingress.fqdn",
+                "-o",
+                "tsv",
+            ]
+        else:
+            cmd = [
+                "az",
+                "container",
+                "show",
+                "--name",
+                self.container_app_name,
+                "--resource-group",
+                self.resource_group,
+                "--query",
+                "ipAddress.fqdn",
+                "-o",
+                "tsv",
+            ]
+        return run_cmd_with_retries(cmd)
 
     def pre_build_image_cloud(self, dockerfile, package_path):
         print("[AzureProvider] Pre-building Docker image locally...")
@@ -138,35 +152,59 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
 
     @override
     def get_run_cmd(self):
-        """
-        Deploys a container to Azure Container Apps (ACA).
-        Assumes the container image is already pushed to ACR.
-        """
-
-        return [
-            "az",
-            "containerapp",
-            "create",
-            "--name",
-            self.container_app_name,
-            "--resource-group",
-            self.resource_group,
-            "--environment",
-            self.environment_name,
-            "--image",
-            self.image.full_name,
-            "--target-port",
-            "8080",
-            "--ingress",
-            "external",
-            "--registry-server",
-            f"{self.acr_login_server}.azurecr.io",
-            "--registry-username",
-            self.acr_user_name,
-            "--registry-password",
-            self.acr_user_password,
-            "--min-replicas",
-            "1",
-            "--max-replicas",
-            "1",
-        ]
+        if self.ENV == "prod":
+            return [
+                "az",
+                "containerapp",
+                "create",
+                "--name",
+                self.container_app_name,
+                "--resource-group",
+                self.resource_group,
+                "--environment",
+                self.environment_name,
+                "--image",
+                self.image.full_name,
+                "--target-port",
+                "8080",
+                "--ingress",
+                "external",
+                "--registry-server",
+                f"{self.acr_login_server}.azurecr.io",
+                "--registry-username",
+                self.acr_user_name,
+                "--registry-password",
+                self.acr_user_password,
+                "--min-replicas",
+                "1",
+                "--max-replicas",
+                "1",
+            ]
+        else:
+            # dev/test → ACI
+            dns_label = f"{self.container_app_name}-{self.ENV}"  # optional
+            return [
+                "az",
+                "container",
+                "create",
+                "--name",
+                self.container_app_name,
+                "--resource-group",
+                self.resource_group,
+                "--image",
+                self.image.full_name,
+                "--cpu",
+                "0.5",
+                "--memory",
+                "1Gi",
+                "--registry-login-server",
+                f"{self.acr_login_server}.azurecr.io",
+                "--registry-username",
+                self.acr_user_name,
+                "--registry-password",
+                self.acr_user_password,
+                "--dns-name-label",
+                dns_label,
+                "--ports",
+                "8080",
+            ]
