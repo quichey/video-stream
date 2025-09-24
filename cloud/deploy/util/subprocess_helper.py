@@ -1,6 +1,11 @@
 import subprocess
 import time
 
+
+class CloudError(Exception):
+    pass
+
+
 def run_cmds(cmd_array, **kwargs):
     if type(cmd_array[0]) == str:
         return subprocess.run(cmd_array, **kwargs)
@@ -26,7 +31,6 @@ def run_cmd_with_retries(cmd, retries=5, delay=5, check=True):
     Raises:
         subprocess.CalledProcessError after all retries fail.
     """
-    last_exception = None
     for attempt in range(1, retries + 1):
         try:
             print(f"Attempt {attempt}: Running command: {' '.join(cmd)}")
@@ -35,10 +39,9 @@ def run_cmd_with_retries(cmd, retries=5, delay=5, check=True):
             return result
         except subprocess.CalledProcessError as e:
             print(f"Attempt {attempt} failed with error: {e.stderr or e}")
-            last_exception = e
             if attempt < retries:
                 print(f"Retrying in {delay} seconds...")
                 time.sleep(delay)
             else:
                 print("All retries failed.")
-                raise last_exception
+                raise CloudError
