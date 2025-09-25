@@ -1,6 +1,6 @@
 import re
 
-from util.subprocess_helper import run_cmds, run_cmd_with_retries
+from util.subprocess_helper import run_cmds, run_cmd_with_retries, CloudError
 
 from cloud_providers_deployment import get_provider_class
 
@@ -27,6 +27,20 @@ class CloudMixin:
     def set_up_provider_env(self):
         self.provider.set_up_env()
         return
+
+    def is_first_deployment(self) -> bool:
+        """
+        Fetch the latest semantic version tag from ACR.
+        Returns "0.0.0" if no valid tags are found.
+        """
+        try:
+            container_url_cmd_output = self.provider.get_container_url()
+            if container_url_cmd_output.stdout.strip("\n") == "":
+                return True
+            else:
+                return False
+        except CloudError:
+            return True
 
     def get_images_archives(self):
         """
