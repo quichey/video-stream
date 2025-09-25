@@ -196,7 +196,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
                 "--cpu",
                 "0.5",
                 "--memory",
-                "1Gi",
+                "1",
                 "--registry-login-server",
                 f"{self.acr_login_server}.azurecr.io",
                 "--registry-username",
@@ -207,4 +207,6 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
                 dns_label,
                 "--ports",
                 "8080",
+                "--os-type",
+                "Linux",
             ]
