@@ -78,7 +78,8 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         self.generate_image_name()
         self.build_docker_image()
         self.launch_instance()
-        self.clean_up()
+        if not is_initial_deployment:
+            self.clean_up()
 
     def start(self):
         if self.is_cloud():
