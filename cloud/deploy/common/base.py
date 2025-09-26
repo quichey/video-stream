@@ -13,17 +13,24 @@ from common.dataclasses_models.image import Image
 
 load_dotenv()
 
+
 def pre_set_up_cloud_env_hook(func):
     """Decorator to run a pre-set-up-cloud-env step if the subclass/provider defines it."""
+
     def wrapper(self, *args, **kwargs):
         # Call pre-build step if provider has it
         pre_build = getattr(self, "pre_set_up_cloud_env", None)
         if callable(pre_build):
-            print(f"[BaseDeployer] Running pre-set-up-cloud-env step for {self.CONTEXT}...")
+            print(
+                f"[BaseDeployer] Running pre-set-up-cloud-env step for {self.CONTEXT}..."
+            )
             pre_build(*args, **kwargs)
         return func(self, *args, **kwargs)
+
     return wrapper
 
+
+# TODO: db deploy
 class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
@@ -33,9 +40,7 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         self.ENV = env
         if self.is_cloud():
             self.cloud_mixin_instance = CloudMixin(
-                provider_name=provider_name,
-                context=self.CONTEXT,
-                env=env
+                provider_name=provider_name, context=self.CONTEXT, env=env
             )
 
     def deploy(self):
@@ -53,10 +58,14 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         if self.PACKAGE_MANAGER == "npm":
             for tool in ["node", "npm"]:
                 if shutil.which(tool) is None:
-                    raise EnvironmentError(f"{tool} not found. Run deploy/os/linux/env_setup.sh first.")
+                    raise EnvironmentError(
+                        f"{tool} not found. Run deploy/os/linux/env_setup.sh first."
+                    )
         elif self.PACKAGE_MANAGER == "poetry":
             if shutil.which("poetry") is None:
-                raise EnvironmentError("poetry not found. Run deploy/os/linux/env_setup.sh first.")
+                raise EnvironmentError(
+                    "poetry not found. Run deploy/os/linux/env_setup.sh first."
+                )
         else:
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
@@ -71,27 +80,34 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
 
     def is_cloud(self) -> bool:
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
-    
+
     @pre_set_up_cloud_env_hook
     def set_up_cloud_env(self):
         if self.is_cloud():
             print(f"[BaseDeployer] Setting Up Cloud Provider env for {self.CONTEXT}")
             self.cloud_mixin_instance.set_up_provider_env()
         else:
-            print(f"[BaseDeployer] Local Deploy: Skipping Cloud env setup for {self.CONTEXT}")
-        
-        return
+            print(
+                f"[BaseDeployer] Local Deploy: Skipping Cloud env setup for {self.CONTEXT}"
+            )
 
+        return
 
     def generate_image_name(self):
         if self.is_cloud():
-            print(f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}")
+            print(
+                f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}"
+            )
             images_archives = self.cloud_mixin_instance.get_images_archives()
-            self.cloud_mixin_instance.provider.image.tag = self.generate_timestamped_tag(images_archives)
+            self.cloud_mixin_instance.provider.image.tag = (
+                self.generate_timestamped_tag(images_archives)
+            )
         else:
-            print(f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}")
+            print(
+                f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}"
+            )
             repository = f"{self.CONTEXT}-engine"
-            self.image = Image(registry='local', repository=repository, tag="1.0.0")
+            self.image = Image(registry="local", repository=repository, tag="1.0.0")
             images_archives = self.get_images_archives()
             self.image.tag = self.generate_timestamped_tag(images_archives)
         return
@@ -123,12 +139,12 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             self.cloud_mixin_instance.cloud_deploy()
         else:
             machine_context = self.CONTEXT.upper()
-            port =  os.environ.get(f"PORT_{machine_context}", "local")
+            port = os.environ.get(f"PORT_{machine_context}", "local")
             self.docker_run(
                 image_name=self.image.full_name,
                 port=port,
             )
-    
+
     @abstractmethod
     def clean_up(self):
         pass
