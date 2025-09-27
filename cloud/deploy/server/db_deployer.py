@@ -45,6 +45,8 @@ class DBDeployer(ABC):
     def run_migrations(self):
         """
         Run any schema migrations or initialization scripts.
+
+        Use server/Seed module here i think
         """
         pass
 
