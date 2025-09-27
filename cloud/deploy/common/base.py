@@ -4,7 +4,6 @@ import shutil
 
 from common.mixins.package_manager_mixin import PackageManagerMixin
 from common.mixins.docker_mixin import DockerMixin
-from common.mixins.cloud_mixin import CloudMixin
 from common.mixins.bashrc_mixin import BashrcMixin
 from common.mixins.version_mixin import VersionMixin
 
@@ -33,11 +32,12 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
     ENV = None
+    CLOUD_MIXIN_CLASS = None
 
     def __init__(self, provider_name, env):
         self.ENV = env
         if self.is_cloud():
-            self.cloud_mixin_instance = CloudMixin(
+            self.cloud_mixin_instance = self.CLOUD_MIXIN_CLASS(
                 provider_name=provider_name, context=self.CONTEXT, env=env
             )
 
