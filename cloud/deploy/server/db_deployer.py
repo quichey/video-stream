@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 
-from common.mixins.cloud_mixin import CloudMixin
+from common.mixins.cloud_db_mixin import CloudDBMixin
 
 load_dotenv()
 
@@ -18,7 +18,7 @@ class DBDeployer(ABC):
     def __init__(self, provider_name, env):
         self.ENV = env
         print(f"[DBDeployer] Initializing CloudMixin for {self.CONTEXT}...")
-        self.cloud_mixin_instance = CloudMixin(
+        self.cloud_mixin_instance = CloudDBMixin(
             provider_name=provider_name, context=self.CONTEXT, env=env
         )
 
