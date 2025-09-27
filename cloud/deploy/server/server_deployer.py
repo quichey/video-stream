@@ -1,33 +1,47 @@
 from typing_extensions import override
 
-from common.base import BaseDeployer
+from common.base_container import BaseContainerDeployer
 from util.file_handling import update_file
 
-class ServerDeployer(BaseDeployer):
+
+class ServerDeployer(BaseContainerDeployer):
     CONTEXT = "server"
     PACKAGE_MANAGER = "poetry"
-    PACKAGE_PATH = f"{BaseDeployer.PATH_PROJECT_ROOT}/{CONTEXT}"
-    DOCKERFILE = f"{BaseDeployer.PATH_PROJECT_DOCKER}/{CONTEXT}/{CONTEXT}.Dockerfile"
+    PACKAGE_PATH = f"{BaseContainerDeployer.PATH_PROJECT_ROOT}/{CONTEXT}"
+    DOCKERFILE = (
+        f"{BaseContainerDeployer.PATH_PROJECT_DOCKER}/{CONTEXT}/{CONTEXT}.Dockerfile"
+    )
 
     def pre_set_up_cloud_env(self):
         provider = self.cloud_mixin_instance.provider
         server_container_url = provider.get_container_url().stdout.strip("\n")
         server_container_url = f"https://{server_container_url}"
         print(f"\n\n server_container_url: {server_container_url} \n\n")
-        #TODO: replace client_container_url <client> with <server>?
+        # TODO: replace client_container_url <client> with <server>?
         client_container_url = server_container_url.replace(self.CONTEXT, "client")
         print(f"\n\n client_container_url: {client_container_url} \n\n")
-        #deployment_env = self.ENV
-        #TODO: write to cloud/providers/azure/.env
+        # deployment_env = self.ENV
+        # TODO: write to cloud/providers/azure/.env
         # REACT_APP_SERVER_URL={server_container_url}
         dot_env_file_path = "../providers/azure/.env"
-        update_file(dot_env_file_path, "CLIENT_APP_URL=", f"CLIENT_APP_URL={client_container_url}\n")
-        update_file(dot_env_file_path, "BLOB_CONTAINER=", f"BLOB_CONTAINER={self.ENV}\n")
+        update_file(
+            dot_env_file_path,
+            "CLIENT_APP_URL=",
+            f"CLIENT_APP_URL={client_container_url}\n",
+        )
+        update_file(
+            dot_env_file_path, "BLOB_CONTAINER=", f"BLOB_CONTAINER={self.ENV}\n"
+        )
         if self.ENV == "prod":
-            update_file(dot_env_file_path, "MYSQL_DB_NAME=", f"MYSQL_DB_NAME=video-stream\n")
+            update_file(
+                dot_env_file_path, "MYSQL_DB_NAME=", "MYSQL_DB_NAME=video-stream\n"
+            )
         else:
-            update_file(dot_env_file_path, "MYSQL_DB_NAME=", f"MYSQL_DB_NAME=video-stream-{self.ENV}\n")
-
+            update_file(
+                dot_env_file_path,
+                "MYSQL_DB_NAME=",
+                f"MYSQL_DB_NAME=video-stream-{self.ENV}\n",
+            )
 
     @override
     def clean_up(self):
