@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 import shutil
 
-from common.mixins.cloud_mixin import CloudMixin
+from common.mixins.cloud_mixin.cloud_db_mixin import CloudDBMixin
 from common.base import BaseDeployer
 
 
@@ -27,16 +27,7 @@ def pre_set_up_cloud_env_hook(func):
 
 # TODO: db deploy
 class BaseDBDeployer(BaseDeployer, ABC):
-    PATH_PROJECT_ROOT = "../.."
-    PATH_PROJECT_DOCKER = "../Docker"
-    ENV = None
-
-    def __init__(self, provider_name, env):
-        self.ENV = env
-        if self.is_cloud():
-            self.cloud_mixin_instance = CloudMixin(
-                provider_name=provider_name, context=self.CONTEXT, env=env
-            )
+    CLOUD_MIXIN_CLASS = CloudDBMixin
 
     @abstractmethod
     def deploy(self):
