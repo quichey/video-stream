@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 
+from cloud_providers_deployment.base.base_provider import BaseCloudProvider
 
-class BaseDBCloudProvider(ABC):
+
+class BaseDBCloudProvider(BaseCloudProvider, ABC):
     """
     Abstract base class for cloud database providers.
     Handles DB provisioning, migrations, and deletion.
     """
-
-    PROVIDER_NAME = "base-db"
 
     def __init__(self, context, env):
         self.context = context

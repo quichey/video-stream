@@ -2,11 +2,8 @@ from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 import shutil
 
-from common.mixins.package_manager_mixin import PackageManagerMixin
-from common.mixins.docker_mixin import DockerMixin
 from common.mixins.cloud_mixin import CloudMixin
-from common.mixins.bashrc_mixin import BashrcMixin
-from common.mixins.version_mixin import VersionMixin
+from common.base import BaseDeployer
 
 
 load_dotenv()
@@ -29,7 +26,7 @@ def pre_set_up_cloud_env_hook(func):
 
 
 # TODO: db deploy
-class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMixin):
+class BaseDBDeployer(BaseDeployer, ABC):
     PATH_PROJECT_ROOT = "../.."
     PATH_PROJECT_DOCKER = "../Docker"
     ENV = None
