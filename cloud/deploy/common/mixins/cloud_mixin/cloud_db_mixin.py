@@ -1,4 +1,5 @@
 from cloud_providers_deployment import get_provider_class
+from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
 
 
 def pre_build_hook(func):
@@ -15,7 +16,7 @@ def pre_build_hook(func):
     return wrapper
 
 
-class CloudDBMixin:
+class CloudDBMixin(CloudMixin):
     def __init__(self, provider_name, context, env):
         self.context = context
         self.provider = get_provider_class(provider_name)(context, env)
