@@ -3,7 +3,7 @@ import re
 from util.subprocess_helper import run_cmds, run_cmd_with_retries
 from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
 
-from cloud_providers_deployment import get_provider_class
+from cloud_providers_deployment import get_provider_class_container
 
 
 def pre_build_hook(func):
@@ -21,9 +21,7 @@ def pre_build_hook(func):
 
 
 class CloudContainerMixin(CloudMixin):
-    def __init__(self, provider_name, context, env):
-        self.context = context
-        self.provider = get_provider_class(provider_name)(context, env)
+    GET_PROVIDER_CLASS_FUNC = get_provider_class_container
 
     def set_up_provider_env(self):
         self.provider.set_up_env()

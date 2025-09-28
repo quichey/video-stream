@@ -8,7 +8,7 @@ from cloud_providers_deployment.base.base_provider import BaseCloudProvider
 
 class BaseCloudContainerProvider(BaseCloudProvider, ABC):
     def __init__(self, context, env):
-        self._context = context
+        super().__init__(context, env)
         repository = f"{context}-engine" if env == "prod" else f"{context}-engine-{env}"
         self._image = Image(registry="unkown", repository=repository, tag="1.0.0")
 

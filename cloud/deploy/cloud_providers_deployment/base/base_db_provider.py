@@ -9,10 +9,6 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
     Handles DB provisioning, migrations, and deletion.
     """
 
-    def __init__(self, context, env):
-        self.context = context
-        self.env = env
-
     @abstractmethod
     def create_database(self, db_name: str):
         """Create a new database instance."""

@@ -1,4 +1,4 @@
-from cloud_providers_deployment import get_provider_class
+from cloud_providers_deployment import get_provider_class_db
 from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
 
 
@@ -17,9 +17,7 @@ def pre_build_hook(func):
 
 
 class CloudDBMixin(CloudMixin):
-    def __init__(self, provider_name, context, env):
-        self.context = context
-        self.provider = get_provider_class(provider_name)(context, env)
+    GET_PROVIDER_CLASS_FUNC = get_provider_class_db
 
     def set_up_provider_env(self):
         self.provider.set_up_env()

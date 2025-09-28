@@ -2,20 +2,21 @@ from abc import ABC
 import shutil
 from pathlib import Path
 
-from common.dataclasses_models.image import Image
-
 
 class BaseCloudProvider(ABC):
     PROVIDER_NAME = ""
 
     def __init__(self, context, env):
         self._context = context
-        repository = f"{context}-engine" if env == "prod" else f"{context}-engine-{env}"
-        self._image = Image(registry="unkown", repository=repository, tag="1.0.0")
+        self._env = env
 
     @property
     def context(self):
         return self._context
+
+    @property
+    def env(self):
+        return self._env
 
     """
     Copy over cloud/providers/<name>/.env to <service>/env/<name>/.env?
