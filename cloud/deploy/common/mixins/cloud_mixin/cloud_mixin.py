@@ -1,6 +1,3 @@
-from cloud_providers_deployment import get_provider_class
-
-
 def pre_build_hook(func):
     """Decorator to run a pre-build step if the subclass/provider defines it."""
 
@@ -16,9 +13,11 @@ def pre_build_hook(func):
 
 
 class CloudMixin:
+    GET_PROVIDER_CLASS_FUNC = None
+
     def __init__(self, provider_name, context, env):
         self.context = context
-        self.provider = get_provider_class(provider_name)(context, env)
+        self.provider = self.GET_PROVIDER_CLASS_FUNC(provider_name)(context, env)
 
     def set_up_provider_env(self):
         self.provider.set_up_env()
