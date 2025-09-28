@@ -31,7 +31,11 @@ class BaseDBDeployer(BaseDeployer, ABC):
 
     @abstractmethod
     def deploy(self):
-        pass
+        print(f"=== Deploying {self.CONTEXT} Database ===")
+        self.set_up_cloud_env()
+        self.provision_database()
+        self.run_migrations()
+        self.clean_up()
 
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""
@@ -62,5 +66,25 @@ class BaseDBDeployer(BaseDeployer, ABC):
         return
 
     @abstractmethod
+    def provision_database(self):
+        """
+        Provision the database itself.
+        For example, create SQL server, Postgres instance, or Cosmos DB.
+        """
+        pass
+
+    @abstractmethod
+    def run_migrations(self):
+        """
+        Run any schema migrations or initialization scripts.
+
+        Use server/Seed module here i think
+        """
+        pass
+
+    @abstractmethod
     def clean_up(self):
+        """
+        Clean up temporary resources or connections after deploy.
+        """
         pass
