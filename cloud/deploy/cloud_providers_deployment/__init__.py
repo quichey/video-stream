@@ -1,6 +1,6 @@
 from .aws.aws_provider import AWSProvider
 from .azure.azure_provider import AzureProvider
-from .gcp_provider import GoogleCloudProvider
+from .gcp.gcp_provider import GoogleCloudProvider
 
 
 def get_provider_class_container(provider_name):
