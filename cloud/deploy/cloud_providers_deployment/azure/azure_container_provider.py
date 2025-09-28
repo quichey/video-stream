@@ -5,16 +5,18 @@ import sys
 
 from util.subprocess_helper import run_cmd_with_retries
 from common.mixins.docker_mixin import DockerMixin
+from cloud_providers_deployment.base.base_container_provider import (
+    BaseCloudContainerProvider,
+)
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from providers.azure.azure_cli import AzureCLIHelper
-from ..base_provider import BaseCloudProvider
 
 load_dotenv()
 load_dotenv(dotenv_path="../providers/azure/.env")
 
 
-class AzureProvider(BaseCloudProvider, DockerMixin):
+class AzureContainerProvider(BaseCloudContainerProvider, DockerMixin):
     PROVIDER_NAME = "azure"
 
     def __init__(self, context, env):
@@ -28,7 +30,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
             "CONTAINER_REGISTRY_USER_PASSWORD", "blah"
         )
         self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", "blah")
-        self.environment_name = os.getenv(f"CONTAINER_APP_ENVIRONMENT")
+        self.environment_name = os.getenv("CONTAINER_APP_ENVIRONMENT")
 
         self.container_app_name = (
             self.image.repository.lower().replace("_", "-") + "-app"
@@ -77,7 +79,7 @@ class AzureProvider(BaseCloudProvider, DockerMixin):
         return app_url
 
     def pre_build_image_cloud(self, dockerfile, package_path):
-        print(f"[AzureProvider] Pre-building Docker image locally...")
+        print("[AzureProvider] Pre-building Docker image locally...")
         self.build_docker_image_local(
             image_name=self.image.full_name,
             dockerfile=dockerfile,
