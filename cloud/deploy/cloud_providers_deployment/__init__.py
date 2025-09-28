@@ -1,5 +1,5 @@
-from .aws_provider import AWSProvider
-from .azure_provider import AzureProvider
+from .aws.aws_provider import AWSProvider
+from .azure.azure_provider import AzureProvider
 from .gcp_provider import GoogleCloudProvider
 
 
