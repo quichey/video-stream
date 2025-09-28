@@ -1,13 +1,12 @@
-# db_deployer.py
-from abc import ABC, abstractmethod
+from typing_extensions import override
 from dotenv import load_dotenv
 
-from common.mixins.cloud_db_mixin import CloudDBMixin
+from common.base_db import BaseDBDeployer
 
 load_dotenv()
 
 
-class DBDeployer(ABC):
+class MysqlDBDeployer(BaseDBDeployer):
     """
     Handles deployment of databases in the cloud.
     Designed to work alongside BaseDeployer but for DB provisioning/migrations.
@@ -15,25 +14,11 @@ class DBDeployer(ABC):
 
     CONTEXT = "db"  # override in subclasses if multiple DBs
 
-    def __init__(self, provider_name, env):
-        self.ENV = env
-        print(f"[DBDeployer] Initializing CloudMixin for {self.CONTEXT}...")
-        self.cloud_mixin_instance = CloudDBMixin(
-            provider_name=provider_name, context=self.CONTEXT, env=env
-        )
-
-    def deploy(self):
-        print(f"=== Deploying {self.CONTEXT} Database ===")
-        self.set_up_cloud_env()
-        self.provision_database()
-        self.run_migrations()
-        self.clean_up()
-
     def set_up_cloud_env(self):
         print(f"[DBDeployer] Setting Up Cloud Provider env for {self.CONTEXT}")
         self.cloud_mixin_instance.set_up_provider_env()
 
-    @abstractmethod
+    @override
     def provision_database(self):
         """
         Provision the database itself.
@@ -41,7 +26,7 @@ class DBDeployer(ABC):
         """
         pass
 
-    @abstractmethod
+    @override
     def run_migrations(self):
         """
         Run any schema migrations or initialization scripts.
@@ -50,7 +35,7 @@ class DBDeployer(ABC):
         """
         pass
 
-    @abstractmethod
+    @override
     def clean_up(self):
         """
         Clean up temporary resources or connections after deploy.
