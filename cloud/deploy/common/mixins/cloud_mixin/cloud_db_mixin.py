@@ -1,5 +1,6 @@
 from cloud_providers_deployment import get_provider_class_db
 from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
+from util.subprocess_helper import run_cmd_with_retries
 
 
 class CloudDBMixin(CloudMixin):
@@ -10,7 +11,12 @@ class CloudDBMixin(CloudMixin):
         Provision the database itself.
         For example, create SQL server, Postgres instance, or Cosmos DB.
         """
-        pass
+        cloud_cmd = self.provider.get_cmd_create_database()
+        print(f"[CloudDBMixin] Provisioning {self.context} to Cloud...")
+        run_cmd_with_retries(
+            cloud_cmd,
+            check=True,
+        )
 
     def run_migrations(self):
         """
@@ -18,10 +24,20 @@ class CloudDBMixin(CloudMixin):
 
         Use server/Seed module here i think
         """
-        pass
+        cloud_cmd = self.provider.get_cmd_run_migrations()
+        print(f"[CloudDBMixin] Running migrations {self.context} on Cloud...")
+        run_cmd_with_retries(
+            cloud_cmd,
+            check=True,
+        )
 
     def clean_up(self):
         """
         Clean up temporary resources or connections after deploy.
         """
-        pass
+        cloud_cmd = self.provider.get_run_cmd()
+        print(f"[CloudDBMixin] Provisioning {self.context} to Cloud...")
+        run_cmd_with_retries(
+            cloud_cmd,
+            check=True,
+        )
