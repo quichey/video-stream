@@ -5,10 +5,6 @@ from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
 class CloudDBMixin(CloudMixin):
     GET_PROVIDER_CLASS_FUNC = get_provider_class_db
 
-    def set_up_provider_env(self):
-        self.provider.set_up_env()
-        return
-
     def provision_database(self):
         """
         Provision the database itself.
