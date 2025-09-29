@@ -23,10 +23,6 @@ def pre_build_hook(func):
 class CloudContainerMixin(CloudMixin):
     GET_PROVIDER_CLASS_FUNC = get_provider_class_container
 
-    def set_up_provider_env(self):
-        self.provider.set_up_env()
-        return
-
     def get_images_archives(self):
         """
         Fetch the latest semantic version tag from ACR.
