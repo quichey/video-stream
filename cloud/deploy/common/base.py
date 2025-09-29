@@ -46,8 +46,22 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
         return os.environ.get("DEPLOY_ENV", "local") == "cloud"
 
     @abstractmethod
-    def deploy(self):
+    def is_first_deploy(self) -> bool:
         pass
+
+    @abstractmethod
+    def do_first_deploy(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def do_update(self, *args, **kwargs):
+        pass
+
+    def deploy(self, *args, **kwargs):
+        if self.is_first_deploy:
+            self.do_first_deploy(*args, **kwargs)
+        else:
+            self.do_update(*args, **kwargs)
 
     def verify_os_env(self):
         """Shared OS environment verification based on package_manager."""

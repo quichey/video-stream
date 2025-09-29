@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing_extensions import override
 from dotenv import load_dotenv
 import shutil
 import os
@@ -14,7 +15,23 @@ load_dotenv()
 class BaseContainerDeployer(BaseDeployer, ABC):
     CLOUD_MIXIN_CLASS = CloudContainerMixin
 
-    def deploy(self):
+    @override
+    def is_first_deploy(self) -> bool:
+        pass
+
+    @override
+    def do_first_deploy(self):
+        print(f"=== Deploying {self.__class__.__name__} ===")
+        self.verify_os_env()
+        self.bundle_packages()
+        self.set_up_cloud_env()
+        self.generate_image_name()
+        self.build_docker_image()
+        self.launch_instance()
+        self.clean_up()
+
+    @override
+    def do_update(self):
         print(f"=== Deploying {self.__class__.__name__} ===")
         self.verify_os_env()
         self.bundle_packages()
