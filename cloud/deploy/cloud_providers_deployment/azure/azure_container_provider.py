@@ -1,46 +1,35 @@
 from dotenv import load_dotenv
 from typing_extensions import override
 import os
-import sys
 
 from util.subprocess_helper import run_cmd_with_retries
 from common.mixins.docker_mixin import DockerMixin
 from cloud_providers_deployment.base.base_container_provider import (
     BaseCloudContainerProvider,
 )
+from cloud_providers_deployment.azure.azure_base import AzureBaseProvider
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from providers.azure.azure_cli import AzureCLIHelper
 
 load_dotenv()
 load_dotenv(dotenv_path="../providers/azure/.env")
 
 
-class AzureContainerProvider(BaseCloudContainerProvider, DockerMixin):
+class AzureContainerProvider(
+    AzureBaseProvider, BaseCloudContainerProvider, DockerMixin
+):
     PROVIDER_NAME = "azure"
 
     def __init__(self, context, env):
         super().__init__(context, env)
-        self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", "blah")
         self.acr_login_server = os.environ.get(
             "CONTAINER_REGISTRY_LOGIN_SERVER", "blah"
         )
-        self.acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", "blah")
-        self.acr_user_password = os.environ.get(
-            "CONTAINER_REGISTRY_USER_PASSWORD", "blah"
-        )
-        self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", "blah")
         self.environment_name = os.getenv("CONTAINER_APP_ENVIRONMENT")
 
         self.container_app_name = (
             self.image.repository.lower().replace("_", "-") + "-app"
         )
         self.image.registry = f"{self.acr_login_server}.azurecr.io"
-
-        cli_helper = AzureCLIHelper(
-            resource_group=self.resource_group, acr_name=self.acr_name
-        )
-        cli_helper.login()
         return
 
     @override
