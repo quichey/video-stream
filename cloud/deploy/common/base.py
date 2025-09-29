@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 import shutil
+import os
 
 from common.mixins.package_manager_mixin import PackageManagerMixin
 from common.mixins.docker_mixin import DockerMixin
@@ -40,6 +41,9 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
             self.cloud_mixin_instance = self.CLOUD_MIXIN_CLASS(
                 provider_name=provider_name, context=self.CONTEXT, env=env
             )
+
+    def is_cloud(self) -> bool:
+        return os.environ.get("DEPLOY_ENV", "local") == "cloud"
 
     @abstractmethod
     def deploy(self):
