@@ -49,9 +49,6 @@ class BaseContainerDeployer(BaseDeployer, ABC):
         else:
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
-    def is_cloud(self) -> bool:
-        return os.environ.get("DEPLOY_ENV", "local") == "cloud"
-
     def generate_image_name(self):
         if self.is_cloud():
             print(
