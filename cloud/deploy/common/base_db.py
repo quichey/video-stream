@@ -29,7 +29,6 @@ def pre_set_up_cloud_env_hook(func):
 class BaseDBDeployer(BaseDeployer, ABC):
     CLOUD_MIXIN_CLASS = CloudDBMixin
 
-    @abstractmethod
     def deploy(self):
         print(f"=== Deploying {self.CONTEXT} Database ===")
         self.set_up_cloud_env()
@@ -65,7 +64,6 @@ class BaseDBDeployer(BaseDeployer, ABC):
 
         return
 
-    @abstractmethod
     def provision_database(self):
         """
         Provision the database itself.
@@ -73,7 +71,6 @@ class BaseDBDeployer(BaseDeployer, ABC):
         """
         pass
 
-    @abstractmethod
     def run_migrations(self):
         """
         Run any schema migrations or initialization scripts.
