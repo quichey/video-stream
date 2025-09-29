@@ -2,9 +2,10 @@ import os
 from typing_extensions import override
 from subprocess import run, CalledProcessError
 from cloud_providers_deployment.base.base_db_provider import BaseDBCloudProvider
+from cloud_providers_deployment.azure.azure_base import AzureBaseProvider
 
 
-class AzureDBCloudProvider(BaseDBCloudProvider):
+class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
     PROVIDER_NAME = "azure-db"
 
     def __init__(self, context, env):
