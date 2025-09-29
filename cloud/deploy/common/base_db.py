@@ -40,7 +40,12 @@ class BaseDBDeployer(BaseDeployer, ABC):
         Provision the database itself.
         For example, create SQL server, Postgres instance, or Cosmos DB.
         """
-        pass
+        if self.is_cloud():
+            print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
+            self.cloud_mixin_instance.provision_database()
+        else:
+            print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
+        return
 
     def run_migrations(self):
         """
@@ -48,11 +53,15 @@ class BaseDBDeployer(BaseDeployer, ABC):
 
         Use server/Seed module here i think
         """
-        pass
+        if self.is_cloud():
+            print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
+            self.cloud_mixin_instance.run_migrations()
+        else:
+            print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
+        return
 
     @abstractmethod
     def clean_up(self):
         """
         Clean up temporary resources or connections after deploy.
         """
-        pass
