@@ -16,17 +16,33 @@ class AzureBaseProvider(BaseCloudProvider):
 
     def __init__(self, context, env):
         super().__init__(context, env)
-        self.acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", "blah")
-        self.acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", "blah")
-        self.acr_user_password = os.environ.get(
+        self._acr_name = os.environ.get("CONTAINER_REGISTRY_NAME", "blah")
+        self._acr_user_name = os.environ.get("CONTAINER_REGISTRY_USER_NAME", "blah")
+        self._acr_user_password = os.environ.get(
             "CONTAINER_REGISTRY_USER_PASSWORD", "blah"
         )
-        self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", "blah")
+        self._resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", "blah")
 
         cli_helper = AzureCLIHelper(
             resource_group=self.resource_group, acr_name=self.acr_name
         )
         cli_helper.login()
+
+    @property
+    def acr_name(self) -> str:
+        return self._acr_name
+
+    @property
+    def acr_user_name(self) -> str:
+        return self._acr_user_name
+
+    @property
+    def acr_user_password(self) -> str:
+        return self._acr_user_password
+
+    @property
+    def resource_group(self) -> str:
+        return self._resource_group
 
     def _run_az_cmd(self, cmd: list):
         try:
