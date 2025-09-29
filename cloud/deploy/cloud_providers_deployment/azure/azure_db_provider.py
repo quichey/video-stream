@@ -1,6 +1,7 @@
 import os
+from typing_extensions import override
 from subprocess import run, CalledProcessError
-from .base_db_cloud_provider import BaseDBCloudProvider
+from cloud_providers_deployment.base.base_db_provider import BaseDBCloudProvider
 
 
 class AzureDBCloudProvider(BaseDBCloudProvider):
@@ -21,7 +22,8 @@ class AzureDBCloudProvider(BaseDBCloudProvider):
             print(f"[AzureDBCloudProvider] Command failed: {' '.join(cmd)}")
             raise e
 
-    def create_database(self, db_name: str):
+    @override
+    def get_cmd_create_database(self) -> str:
         """Create a Postgres database in Azure (example)."""
         server_name = f"{self.db_server_name_prefix}-{self.env}"
         print(f"[AzureDBCloudProvider] Creating DB server {server_name}...")
@@ -56,7 +58,7 @@ class AzureDBCloudProvider(BaseDBCloudProvider):
             "db",
             "create",
             "--name",
-            db_name,
+            self.db_name,
             "--server-name",
             server_name,
             "--resource-group",
@@ -64,17 +66,19 @@ class AzureDBCloudProvider(BaseDBCloudProvider):
         ]
         self._run_az_cmd(cmd_db)
 
-    def run_migrations(self, db_name: str):
+    @override
+    def get_cmd_run_migrations(self) -> str:
         """Run migrations - this could be calling Alembic, Flyway, etc."""
-        connection_string = self.get_connection_string(db_name)
-        print(f"[AzureDBCloudProvider] Running migrations on {db_name}...")
+        connection_string = self.get_connection_string(self.db_name)
+        print(f"[AzureDBCloudProvider] Running migrations on {self.db_name}...")
         # Example: call Alembic or other migration tool here
         # subprocess.run(["alembic", "upgrade", "head", "-x", f"db_url={connection_string}"], check=True)
 
-    def delete_database(self, db_name: str):
+    @override
+    def get_cmd_delete_database(self) -> str:
         server_name = f"{self.db_server_name_prefix}-{self.env}"
         print(
-            f"[AzureDBCloudProvider] Deleting DB {db_name} from server {server_name}..."
+            f"[AzureDBCloudProvider] Deleting DB {self.db_name} from server {server_name}..."
         )
         cmd = [
             "az",
@@ -82,7 +86,7 @@ class AzureDBCloudProvider(BaseDBCloudProvider):
             "db",
             "delete",
             "--name",
-            db_name,
+            self.db_name,
             "--server-name",
             server_name,
             "--resource-group",
@@ -91,6 +95,7 @@ class AzureDBCloudProvider(BaseDBCloudProvider):
         ]
         self._run_az_cmd(cmd)
 
-    def get_connection_string(self, db_name: str) -> str:
+    @override
+    def get_cmd_get_connection_string(self) -> str:
         server_name = f"{self.db_server_name_prefix}-{self.env}"
-        return f"postgresql://{self.admin_user}:{self.admin_password}@{server_name}.postgres.database.azure.com:5432/{db_name}"
+        return f"postgresql://{self.admin_user}:{self.admin_password}@{server_name}.postgres.database.azure.com:5432/{self.db_name}"
