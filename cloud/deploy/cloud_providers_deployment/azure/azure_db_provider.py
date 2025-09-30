@@ -81,16 +81,16 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
     @override
     def get_cmd_run_migrations(self) -> str:
         """Run migrations - this could be calling Alembic, Flyway, etc."""
-        connection_string = self.get_connection_string(self.db_name)
-        print(f"[AzureDBCloudProvider] Running migrations on {self.db_name}...")
+        connection_string = self.get_connection_string()
+        print(f"[AzureDBCloudProvider] Running migrations on {self.db_server_name}...")
         # Example: call Alembic or other migration tool here
         # subprocess.run(["alembic", "upgrade", "head", "-x", f"db_url={connection_string}"], check=True)
 
     @override
     def get_cmd_delete_database(self) -> str:
-        server_name = f"{self.db_server_name_prefix}-{self.env}"
+        server_name = self.db_server_name
         print(
-            f"[AzureDBCloudProvider] Deleting DB {self.db_name} from server {server_name}..."
+            f"[AzureDBCloudProvider] Deleting DB {self.db_server_name} from server {server_name}..."
         )
         cmd = [
             "az",
@@ -98,7 +98,7 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
             "db",
             "delete",
             "--name",
-            self.db_name,
+            self.db_server_name,
             "--server-name",
             server_name,
             "--resource-group",
@@ -108,6 +108,21 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
         self._run_az_cmd(cmd)
 
     @override
-    def get_cmd_get_connection_string(self) -> str:
-        server_name = f"{self.db_server_name_prefix}-{self.env}"
-        return f"postgresql://{self.admin_user}:{self.admin_password}@{server_name}.postgres.database.azure.com:5432/{self.db_name}"
+    def get_connection_string(self) -> str:
+        admin_specs_cloud_sql = {
+            "dialect": "mysql",
+            "db_api": "mysqlconnector",
+            "user": self.admin_user,
+            "pw": self.admin_password,
+            "hostname": f"{self.db_server_name}.mysql.database.azure.com",
+            "provider": "azure",
+        }
+        dialect = admin_specs_cloud_sql["dialect"]
+        db_api = admin_specs_cloud_sql["db_api"]
+
+        user = admin_specs_cloud_sql["user"]
+        pw = admin_specs_cloud_sql["pw"]
+        hostname = admin_specs_cloud_sql["hostname"]
+        dbname = admin_specs_cloud_sql["dbname"]
+        url = f"{user}:{pw}@{hostname}/{dbname}"
+        return f"{dialect}+{db_api}://{url}"
