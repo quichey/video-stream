@@ -22,6 +22,7 @@ class AzureBaseProvider(BaseCloudProvider):
             "CONTAINER_REGISTRY_USER_PASSWORD", "blah"
         )
         self._resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", "blah")
+        self._location = os.environ.get("AZURE_LOCATION", "westus2")
 
         cli_helper = AzureCLIHelper(
             resource_group=self.resource_group, acr_name=self.acr_name
@@ -43,6 +44,10 @@ class AzureBaseProvider(BaseCloudProvider):
     @property
     def resource_group(self) -> str:
         return self._resource_group
+
+    @property
+    def location(self) -> str:
+        return self._location
 
     def _run_az_cmd(self, cmd: list):
         try:

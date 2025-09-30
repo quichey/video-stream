@@ -10,8 +10,6 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
 
     def __init__(self, context, env):
         super().__init__(context, env)
-        self.resource_group = os.environ.get("RESOURCE_GROUP_CENTRAL", "default-rg")
-        self.location = os.environ.get("AZURE_LOCATION", "westus2")
         self.admin_user = os.environ.get("DB_ADMIN_USER", "admin")
         self.admin_password = os.environ.get("DB_ADMIN_PASSWORD", "ChangeMe123!")
         self.db_server_name_prefix = f"{context}-db"
