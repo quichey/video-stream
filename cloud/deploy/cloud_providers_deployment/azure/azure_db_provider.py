@@ -10,9 +10,9 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
 
     def __init__(self, context, env):
         super().__init__(context, env)
-        self.admin_user = os.environ.get("DB_ADMIN_USER", "admin")
-        self.admin_password = os.environ.get("DB_ADMIN_PASSWORD", "ChangeMe123!")
-        self.db_server_name_prefix = f"{context}-db"
+        self.admin_user = os.environ.get("MYSQL_ADMIN_NAME", "admin")
+        self.admin_password = os.environ.get("MYSQL_ADMIN_PW", "ChangeMe123!")
+        self.db_server_name_prefix = os.environ.get("MYSQL_DB_NAME", "ChangeMe123!")
 
     def _run_az_cmd(self, cmd: list):
         try:
