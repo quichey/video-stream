@@ -23,15 +23,15 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
 
     @override
     def get_cmd_create_database(self) -> str:
-        """Create a Postgres database in Azure (example)."""
+        """Create an Azure MySQL Flexible Server and database."""
         server_name = f"{self.db_server_name_prefix}-{self.env}"
-        print(f"[AzureDBCloudProvider] Creating DB server {server_name}...")
+        print(f"[AzureDBCloudProvider] Creating MySQL Flexible Server {server_name}...")
 
-        # Step 1: Create the PostgreSQL server if it doesn't exist
+        # Step 1: Create the MySQL Flexible Server if it doesn't exist
         cmd_server = [
             "az",
-            "postgres",
-            "server",
+            "mysql",
+            "flexible-server",  # <-- Changed from 'postgres server'
             "create",
             "--name",
             server_name,
@@ -44,19 +44,29 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
             "--admin-password",
             self.admin_password,
             "--sku-name",
-            "B_Gen5_1",  # example
+            "Standard_B1ms",  # <-- Changed SKU example for Flexible Server
             "--version",
-            "14",
+            "8.0.21",  # <-- Changed version example for MySQL
+            "--storage-size",
+            "20",  # Flexible Server often requires this parameter
+            "--tier",
+            "Burstable",  # Flexible Server requires a tier argument
+            "--public-access",
+            "0.0.0.0",  # Example for no public access / VNET integration
         ]
         self._run_az_cmd(cmd_server)
+        print(
+            f"[AzureDBCloudProvider] MySQL Flexible Server {server_name} created. Creating database..."
+        )
 
-        # Step 2: Create the actual database
+        # Step 2: Create the actual database on the Flexible Server
         cmd_db = [
             "az",
-            "postgres",
-            "db",
+            "mysql",
+            "flexible-server",
+            "db",  # <-- Changed from 'postgres db'
             "create",
-            "--name",
+            "--database-name",  # <-- Changed argument name for database name
             self.db_name,
             "--server-name",
             server_name,
@@ -64,6 +74,8 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
             self.resource_group,
         ]
         self._run_az_cmd(cmd_db)
+
+        return "MySQL Flexible Server and Database creation commands executed."
 
     @override
     def get_cmd_run_migrations(self) -> str:
