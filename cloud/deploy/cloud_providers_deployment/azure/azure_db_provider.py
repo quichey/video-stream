@@ -12,7 +12,7 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
         super().__init__(context, env)
         self.admin_user = os.environ.get("MYSQL_ADMIN_NAME", "admin")
         self.admin_password = os.environ.get("MYSQL_ADMIN_PW", "ChangeMe123!")
-        self.db_server_name_prefix = os.environ.get("MYSQL_DB_NAME", "ChangeMe123!")
+        self.db_server_name = os.environ.get("MYSQL_DB_NAME", "ChangeMe123!")
 
     def _run_az_cmd(self, cmd: list):
         try:
@@ -24,8 +24,9 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
     @override
     def get_cmd_create_database(self) -> str:
         """Create an Azure MySQL Flexible Server and database."""
-        server_name = f"{self.db_server_name_prefix}-{self.env}"
-        print(f"[AzureDBCloudProvider] Creating MySQL Flexible Server {server_name}...")
+        print(
+            f"[AzureDBCloudProvider] Creating MySQL Flexible Server {self.db_server_name}..."
+        )
 
         # Step 1: Create the MySQL Flexible Server if it doesn't exist
         cmd_server = [
@@ -34,7 +35,7 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
             "flexible-server",  # <-- Changed from 'postgres server'
             "create",
             "--name",
-            server_name,
+            self.db_server_name,
             "--resource-group",
             self.resource_group,
             "--location",
@@ -56,7 +57,7 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
         ]
         self._run_az_cmd(cmd_server)
         print(
-            f"[AzureDBCloudProvider] MySQL Flexible Server {server_name} created. Creating database..."
+            f"[AzureDBCloudProvider] MySQL Flexible Server {self.db_server_name} created. Creating database..."
         )
 
         # Step 2: Create the actual database on the Flexible Server
@@ -67,9 +68,9 @@ class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
             "db",  # <-- Changed from 'postgres db'
             "create",
             "--database-name",  # <-- Changed argument name for database name
-            self.db_name,
+            self.db_server_name,
             "--server-name",
-            server_name,
+            self.db_server_name,
             "--resource-group",
             self.resource_group,
         ]
