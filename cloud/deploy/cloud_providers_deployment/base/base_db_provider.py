@@ -40,6 +40,6 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
         pass
 
     @abstractmethod
-    def get_cmd_get_connection_string(self) -> str:
+    def get_connection_string(self) -> str:
         """Return connection string / URI for the database."""
         pass
