@@ -12,14 +12,14 @@ class MysqlDBDeployer(BaseDBDeployer):
     Designed to work alongside BaseDeployer but for DB provisioning/migrations.
     """
 
-    CONTEXT = "db"  # override in subclasses if multiple DBs
+    ENGINE = "mysql"
 
     def set_up_cloud_env(self):
         print(f"[DBDeployer] Setting Up Cloud Provider env for {self.CONTEXT}")
         self.cloud_mixin_instance.set_up_provider_env()
 
     @override
-    def provision_database(self):
+    def provision_database_local(self):
         """
         Provision the database itself.
         For example, create SQL server, Postgres instance, or Cosmos DB.
@@ -27,7 +27,7 @@ class MysqlDBDeployer(BaseDBDeployer):
         pass
 
     @override
-    def run_migrations(self):
+    def run_migrations_local(self):
         """
         Run any schema migrations or initialization scripts.
 
