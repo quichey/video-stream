@@ -1,128 +1,84 @@
-import os
 from typing_extensions import override
 from subprocess import run, CalledProcessError
 from cloud_providers_deployment.base.base_db_provider import BaseDBCloudProvider
 from cloud_providers_deployment.azure.azure_base import AzureBaseProvider
+from abc import abstractmethod  # Import abc for abstract methods
 
 
-class AzureDBCloudProvider(AzureBaseProvider, BaseDBCloudProvider):
-    PROVIDER_NAME = "azure-db"
+class AzureDBProvider(AzureBaseProvider, BaseDBCloudProvider):
+    # This class acts as the abstract base for all Azure database types (MySQL, Postgres, etc.)
+    PROVIDER_NAME = "azure-db-base"
 
     def __init__(self, context, env):
         super().__init__(context, env)
-        self.admin_user = os.environ.get("MYSQL_ADMIN_NAME", "admin")
-        self.admin_password = os.environ.get("MYSQL_ADMIN_PW", "ChangeMe123!")
-        self.db_server_name = os.environ.get("MYSQL_DB_NAME", "ChangeMe123!")
+        # NOTE: Subclasses must define their specific connection and server names.
 
-    def _run_az_cmd(self, cmd: list):
+    def _run_az_cmd(self, cmd: list, action_name: str):
+        """Common method to execute the Azure CLI command."""
         try:
-            run(cmd, check=True)
+            print(f"[{self.PROVIDER_NAME}] Executing {action_name} command...")
+            run(cmd, check=True, capture_output=True, text=True)
+            print(f"[{self.PROVIDER_NAME}] {action_name} successful.")
         except CalledProcessError as e:
-            print(f"[AzureDBCloudProvider] Command failed: {' '.join(cmd)}")
+            print(
+                f"[{self.PROVIDER_NAME}] {action_name} failed. Command: {' '.join(cmd)}"
+            )
+            print(f"Stdout:\n{e.stdout}")
+            print(f"Stderr:\n{e.stderr}")
             raise e
+        except FileNotFoundError:
+            print(
+                "[ERROR] Azure CLI (az) command not found. Ensure it is installed and in your PATH."
+            )
+            raise
+
+    # --- Abstract Inner Helper Functions (Must be defined by subclasses) ---
+
+    @abstractmethod
+    def _get_server_creation_command(self) -> list:
+        """Returns the specific az command list for creating the DB server."""
+        pass
+
+    @abstractmethod
+    def _get_db_creation_command(self) -> list:
+        """Returns the specific az command list for creating the database on the server."""
+        pass
+
+    @abstractmethod
+    def _get_server_deletion_command(self) -> list:
+        """Returns the specific az command list for deleting the DB server."""
+        pass
+
+    @abstractmethod
+    def get_connection_details(self) -> dict:
+        """Returns connection specifics (user, pw, hostname, dbname) for the engine."""
+        pass
+
+    # --- Overridden Public API Functions (Call the inner abstract helpers) ---
 
     @override
     def get_cmd_create_database(self) -> str:
-        """Create an Azure MySQL Flexible Server and database."""
-        print(
-            f"[AzureDBCloudProvider] Creating MySQL Flexible Server {self.db_server_name}..."
-        )
+        """Implements the full database provisioning workflow."""
+        print(f"[{self.PROVIDER_NAME}] Starting full DB provisioning process...")
 
-        # Step 1: Create the MySQL Flexible Server if it doesn't exist
-        cmd_server = [
-            "az",
-            "mysql",
-            "flexible-server",  # <-- Changed from 'postgres server'
-            "create",
-            "--name",
-            self.db_server_name,
-            "--resource-group",
-            self.resource_group,
-            "--location",
-            self.location,
-            "--admin-user",
-            self.admin_user,
-            "--admin-password",
-            self.admin_password,
-            "--sku-name",
-            "Standard_B1ms",  # <-- Changed SKU example for Flexible Server
-            "--version",
-            "8.0.21",  # <-- Changed version example for MySQL
-            "--storage-size",
-            "20",  # Flexible Server often requires this parameter
-            "--tier",
-            "Burstable",  # Flexible Server requires a tier argument
-            "--public-access",
-            "0.0.0.0",  # Example for no public access / VNET integration
-        ]
-        self._run_az_cmd(cmd_server)
-        print(
-            f"[AzureDBCloudProvider] MySQL Flexible Server {self.db_server_name} created. Creating database..."
-        )
+        # Step 1: Create the Server
+        cmd_server = self._get_server_creation_command()
+        self._run_az_cmd(cmd_server, "Server Creation")
 
-        # Step 2: Create the actual database on the Flexible Server
-        cmd_db = [
-            "az",
-            "mysql",
-            "flexible-server",
-            "db",  # <-- Changed from 'postgres db'
-            "create",
-            "--database-name",  # <-- Changed argument name for database name
-            self.db_server_name,
-            "--server-name",
-            self.db_server_name,
-            "--resource-group",
-            self.resource_group,
-        ]
-        self._run_az_cmd(cmd_db)
+        # Step 2: Create the Database on the Server
+        cmd_db = self._get_db_creation_command()
+        self._run_az_cmd(cmd_db, "Database Creation")
 
-        return "MySQL Flexible Server and Database creation commands executed."
-
-    @override
-    def get_cmd_run_migrations(self) -> str:
-        """Run migrations - this could be calling Alembic, Flyway, etc."""
-        connection_string = self.get_connection_string()
-        print(f"[AzureDBCloudProvider] Running migrations on {self.db_server_name}...")
-        # Example: call Alembic or other migration tool here
-        # subprocess.run(["alembic", "upgrade", "head", "-x", f"db_url={connection_string}"], check=True)
+        return "Database server and database creation commands executed."
 
     @override
     def get_cmd_delete_database(self) -> str:
-        server_name = self.db_server_name
-        print(
-            f"[AzureDBCloudProvider] Deleting DB {self.db_server_name} from server {server_name}..."
-        )
-        cmd = [
-            "az",
-            "postgres",
-            "db",
-            "delete",
-            "--name",
-            self.db_server_name,
-            "--server-name",
-            server_name,
-            "--resource-group",
-            self.resource_group,
-            "--yes",
-        ]
-        self._run_az_cmd(cmd)
+        """Implements the full database deletion workflow."""
+        cmd_delete = self._get_server_deletion_command()
+        self._run_az_cmd(cmd_delete, "Server Deletion")
+        return "Database server deletion command executed."
 
     @override
-    def get_connection_string(self) -> str:
-        admin_specs_cloud_sql = {
-            "dialect": "mysql",
-            "db_api": "mysqlconnector",
-            "user": self.admin_user,
-            "pw": self.admin_password,
-            "hostname": f"{self.db_server_name}.mysql.database.azure.com",
-            "provider": "azure",
-        }
-        dialect = admin_specs_cloud_sql["dialect"]
-        db_api = admin_specs_cloud_sql["db_api"]
-
-        user = admin_specs_cloud_sql["user"]
-        pw = admin_specs_cloud_sql["pw"]
-        hostname = admin_specs_cloud_sql["hostname"]
-        dbname = admin_specs_cloud_sql["dbname"]
-        url = f"{user}:{pw}@{hostname}/{dbname}"
-        return f"{dialect}+{db_api}://{url}"
+    def get_cmd_run_migrations(self) -> str:
+        """Hook for running migrations, delegated to the Deployer class."""
+        return "Migration run delegated to Deployer class."
