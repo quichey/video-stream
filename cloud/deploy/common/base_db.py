@@ -1,9 +1,16 @@
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 from typing_extensions import override
+import os
+import sys
 
 from common.mixins.cloud_mixin.cloud_db_mixin import CloudDBMixin
 from common.base import BaseDeployer
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../server"))
+)
+from db.Seed import Seed
 
 
 load_dotenv()
@@ -14,6 +21,11 @@ class BaseDBDeployer(BaseDeployer, ABC):
     CLOUD_MIXIN_CLASS = CloudDBMixin
     CONTEXT = "db"  # override in subclasses if multiple DBs
     ENGINE = None
+    SEEDER = None
+
+    def __init__(self, provider_name, env):
+        super().__init__(provider_name, env)
+        self.SEEDER = Seed()
 
     @override
     def is_first_deploy(self) -> bool:
