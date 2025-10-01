@@ -141,7 +141,7 @@ class Data_Records:
 
         # TODO: handle session tables values
         # - uuid
-        # - google auth?
+        # - google auth? -- no google auth data -- let automated test flows handle
 
     def init_table_data(self, list_of_table_rand):
         with Session(self.seed.engine) as session:
