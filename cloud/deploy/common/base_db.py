@@ -12,6 +12,8 @@ load_dotenv()
 # TODO: db deploy
 class BaseDBDeployer(BaseDeployer, ABC):
     CLOUD_MIXIN_CLASS = CloudDBMixin
+    CONTEXT = "db"  # override in subclasses if multiple DBs
+    ENGINE = None
 
     @override
     def is_first_deploy(self) -> bool:
@@ -45,7 +47,12 @@ class BaseDBDeployer(BaseDeployer, ABC):
             self.cloud_mixin_instance.provision_database()
         else:
             print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
+            self.provision_database_local()
         return
+
+    @abstractmethod
+    def provision_database_local(self):
+        pass
 
     def run_migrations(self):
         """
@@ -58,7 +65,12 @@ class BaseDBDeployer(BaseDeployer, ABC):
             self.cloud_mixin_instance.run_migrations()
         else:
             print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
+            self.run_migrations_local()
         return
+
+    @abstractmethod
+    def run_migrations_local(self):
+        pass
 
     @abstractmethod
     def clean_up(self):
