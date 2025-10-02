@@ -1,6 +1,7 @@
 import random
 import time
 import os
+import bcrypt
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -146,8 +147,12 @@ class Data_Records:
         # - uuid
         # - google auth? -- no google auth data -- let automated test flows handle
 
-    def random_password(self):
-        pass
+    def random_password(self) -> bytes:
+        # bcrypt automatically generates a random salt
+        salt = bcrypt.gensalt()
+        plain_password = f"blah--{str(random.randint(100000, 1000000))}"
+        hashed = bcrypt.hashpw(plain_password.encode("utf-8"), salt)
+        return hashed
 
     def init_table_data(self, list_of_table_rand):
         with Session(self.seed.engine) as session:
