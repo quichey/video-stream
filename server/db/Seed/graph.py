@@ -91,3 +91,9 @@ def topological_sort_tables(
         )
 
     return sorted_order
+
+
+def do_whole_thing(Base: DeclarativeBase, all_table_names) -> List[str]:
+    first_thing = build_dependency_graph(Base)
+    second_thing = topological_sort_tables(all_table_names, first_thing)
+    return second_thing
