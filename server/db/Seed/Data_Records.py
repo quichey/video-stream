@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 
 from db.Schema.Video import VideoFileManager
+from db.Seed.graph import do_whole_thing
 
 
 class Data_Records:
@@ -161,10 +162,17 @@ class Data_Records:
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
-
+            base = pass
+            all_table_names = pass
+            top_sorted_names = do_whole_thing(base, all_table_names)
             # TODO: add try/except block to clean video_file_manager
             # if seeding errors out
-            for table_state in list_of_table_rand:
+            for name in top_sorted_names:
+                table_state = None
+                for table_state_one in list_of_table_rand:
+                    if table_state_one["name"] == name:
+                        table_state = table_state_one
+                        break
                 self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
 
