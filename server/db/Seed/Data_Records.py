@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from sqlalchemy import Boolean, Integer, String, DateTime
+from sqlalchemy import Boolean, Integer, String, DateTime, VARBINARY
 from sqlalchemy.orm import Session
 
 
@@ -139,9 +139,15 @@ class Data_Records:
             # code fix should be somewhere around here
             return random_date(hardcoded_start_date, hardcoded_end_date)
 
+        elif isinstance(data_type, VARBINARY):
+            return self.random_password()
+
         # TODO: handle session tables values
         # - uuid
         # - google auth? -- no google auth data -- let automated test flows handle
+
+    def random_password(self):
+        pass
 
     def init_table_data(self, list_of_table_rand):
         with Session(self.seed.engine) as session:
