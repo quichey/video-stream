@@ -162,8 +162,10 @@ class Data_Records:
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
-            base = pass
-            all_table_names = pass
+            base = self.seed.base
+            all_table_names = []
+            for table_thing in list_of_table_rand:
+                all_table_names.append(table_thing["name"])
             top_sorted_names = do_whole_thing(base, all_table_names)
             # TODO: add try/except block to clean video_file_manager
             # if seeding errors out
