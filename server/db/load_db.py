@@ -5,6 +5,7 @@ from db.Seed.datasets import (
     TESTING_STATE_FULL,
     TESTING_STATE_SMALL,
     TESTING_STATE_USERS_ONLY,
+    TESTING_STATE_SERVER_RESTART,
 )
 
 # --- 1. Configuration States ---
@@ -16,6 +17,7 @@ STATE_MAP = {
     "full": TESTING_STATE_FULL,
     "small": TESTING_STATE_SMALL,
     "users": TESTING_STATE_USERS_ONLY,
+    "restart": TESTING_STATE_SERVER_RESTART,
 }
 
 
