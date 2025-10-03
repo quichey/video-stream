@@ -173,16 +173,16 @@ class Data_Records:
             base = self.seed.base
             all_table_names = []
             for table_thing in list_of_table_rand:
-                if table_thing["num_records"] == 0:
+                if table_thing.num_records == 0:
                     continue
-                all_table_names.append(table_thing["name"])
+                all_table_names.append(table_thing.name)
             top_sorted_names = do_whole_thing(base, all_table_names)
             # TODO: add try/except block to clean video_file_manager
             # if seeding errors out
             for name in top_sorted_names:
                 table_state = None
                 for table_state_one in list_of_table_rand:
-                    if table_state_one["name"] == name:
+                    if table_state_one.name == name:
                         table_state = table_state_one
                         break
                 self.cache[table_state.name] = []
