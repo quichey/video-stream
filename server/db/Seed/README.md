@@ -38,4 +38,4 @@ The `load_db.py` script now uses a Command Line Interface (CLI) to select action
 **1. To seed the database with the minimal data set (`small`):**
 
 ```bash
-poetry run python3 db/load_db.py seed -s small
+poetry run python3 -m db.load_db seed -s small
