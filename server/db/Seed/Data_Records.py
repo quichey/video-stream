@@ -89,6 +89,14 @@ class Data_Records:
         # do random.int of index of table to get random record
         # get that record's id
         records = cache[referred_table_name]
+
+        # CRITICAL FIX 1: Check if the referenced table has been populated
+        if not records:
+            raise ValueError(
+                f"Cannot create FK for column '{column.name}'. Referenced table "
+                f"'{referred_table_name}' has 0 records in cache. "
+                "Check topological sort order and population list."
+            )
         random_idx = random.randint(0, len(records) - 1)
         return records[random_idx].id
 
