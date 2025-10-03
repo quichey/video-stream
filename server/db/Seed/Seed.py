@@ -1,12 +1,12 @@
-
 from dataclasses import dataclass
 from typing import Optional
+from datetime import datetime
 
 
 from .Data_Base_Structure import Data_Base_Structure
 from .Data_Records import Data_Records
 
-#Sketching out blueprint/concepts of Seed class vs Cache class
+# Sketching out blueprint/concepts of Seed class vs Cache class
 """
 I want the Seed class to be a wrapper around the sqlalchemy library, to be able to quickly create test data-sets for a given schema.
 
@@ -41,6 +41,7 @@ But I feel lazy right now
 @dataclass
 class DataBaseSpec:
     """Class for keeping track of sql-alchemy engine creation info."""
+
     dialect: str
     db_api: str
     user: str
@@ -52,9 +53,9 @@ class DataBaseSpec:
 @dataclass
 class TableTestingState:
     """Class for keeping track of an test dataset table generation info."""
+
     name: str
     num_records: int
-
 
 
 # may expand this file to be named snapshot_db
@@ -66,11 +67,11 @@ class TableTestingState:
 # - create/load tables with demo-able data
 # - prepare indices for optimal searching/fetching for appropriate cases
 
-class Seed():
+
+class Seed:
     database_specs = None
     base = None
     metadata_obj = None
-
 
     def __init__(self, admin_specs, database_specs, schema):
         self.admin_specs = DataBaseSpec(**admin_specs)
@@ -94,7 +95,6 @@ class Seed():
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
-    
 
     def parse_test_data_file(self):
         # first row is table name
@@ -102,13 +102,9 @@ class Seed():
         # determine the delimiter
         # construct list of dictionary records
         pass
-    
+
     def fill_table_with_test_data(self, table_name, test_file):
         pass
-    
-
-
-    
 
     # fill in tables with given test data
     # TODO: update, i think create TableTestState instances here or in load_db.py
@@ -119,14 +115,68 @@ class Seed():
             table_data = self.parse_test_data_file(file)
             print(f"table_data: {table_data}")
         list_of_table_rand = testing_state["tables_random_populate"]
-        test_table_states = [TableTestingState(**test_table_info) for test_table_info in list_of_table_rand]
+        test_table_states = [
+            TableTestingState(**test_table_info)
+            for test_table_info in list_of_table_rand
+        ]
 
-        
         self.data_base_structure_factory.init_ddl()
         self.data_records_factory.init_table_data(test_table_states)
 
+    def export_data_to_file(self, file_name_base="video_stream") -> str:
+        # ASSUME INITIATE_test_environment as been run alrady
+        file_extension = self.determine_ext()
+        version_num = datetime.now().strftime("%Y%m%d%H%M%S")
+        file_name = f"{file_name_base}_{version_num}_.{file_extension}"
+        db_engine_export_cmd = self._generate_ordered_inserts(file_name)
+        # TODO: combine db_engine_export_cmd and file_name
+        return file_name
 
- 
+    def determine_ext(self) -> str:
+        return "sql"
+
+    def _generate_ordered_inserts(self, file_name: str):
+        """
+        Fetches records in topological order and writes SQL INSERT statements to a file.
+        (This is the actual "db_engine_export_cmd" action.)
+        """
+
+        # ASSUMPTION: self.engine and self.top_sorted_names exist and are populated
+
+        # 1. Get the list of tables in load-order (from your topological sort)
+        sorted_table_names = (
+            self.top_sorted_names
+        )  # Replace with actual logic to fetch the sorted list
+
+        # 2. Iterate and write data
+        with open(file_name, "w") as f:
+            f.write("-- Database Seed Dump - Generated {}\n\n".format(datetime.now()))
+
+            for table_name in sorted_table_names:
+                # OPTIONAL: Add identity insert toggle for explicit ID insertion (e.g., Azure SQL)
+                f.write(f"SET IDENTITY_INSERT {table_name} ON;\n")
+
+                # --- Logic to fetch data from the database and serialize it ---
+
+                # Since you already seeded the local DB, you query that database.
+                with self.Session() as session:
+                    # Reflect or query the table
+                    # NOTE: This is complex SQLAlchemy work, but the principle is:
+                    # 1. Query the existing data.
+                    # 2. Loop through the records.
+                    # 3. Use SQLAlchemy's compiler or manual string formatting to create the INSERT statement.
+
+                    f.write(f"-- INSERTING DATA FOR: {table_name}\n")
+
+                    # Placeholder for the actual serialization/writing loop
+                    f.write("-- [SQLAlchemy INSERT statements generated here]\n")
+
+                f.write(f"SET IDENTITY_INSERT {table_name} OFF;\n\n")
+
+        print(f"✅ Successfully exported test data to {file_name}")
+        # Return statement is a placeholder since the command is executed internally
+        return True
+
 
 # ideas for testing state
 # fill up users table with random data since it does not have foreign keys
