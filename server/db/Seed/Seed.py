@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 from datetime import datetime
+import subprocess
 
 
 from .Data_Base_Structure import Data_Base_Structure
@@ -128,54 +129,40 @@ class Seed:
         file_extension = self.determine_ext()
         version_num = datetime.now().strftime("%Y%m%d%H%M%S")
         file_name = f"{file_name_base}_{version_num}_.{file_extension}"
-        db_engine_export_cmd = self._generate_ordered_inserts(file_name)
+        db_engine_export_cmd = self._get_load_cmd(file_name)
+        subprocess.run(db_engine_export_cmd)
         # TODO: combine db_engine_export_cmd and file_name
         return file_name
 
     def determine_ext(self) -> str:
         return "sql"
 
-    def _generate_ordered_inserts(self, file_name: str):
-        """
-        Fetches records in topological order and writes SQL INSERT statements to a file.
-        (This is the actual "db_engine_export_cmd" action.)
-        """
+    def _get_load_cmd(self, file_name: str) -> str:
+        # Get the dialect from your SQLAlchemy engine/configuration
+        dialect = self.engine.dialect.name
 
-        # ASSUMPTION: self.engine and self.top_sorted_names exist and are populated
+        # NOTE: These commands assume environment variables or config files handle credentials
+        #       for security reasons, which is best practice.
 
-        # 1. Get the list of tables in load-order (from your topological sort)
-        sorted_table_names = (
-            self.top_sorted_names
-        )  # Replace with actual logic to fetch the sorted list
+        if "postgresql" in dialect:
+            # PostgreSQL load command using the psql client
+            # Example: psql -h <host> -U <user> -d <db_name> -f <file_name>
+            return f"psql -h $PGHOST -U $PGUSER -d $PGDATABASE -f {file_name}"
 
-        # 2. Iterate and write data
-        with open(file_name, "w") as f:
-            f.write("-- Database Seed Dump - Generated {}\n\n".format(datetime.now()))
+        elif "mysql" in dialect:
+            # MySQL load command using the mysql client
+            # Example: mysql -h <host> -u <user> -p <db_name> < <file_name>
+            return f"mysql -h $MYSQL_HOST -u $MYSQL_USER -p $MYSQL_DBNAME < {file_name}"
 
-            for table_name in sorted_table_names:
-                # OPTIONAL: Add identity insert toggle for explicit ID insertion (e.g., Azure SQL)
-                f.write(f"SET IDENTITY_INSERT {table_name} ON;\n")
+        elif "mssql" in dialect or "azure" in dialect:
+            # Azure SQL Database / MSSQL (using the sqlcmd utility)
+            # Example: sqlcmd -S <server> -d <db> -i <file_name>
+            return f"sqlcmd -S $AZURE_SQL_SERVER -d $AZURE_SQL_DB -U $AZURE_SQL_USER -P $AZURE_SQL_PASS -i {file_name}"
 
-                # --- Logic to fetch data from the database and serialize it ---
-
-                # Since you already seeded the local DB, you query that database.
-                with self.Session() as session:
-                    # Reflect or query the table
-                    # NOTE: This is complex SQLAlchemy work, but the principle is:
-                    # 1. Query the existing data.
-                    # 2. Loop through the records.
-                    # 3. Use SQLAlchemy's compiler or manual string formatting to create the INSERT statement.
-
-                    f.write(f"-- INSERTING DATA FOR: {table_name}\n")
-
-                    # Placeholder for the actual serialization/writing loop
-                    f.write("-- [SQLAlchemy INSERT statements generated here]\n")
-
-                f.write(f"SET IDENTITY_INSERT {table_name} OFF;\n\n")
-
-        print(f"✅ Successfully exported test data to {file_name}")
-        # Return statement is a placeholder since the command is executed internally
-        return True
+        else:
+            return (
+                f"ERROR: Unsupported dialect '{dialect}' for generating load command."
+            )
 
 
 # ideas for testing state
