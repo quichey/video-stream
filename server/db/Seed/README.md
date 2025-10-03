@@ -31,6 +31,7 @@ The `load_db.py` script now uses a Command Line Interface (CLI) to select action
 | **Seed** | `seed -s full` | **Full Load** | Core functional testing and high-volume data performance. |
 | **Seed** | `seed -s small` | **Small Load** | Rapid, low-volume integration testing (default). |
 | **Seed** | `seed -s users` | **Users Only** | Testing authentication/session stability. |
+| **Seed** | `seed -s restart` | **Restart** | Testing server restart stability. |
 | **Export** | `export -f regression` | **Export Data** | Saves the current database state to a timestamped `regression_...sql` file. |
 
 #### Examples:
