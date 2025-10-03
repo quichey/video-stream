@@ -1,4 +1,4 @@
-testing_state_small = {
+TESTING_STATE_SMALL = {
     "tables_random_populate": [
         {
             "name": "users",
@@ -20,6 +20,34 @@ testing_state_small = {
         {
             "name": "third_party_auth_tokens",
             "num_records": 0,
+        },
+    ]
+}
+
+TESTING_STATE_FULL = {
+    "tables_random_populate": [
+        {
+            "name": "users",
+            "num_records": 10,
+        },
+        {
+            "name": "videos",
+            "num_records": 5,
+        },
+        {
+            "name": "comments",
+            "num_records": 10000,
+        },
+        # Add more tables as needed
+    ]
+}
+
+
+TESTING_STATE_USERS_ONLY = {
+    "tables_random_populate": [
+        {
+            "name": "users",
+            "num_records": 5,
         },
     ]
 }

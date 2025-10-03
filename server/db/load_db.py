@@ -1,50 +1,15 @@
 import argparse
 import db.Schema as Schema
 import db.Seed.Seed as Seed
+from db.Seed.datasets import (
+    TESTING_STATE_FULL,
+    TESTING_STATE_SMALL,
+    TESTING_STATE_USERS_ONLY,
+)
 
 # --- 1. Configuration States ---
 # Define the different data load configurations
 
-TESTING_STATE_FULL = {
-    "tables_random_populate": [
-        {
-            "name": "users",
-            "num_records": 10,
-        },
-        {
-            "name": "videos",
-            "num_records": 5,
-        },
-        {
-            "name": "comments",
-            "num_records": 10000,
-        },
-        # Add more tables as needed
-    ]
-}
-
-TESTING_STATE_SMALL = {
-    "tables_random_populate": [
-        {
-            "name": "users",
-            "num_records": 2,
-        },
-        {"name": "videos", "num_records": 2},
-        {
-            "name": "comments",
-            "num_records": 1,
-        },
-    ]
-}
-
-TESTING_STATE_USERS_ONLY = {
-    "tables_random_populate": [
-        {
-            "name": "users",
-            "num_records": 5,
-        },
-    ]
-}
 
 # Map argument strings to the actual configuration objects
 STATE_MAP = {
