@@ -51,10 +51,9 @@ def execute_export(seeder: Seed.Seed, file_name_base: str):
 
     # Assumes seeder.export_data_to_file is the new method returning (filename, load_cmd)
     try:
-        file_name, load_cmd = seeder.export_data_to_file(file_name_base)
+        file_name = seeder.export_data_to_file(file_name_base)
         print("--- EXPORT SUCCESSFUL ---")
         print(f"File created: {file_name}")
-        print(f"Load Command: {load_cmd}")
         print("-------------------------")
     except Exception as e:
         print(f"❌ Export failed: {e}")
