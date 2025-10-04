@@ -1,4 +1,3 @@
-
 import sqlalchemy as sql
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
@@ -9,7 +8,8 @@ GUNAM SEED, though i didn't actually watch that one
 G Gundam is better though humorously racist
 """
 
-class Data_Base_Structure():
+
+class Data_Base_Structure:
     def __init__(self, seed):
         self.seed = seed
         self.back_up_counter = 0
@@ -41,10 +41,15 @@ class Data_Base_Structure():
             if exists:
                 self.back_up_db(admin_session)
 
+            # 1. Create the target database
             self.create_database(admin_session, self.db_name)
+
+            # 2. Grant the necessary permissions for the user (Crucial for mysqldump)
+            self.grant_database_permissions(admin_session)
+
+            # 3. Create the tables/schema definition within the new database
             self.create_database_definition()
         return
-
 
     # Creates the database if not exists as well as the empty tables
     def create_database_definition(self, engine=None):
@@ -56,20 +61,20 @@ class Data_Base_Structure():
         self.seed.engine = engine
         return
 
-
     """
     TODO: ?
     may need or want to get rid of database_specs to
     avoid/deal-with concurrency problems.
     or finally understand python multithreading library
     """
+
     def back_up_db(self, admin_session):
         back_up_db_name = self.back_up_db_name
         self.create_database(admin_session, back_up_db_name)
         back_up_engine = self.construct_back_up_engine()
         self.create_database_definition(back_up_engine)
 
-        #TODO:
+        # TODO:
         # - check for concurrency problems
         dialect = self.admin_specs.dialect
         db_name = self.database_specs.dbname
@@ -80,7 +85,6 @@ class Data_Base_Structure():
         admin_session.execute(sql.text(query))
         return
 
-
     def create_database(self, admin_session, db_name):
         dialect = self.admin_specs.dialect
         query = ""
@@ -90,6 +94,41 @@ class Data_Base_Structure():
         admin_session.execute(sql.text(query))
         return
 
+    def grant_database_permissions(self, admin_session):
+        """
+        Grants necessary privileges to the database user for mysqldump to succeed.
+        Executed by the admin user on the server.
+        """
+        dialect = self.database_specs.dialect
+        user = self.database_specs.user
+        host = "localhost"  # Assuming the user is connecting from localhost
+        db_name = self.database_specs.dbname
+
+        if dialect == "mysql":
+            print(
+                f"Granting mysqldump privileges to '{user}'@'{host}' on database '{db_name}'..."
+            )
+
+            # 1. Grant necessary privileges for SELECT, LOCK TABLES, and schema elements
+            grant_db_query = f"""
+            GRANT SELECT, LOCK TABLES, EVENT, TRIGGER, SHOW VIEW
+            ON {db_name}.*
+            TO '{user}'@'{host}';
+            """
+
+            # 2. Grant the global PROCESS privilege needed by mysqldump to read tablespace info
+            grant_process_query = f"GRANT PROCESS ON *.* TO '{user}'@'{host}';"
+
+            # Execute the grant statements
+            admin_session.execute(sql.text(grant_db_query))
+            admin_session.execute(sql.text(grant_process_query))
+            admin_session.execute(sql.text("FLUSH PRIVILEGES;"))
+            admin_session.commit()
+            print("Privileges granted successfully.")
+        else:
+            print(f"Permissions granting logic not implemented for dialect: {dialect}")
+
+        return
 
     def construct_back_up_engine(self):
         db_specs = self.admin_specs
@@ -99,7 +138,6 @@ class Data_Base_Structure():
         engine = create_engine(conn_str, echo=True)
         return engine
 
-
     def construct_engine(self):
         conn_str = self.construct_db_conn_str(self.database_specs)
 
@@ -108,14 +146,12 @@ class Data_Base_Structure():
         self.seed.engine = engine
         return engine
 
-
     def construct_admin_engine(self):
         conn_str = self.construct_db_conn_str(self.admin_specs)
 
         engine = create_engine(conn_str, echo=True)
         self.admin_engine = engine
         return engine
-
 
     def construct_db_conn_str(self, database_specs):
         dialect = database_specs.dialect
@@ -124,7 +160,7 @@ class Data_Base_Structure():
         user = database_specs.user
         pw = database_specs.pw
         hostname = database_specs.hostname
-        dbname = database_specs.dbname 
+        dbname = database_specs.dbname
         url = f"{dialect}+{db_api}://{user}:{pw}@{hostname}"
         if dbname != "":
             url += f"/{dbname}"

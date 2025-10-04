@@ -130,8 +130,11 @@ class Seed:
         version_num = datetime.now().strftime("%Y%m%d%H%M%S")
         file_name = f"{file_name_base}_{version_num}_.{file_extension}"
         db_engine_export_cmd = self._get_load_cmd(file_name)
-        subprocess.run(db_engine_export_cmd)
-        # TODO: combine db_engine_export_cmd and file_name
+        # Note: subprocess.run expects the command as a list of strings for security,
+        # but for simple shell redirects (mysqldump > file), passing a single string
+        # with shell=True is simpler and often used in this context.
+        # We'll use the string format here.
+        subprocess.run(db_engine_export_cmd, shell=True, check=True)
         return file_name
 
     def determine_ext(self) -> str:
@@ -141,29 +144,37 @@ class Seed:
         # Get the dialect from your SQLAlchemy engine/configuration
         dialect = self.engine.dialect.name
 
-        # NOTE: These commands assume environment variables or config files handle credentials
-        #       for security reasons, which is best practice.
+        specs = self.database_specs
 
         if "postgresql" in dialect:
-            # PostgreSQL load command using the psql client
-            # Example: psql -h <host> -U <user> -d <db_name> -f <file_name>
-            return f"psql -h $PGHOST -U $PGUSER -d $PGDATABASE -f {file_name}"
+            # PostgreSQL dump command using the pg_dump client
+            # Example: pg_dump -h <host> -U <user> -d <db_name> > <file_name>
+            return f"pg_dump -h {specs.hostname} -U {specs.user} -d {specs.dbname} > {file_name}"
 
         elif "mysql" in dialect:
-            # MySQL load command using the mysql client
-            # Example: mysql -h <host> -u <user> -p <db_name> < <file_name>
+            # MySQL dump command using the mysqldump client
+            # Command structure: mysqldump -u <user> -h <host> -P <port> -p<pw> <db_name> > <file_name>
 
-            # TODO: use correct values
-            return f"mysql -h $MYSQL_HOST -u $MYSQL_USER -p $MYSQL_DBNAME > {file_name}"
+            user = specs.user
+            pw = specs.pw
+            # Safely extract host and port
+            host_parts = specs.hostname.split(":")
+            host = host_parts[0]
+            port = host_parts[1] if len(host_parts) > 1 else "3306"
+            db_name = specs.dbname
+
+            # Using -p<password> for non-interactive execution with subprocess.run
+            # Warning is expected, but necessary for automation.
+            return f"mysqldump -u {user} -h {host} -P {port} -p'{pw}' {db_name} > {file_name}"
 
         elif "mssql" in dialect or "azure" in dialect:
-            # Azure SQL Database / MSSQL (using the sqlcmd utility)
-            # Example: sqlcmd -S <server> -d <db> -i <file_name>
-            return f"sqlcmd -S $AZURE_SQL_SERVER -d $AZURE_SQL_DB -U $AZURE_SQL_USER -P $AZURE_SQL_PASS -i {file_name}"
+            # Azure SQL Database / MSSQL (using the sqlcmd utility for EXPORT is complex,
+            # often a different utility or a script is needed). Placeholder for now.
+            return "ERROR: MSSQL export not yet supported by shell command logic."
 
         else:
             return (
-                f"ERROR: Unsupported dialect '{dialect}' for generating load command."
+                f"ERROR: Unsupported dialect '{dialect}' for generating dump command."
             )
 
 
