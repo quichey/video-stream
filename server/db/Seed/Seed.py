@@ -1,12 +1,12 @@
-
 from dataclasses import dataclass
 from typing import Optional
 
 
 from .Data_Base_Structure import Data_Base_Structure
 from .Data_Records import Data_Records
+from .export import Export
 
-#Sketching out blueprint/concepts of Seed class vs Cache class
+# Sketching out blueprint/concepts of Seed class vs Cache class
 """
 I want the Seed class to be a wrapper around the sqlalchemy library, to be able to quickly create test data-sets for a given schema.
 
@@ -41,6 +41,7 @@ But I feel lazy right now
 @dataclass
 class DataBaseSpec:
     """Class for keeping track of sql-alchemy engine creation info."""
+
     dialect: str
     db_api: str
     user: str
@@ -52,9 +53,9 @@ class DataBaseSpec:
 @dataclass
 class TableTestingState:
     """Class for keeping track of an test dataset table generation info."""
+
     name: str
     num_records: int
-
 
 
 # may expand this file to be named snapshot_db
@@ -66,11 +67,11 @@ class TableTestingState:
 # - create/load tables with demo-able data
 # - prepare indices for optimal searching/fetching for appropriate cases
 
-class Seed():
+
+class Seed:
     database_specs = None
     base = None
     metadata_obj = None
-
 
     def __init__(self, admin_specs, database_specs, schema):
         self.admin_specs = DataBaseSpec(**admin_specs)
@@ -81,6 +82,7 @@ class Seed():
 
         self.data_base_structure_factory = Data_Base_Structure(self)
         self.data_records_factory = Data_Records(self)
+        self.exporter = Export(self)
 
     @property
     def engine(self):
@@ -94,7 +96,6 @@ class Seed():
 
     def get_table_metadata(self, table_name):
         return self.metadata_obj.tables[table_name]
-    
 
     def parse_test_data_file(self):
         # first row is table name
@@ -102,13 +103,9 @@ class Seed():
         # determine the delimiter
         # construct list of dictionary records
         pass
-    
+
     def fill_table_with_test_data(self, table_name, test_file):
         pass
-    
-
-
-    
 
     # fill in tables with given test data
     # TODO: update, i think create TableTestState instances here or in load_db.py
@@ -119,14 +116,17 @@ class Seed():
             table_data = self.parse_test_data_file(file)
             print(f"table_data: {table_data}")
         list_of_table_rand = testing_state["tables_random_populate"]
-        test_table_states = [TableTestingState(**test_table_info) for test_table_info in list_of_table_rand]
+        test_table_states = [
+            TableTestingState(**test_table_info)
+            for test_table_info in list_of_table_rand
+        ]
 
-        
         self.data_base_structure_factory.init_ddl()
         self.data_records_factory.init_table_data(test_table_states)
 
+    def export_data_to_file(self, file_name_base="video_stream") -> str:
+        return self.exporter.export_data_to_file(file_name_base)
 
- 
 
 # ideas for testing state
 # fill up users table with random data since it does not have foreign keys

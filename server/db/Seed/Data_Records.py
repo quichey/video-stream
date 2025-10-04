@@ -1,20 +1,20 @@
 import random
 import time
 import os
+import bcrypt
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from sqlalchemy import Boolean, Integer, String, DateTime
+from sqlalchemy import Boolean, Integer, String, DateTime, VARBINARY
 from sqlalchemy.orm import Session
 
 
 from db.Schema.Video import VideoFileManager
+from db.Seed.graph import do_whole_thing
 
 
-
-
-class Data_Records():
+class Data_Records:
     # dict of "table_name": SqlAlchemy Base class
     cache = {}
 
@@ -22,7 +22,6 @@ class Data_Records():
         self.seed = seed
         self.video_file_manager = VideoFileManager()
 
-    
     def is_a_primary_key(self, table, key):
         # think may change comments to not have id later
         # but actually do need it because
@@ -35,7 +34,7 @@ class Data_Records():
         # use create_random_value
         # sqlalchemy may have function available to do this
         record = {"id": None}
-        
+
         keys = table.c.keys()
         for key in keys:
             if self.is_a_primary_key(table, key):
@@ -46,7 +45,7 @@ class Data_Records():
                 continue
 
             special_cases = [
-                "file_dir", #videos
+                "file_dir",  # videos
             ]
             # for video storage
             if key in special_cases:
@@ -56,13 +55,12 @@ class Data_Records():
         # probably convert record dictionary into sqlalchemy Record object type
         # maybe not if the insert function only requires a list of dicts
 
-
-        #TODO: check out to dynamically create a class from a variable class name
+        # TODO: check out to dynamically create a class from a variable class name
         record = self.insert_foreign_keys(table, record)
         record = self.seed.schema.get_record_factory(table.name)(**record)
         if table.name == "videos":
             self.video_file_manager.store_video(record)
-        return record      
+        return record
 
     def insert_foreign_keys(self, table, record):
         keys = table.c.keys()
@@ -78,7 +76,7 @@ class Data_Records():
 
     def is_foreign_key(self, column):
         return len(column.foreign_keys) > 0
-    
+
     def get_random_foreign_key(self, column):
         # TODO: check self.cache for the primary keys
         cache = self.cache
@@ -91,9 +89,16 @@ class Data_Records():
         # do random.int of index of table to get random record
         # get that record's id
         records = cache[referred_table_name]
+
+        # CRITICAL FIX 1: Check if the referenced table has been populated
+        if not records:
+            raise ValueError(
+                f"Cannot create FK for column '{column.name}'. Referenced table "
+                f"'{referred_table_name}' has 0 records in cache. "
+                "Check topological sort order and population list."
+            )
         random_idx = random.randint(0, len(records) - 1)
         return records[random_idx].id
-
 
     def create_random_value(self, column):
         data_type = column.type
@@ -103,9 +108,14 @@ class Data_Records():
 
         def get_random_file_name(dir_path):
             file_names = os.listdir(dir_path)
-            files_only = [entry for entry in file_names if os.path.isfile(os.path.join(dir_path, entry))]
+            files_only = [
+                entry
+                for entry in file_names
+                if os.path.isfile(os.path.join(dir_path, entry))
+            ]
             random_test_file_name = files_only[random.randint(0, len(files_only) - 1)]
             return random_test_file_name
+
         # for video storage
         if column_name in ["file_name"]:
             dir_path = "./db/assets"
@@ -114,45 +124,67 @@ class Data_Records():
         if column_name in ["profile_icon"]:
             dir_path = "./db/assets/images"
             return get_random_file_name(dir_path)
-        
+
         def random_date(start_date, end_date):
             start_timestamp = time.mktime(start_date.timetuple())
             end_timestamp = time.mktime(end_date.timetuple())
             random_timestamp = random.uniform(start_timestamp, end_timestamp)
             return datetime.fromtimestamp(random_timestamp)
+
         hardcoded_end_date = datetime.now()
         hardcoded_start_date = hardcoded_end_date - relativedelta(years=10)
-
 
         if isinstance(data_type, Boolean):
             flag = random.randint(0, 1)
             return True if flag == 1 else False
-        
+
         elif isinstance(data_type, Integer):
             return random.randint(0, 10000)
-        
+
         elif isinstance(data_type, String):
             rand_int = random.randint(0, 10000)
             return f"{table_name}_{column_name}_{rand_int}"
-        
+
         elif isinstance(data_type, DateTime):
             # code fix should be somewhere around here
             return random_date(hardcoded_start_date, hardcoded_end_date)
 
+        elif isinstance(data_type, VARBINARY):
+            return self.random_password()
+
+        # TODO: handle session tables values
+        # - uuid
+        # - google auth? -- no google auth data -- let automated test flows handle
+
+    def random_password(self) -> bytes:
+        # bcrypt automatically generates a random salt
+        salt = bcrypt.gensalt()
+        plain_password = f"blah--{str(random.randint(100000, 1000000))}"
+        hashed = bcrypt.hashpw(plain_password.encode("utf-8"), salt)
+        return hashed
 
     def init_table_data(self, list_of_table_rand):
-
-        
         with Session(self.seed.engine) as session:
             # if i keep this cache object, I dont have to do
             # select queries assuming every record gets
             # correctly inserted
             # what should i do if this assumption fails?
             # TODO: answer above question
-
+            base = self.seed.base
+            all_table_names = []
+            for table_thing in list_of_table_rand:
+                if table_thing.num_records == 0:
+                    continue
+                all_table_names.append(table_thing.name)
+            top_sorted_names = do_whole_thing(base, all_table_names)
             # TODO: add try/except block to clean video_file_manager
             # if seeding errors out
-            for table_state in list_of_table_rand:
+            for name in top_sorted_names:
+                table_state = None
+                for table_state_one in list_of_table_rand:
+                    if table_state_one.name == name:
+                        table_state = table_state_one
+                        break
                 self.cache[table_state.name] = []
                 table_instance = self.seed.get_table_metadata(table_state.name)
 
@@ -161,7 +193,7 @@ class Data_Records():
                     self.cache[table_state.name].append(random_record)
                     session.add(random_record)
                 session.flush()
-                #TODO: video id gets set after flush i believe
+                # TODO: video id gets set after flush i believe
                 # update video_file_manager
                 # TODO?: may need to account for asynchronicity of flush
                 """
@@ -170,12 +202,7 @@ class Data_Records():
                     self.video_file_manager.load_videos(video_records)
                 """
             session.commit()
-        
+
         return
-    
 
-    
-        
         # - and then create original ddl
-
-        
