@@ -197,3 +197,6 @@ db/assets/*
 #
 cookies.txt
 cookie*.txt
+
+# ignore .sql files
+*.sql

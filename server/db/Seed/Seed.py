@@ -152,7 +152,9 @@ class Seed:
         elif "mysql" in dialect:
             # MySQL load command using the mysql client
             # Example: mysql -h <host> -u <user> -p <db_name> < <file_name>
-            return f"mysql -h $MYSQL_HOST -u $MYSQL_USER -p $MYSQL_DBNAME < {file_name}"
+
+            # TODO: use correct values
+            return f"mysql -h $MYSQL_HOST -u $MYSQL_USER -p $MYSQL_DBNAME > {file_name}"
 
         elif "mssql" in dialect or "azure" in dialect:
             # Azure SQL Database / MSSQL (using the sqlcmd utility)
