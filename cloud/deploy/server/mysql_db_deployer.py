@@ -33,6 +33,7 @@ class MysqlDBDeployer(BaseDBDeployer):
 
         Use server/Seed module here i think
         """
+        #TODO: do things
         testing_state = pass
         self.SEEDER.initiate_test_environment(testing_state)
 
