@@ -1,3 +1,10 @@
+from db.dataclasses.database_spec import DataBaseSpec
+
+
+def translate_to_object(database_specs):
+    return DataBaseSpec(**database_specs)
+
+
 def get_db_conn_str(database_specs):
     dialect = database_specs.dialect
     db_api = database_specs.db_api
