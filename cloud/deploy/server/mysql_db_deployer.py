@@ -24,20 +24,7 @@ class MysqlDBDeployer(BaseDBDeployer):
         Provision the database itself.
         For example, create SQL server, Postgres instance, or Cosmos DB.
         """
-        #TODO: handle mysql installation or something
-
-    @override
-    def run_migrations_local(self):
-        """
-        Run any schema migrations or initialization scripts.
-
-        Use server/Seed module here i think
-        """
-        #TODO: do things
-        # want the Seed thing to specifically be mysql
-        # think need to update Seed module some more
-        testing_state = pass
-        self.SEEDER.initiate_test_environment(testing_state)
+        # TODO: handle mysql installation or something
 
     @override
     def clean_up(self):
