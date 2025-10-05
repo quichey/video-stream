@@ -2,6 +2,7 @@
 import os
 import sys
 from logging.config import fileConfig
+from typing import Optional
 
 # Alembic imports
 from alembic import context
@@ -10,22 +11,27 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-# Add the 'server' root directory to the system path so we can import 'server.db.models'
-# This is crucial when running Alembic commands from the 'server/' directory.
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+# --- CRITICAL PATH FIX ---
+# Add the project's root directory to the system path.
+# Since env.py is at server/db/migrations/, we go up three levels (',', '..', '..')
+# to ensure we can correctly import 'server.db.Schema'.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+)
 
 # --- 1. Import Model Definitions (The Desired State) ---
 # Import the Base class which contains the Metadata for all ORM models.
-# This tells Alembic what the desired final state of the database schema should be.
 try:
-    from server.db.models import Base
+    # Use the fully qualified path to your schema definitions
+    from server.db.Schema import Base
 
     target_metadata = Base.metadata
 except ImportError:
     print(
-        "FATAL ERROR: Could not import 'Base' from 'server.db.models'. Check PYTHONPATH."
+        "FATAL ERROR: Could not import 'Base' from 'server.db.Schema'. Check PYTHONPATH."
     )
-    target_metadata = None  # Set to None to allow the script to fail gracefully
+    # Set to None to allow the script to fail gracefully during initialization if models aren't ready
+    target_metadata = None
 
 # --- 2. Configuration Setup ---
 
@@ -37,11 +43,10 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Get database URL from environment variable (CRITICAL FOR DEPLOYMENT)
-# The deployment scripts will set DB_URL to the correct cloud connection string.
-DB_URL = os.environ.get("DB_URL")
+# The deployer script will set DB_URL to the correct cloud connection string.
+DB_URL: Optional[str] = os.environ.get("DB_URL")
 if DB_URL:
     # If the URL is found, override the 'sqlalchemy.url' in the Alembic configuration
-    # This ensures we use the correct live or test database.
     config.set_main_option("sqlalchemy.url", DB_URL)
 else:
     # Fallback to the setting in alembic.ini if not running in the deployment environment
@@ -56,7 +61,7 @@ else:
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
-    This essentially generates the SQL script without connecting to the actual DB.
+    This generates the SQL script without connecting to the actual DB.
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
@@ -85,7 +90,7 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            # Schema comparison options (e.g., ignore tables/columns)
+            # include_schemas=True, # Uncomment if using schemas
         )
 
         with context.begin_transaction():
