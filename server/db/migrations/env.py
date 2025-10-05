@@ -11,6 +11,9 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
+from db.util.connections import get_db_conn_str
+from db.Schema.Models import database_specs
+
 # --- CRITICAL PATH FIX ---
 # Add the project's root directory to the system path.
 # Since env.py is at server/db/migrations/, we go up three levels ('..', '..', '..')
@@ -45,7 +48,7 @@ config = context.config
 
 # Get database URL from environment variable (CRITICAL FOR DEPLOYMENT)
 # The deployer script will set DB_URL to the correct cloud connection string.
-DB_URL: Optional[str] = os.environ.get("DB_URL")
+DB_URL: Optional[str] = get_db_conn_str(database_specs)
 
 if DB_URL:
     # If the URL is found, override the 'sqlalchemy.url' in the Alembic configuration
