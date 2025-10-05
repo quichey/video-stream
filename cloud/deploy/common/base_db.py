@@ -11,6 +11,7 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../server"))
 )
 from db.Seed import Seed
+from db.Seed.datasets import 
 
 
 load_dotenv()
