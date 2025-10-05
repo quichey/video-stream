@@ -4,6 +4,9 @@ from typing_extensions import override
 
 from common.mixins.cloud_mixin.cloud_db_mixin import CloudDBMixin
 from common.base import BaseDeployer
+from util.subprocess_helper import (
+    run_shell_command,
+)  # Now using the utility
 
 
 load_dotenv()
@@ -72,8 +75,13 @@ class BaseDBDeployer(BaseDeployer, ABC):
         return
 
     def run_migrations_local(self):
+        print(f"--- Running Local Database Migrations for {self.ENGINE} ---")
+        # Command to drop, recreate, and seed the database using the new unified utility
         cmd = f"poetry run python3 -m db.load_db seed --small --dialect {self.ENGINE}"
-        pass
+        print("Executing local seeding command...")
+        # Execute the command using the utility function, ensuring failure if the command fails
+        run_shell_command(cmd, check=True, shell=True)
+        print(f"✅ Local database seeded successfully for {self.ENGINE}.")
 
     @abstractmethod
     def clean_up(self):
