@@ -1,7 +1,6 @@
 # Standard Python imports
 import os
 import sys
-from logging.config import fileConfig
 from typing import Optional
 
 # Alembic imports
@@ -13,17 +12,15 @@ from sqlalchemy import pool
 
 # --- CRITICAL PATH FIX ---
 # Add the project's root directory to the system path.
-# Since env.py is at server/db/migrations/, we go up three levels (',', '..', '..')
+# Since env.py is at server/db/migrations/, we go up three levels ('..', '..', '..')
 # to ensure we can correctly import 'server.db.Schema'.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 # --- 1. Import Model Definitions (The Desired State) ---
 # Import the Base class which contains the Metadata for all ORM models.
 try:
     # Use the fully qualified path to your schema definitions
-    from server.db.Schema import Base
+    from db.Schema import Base
 
     target_metadata = Base.metadata
 except ImportError:
@@ -39,12 +36,15 @@ except ImportError:
 config = context.config
 
 # Interpret the config file for Python's logging.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+# --- FIX FOR KEYERROR: 'formatters' ---
+# We are commenting out the logging config read to bypass the fragile
+# configparser issue, while still getting the configuration options.
+# fileConfig(config.config_file_name) # THIS LINE WAS REMOVED/COMMENTED OUT
 
 # Get database URL from environment variable (CRITICAL FOR DEPLOYMENT)
 # The deployer script will set DB_URL to the correct cloud connection string.
 DB_URL: Optional[str] = os.environ.get("DB_URL")
+
 if DB_URL:
     # If the URL is found, override the 'sqlalchemy.url' in the Alembic configuration
     config.set_main_option("sqlalchemy.url", DB_URL)
@@ -54,13 +54,11 @@ else:
         "WARNING: DB_URL environment variable not found. Using connection string from alembic.ini."
     )
 
-
 # --- 3. Migration Functions ---
 
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
-
     This generates the SQL script without connecting to the actual DB.
     """
     url = config.get_main_option("sqlalchemy.url")
@@ -77,7 +75,6 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
-
     This connects to the database to run upgrades and check for changes (autogenerate).
     """
     connectable = engine_from_config(
