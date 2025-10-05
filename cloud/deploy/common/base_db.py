@@ -31,15 +31,19 @@ class BaseDBDeployer(BaseDeployer, ABC):
         # TODO: handle initial deployment vs subsequent deployments
         self.set_up_cloud_env()
         self.provision_database()
-        self.run_migrations()
+        self.seed_database()
         self.clean_up()
 
     @override
     def do_update(self):
-        print(f"=== Deploying {self.CONTEXT} Database ===")
+        print(f"=== Updating {self.CONTEXT} Database ===")
         # TODO: handle initial deployment vs subsequent deployments
         self.set_up_cloud_env()
-        self.provision_database()
+        # TODO: i have been manually reseeding database sometimes instead of
+        # migration tools
+        # should i do the same for here?
+        # probably not
+        # make new branch for migration tools?
         self.run_migrations()
         self.clean_up()
 
@@ -60,6 +64,20 @@ class BaseDBDeployer(BaseDeployer, ABC):
     def provision_database_local(self):
         pass
 
+    def seed_database(self):
+        """
+        Run any schema migrations or initialization scripts.
+
+        Use server/Seed module here i think
+        """
+        if self.is_cloud():
+            print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
+            self.cloud_mixin_instance.seed_database()
+        else:
+            print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
+            self.seed_database_local()
+        return
+
     def run_migrations(self):
         """
         Run any schema migrations or initialization scripts.
@@ -75,6 +93,9 @@ class BaseDBDeployer(BaseDeployer, ABC):
         return
 
     def run_migrations_local(self):
+        pass
+
+    def seed_database_local(self):
         print(f"--- Running Local Database Migrations for {self.ENGINE} ---")
         # CRITICAL FIX: The command must change directory (cd) to the server's root
         # to execute within the server's Poetry environment and correct path context.
