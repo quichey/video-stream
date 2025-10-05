@@ -34,6 +34,8 @@ class MysqlDBDeployer(BaseDBDeployer):
         Use server/Seed module here i think
         """
         #TODO: do things
+        # want the Seed thing to specifically be mysql
+        # think need to update Seed module some more
         testing_state = pass
         self.SEEDER.initiate_test_environment(testing_state)
 
