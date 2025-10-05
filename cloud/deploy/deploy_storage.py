@@ -1,10 +1,9 @@
 import argparse
-from typing import List
+from typing import List, Type
 
 # Import available storage deployers
 from server.mysql_db_deployer import MysqlDBDeployer
-# from server.postgres_db_deployer import PostgresDBDeployer # Placeholder for future RDBMS
-# from server.azure_blob_deployer import AzureBlobDeployer   # Placeholder for future File Storage
+from server.postgres_db_deployer import PostgresDBDeployer
 
 # Define a flexible base type for deployers
 from common.base_db import BaseDBDeployer as StorageDeployerBase
@@ -12,6 +11,12 @@ from common.base_db import BaseDBDeployer as StorageDeployerBase
 """
 Main script to deploy persistent storage resources (RDBMS, NoSQL, File Storage, etc.).
 """
+
+# Map user-friendly dialect/engine names to the actual Deployer class
+RDBMS_DEPLOYER_MAP: dict[str, Type[StorageDeployerBase]] = {
+    "mysql": MysqlDBDeployer,
+    "postgres": PostgresDBDeployer,
+}
 
 
 def deploy_instances(deployers: List[StorageDeployerBase]):
@@ -42,8 +47,9 @@ if __name__ == "__main__":
     # Storage Specific Flags (facilitating combination)
     parser.add_argument(
         "--rdbms",
-        action="store_true",
-        help="Deploy the relational database service (e.g., MySQL, Postgres)",
+        type=str,
+        choices=RDBMS_DEPLOYER_MAP.keys(),
+        help="Deploy the relational database service and specify the engine (e.g., mysql, postgres)",
     )
     parser.add_argument(
         "--filestore",
@@ -61,9 +67,10 @@ if __name__ == "__main__":
     # --- Storage Mapping and Instantiation ---
     storage_deployers: List[StorageDeployerBase] = []
 
-    # RDBMS Deployment
+    # RDBMS Deployment Logic
     if args.rdbms:
-        db_deployer = MysqlDBDeployer(provider_name=args.cloud_provider, env=args.env)
+        DeployerClass = RDBMS_DEPLOYER_MAP[args.rdbms]
+        db_deployer = DeployerClass(provider_name=args.cloud_provider, env=args.env)
         storage_deployers.append(db_deployer)
 
     # File Storage Deployment (Placeholder)
@@ -78,17 +85,18 @@ if __name__ == "__main__":
             "Note: Data Warehouse deployment requested but the deployer is not yet configured."
         )
 
-    # --- Execution Logic (Default to RDBMS if no flags are set) ---
+    # --- Execution Logic (Default to MySQL if no flags are set) ---
     is_specific_flag_set = args.rdbms or args.filestore or args.warehouse
 
     if not is_specific_flag_set:
         print(
-            "No specific storage services specified. Deploying ALL default storage services (RDBMS)."
+            "No specific storage services specified. Deploying default RDBMS (MySQL)."
         )
-        # Default behavior: If no flags, deploy RDBMS (as it's the core dependency)
+        # Default behavior: If no flags, deploy MySQL
         db_deployer = MysqlDBDeployer(provider_name=args.cloud_provider, env=args.env)
         storage_deployers = [db_deployer]
 
+    # Final Execution
     if len(storage_deployers) == 0:
         print("No storage services specified or configured for deployment.")
     else:
