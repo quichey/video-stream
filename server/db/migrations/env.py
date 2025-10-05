@@ -2,6 +2,7 @@
 import os
 import sys
 from typing import Optional
+from dotenv import load_dotenv
 
 # Alembic imports
 from alembic import context
@@ -16,6 +17,7 @@ from sqlalchemy import pool
 # to ensure we can correctly import 'server.db.Schema'.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
+load_dotenv("db/migrations/")
 # --- 1. Import Model Definitions (The Desired State) ---
 # Import the Base class which contains the Metadata for all ORM models.
 try:
