@@ -1,5 +1,8 @@
 import subprocess
 import time
+import platform
+from typing import Optional
+
 
 def run_cmds(cmd_array, **kwargs):
     if type(cmd_array[0]) == str:
@@ -42,3 +45,36 @@ def run_cmd_with_retries(cmd, retries=5, delay=5, check=True):
             else:
                 print("All retries failed.")
                 raise last_exception
+
+
+def run_shell_command(
+    command: str, check: bool = True, shell: bool = False
+) -> Optional[str]:
+    """
+    Runs a shell command and returns the output or None on failure.
+
+    Args:
+        command: The shell command string.
+        check: If True, raises a CalledProcessError on non-zero exit code.
+        shell: If True, the command is executed through the shell.
+    """
+    try:
+        # Using subprocess.run for simplicity and reliability
+        print(f"-> Executing command: {command}")
+        result = subprocess.run(
+            command, check=check, shell=shell, capture_output=True, text=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing command: {command}")
+        print(f"Stderr: {e.stderr}")
+        if check:
+            raise
+        return None
+    except FileNotFoundError:
+        return None
+
+
+def get_os_type() -> str:
+    """Returns the main OS type (e.g., 'Darwin' for macOS, 'Linux', 'Windows')."""
+    return platform.system()
