@@ -76,9 +76,19 @@ class BaseDBDeployer(BaseDeployer, ABC):
 
     def run_migrations_local(self):
         print(f"--- Running Local Database Migrations for {self.ENGINE} ---")
-        # Command to drop, recreate, and seed the database using the new unified utility
-        cmd = f"poetry run python3 -m db.load_db seed --small --dialect {self.ENGINE}"
-        print("Executing local seeding command...")
+        # CRITICAL FIX: The command must change directory (cd) to the server's root
+        # to execute within the server's Poetry environment and correct path context.
+        # Assuming the server root is two directories up and named 'server'.
+        SERVER_ROOT_PATH = "../../server"
+
+        # Command uses 'cd' and shell chaining ('&&') to switch directory before running Poetry.
+        cmd = (
+            f"cd {SERVER_ROOT_PATH} && "
+            f"poetry run python3 -m db.load_db seed --small --dialect {self.ENGINE}"
+        )
+
+        print(f"Executing local seeding command (Context: {SERVER_ROOT_PATH})...")
+
         # Execute the command using the utility function, ensuring failure if the command fails
         run_shell_command(cmd, check=True, shell=True)
         print(f"✅ Local database seeded successfully for {self.ENGINE}.")
