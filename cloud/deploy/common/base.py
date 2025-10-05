@@ -35,11 +35,15 @@ class BaseDeployer(ABC, PackageManagerMixin, DockerMixin, BashrcMixin, VersionMi
     ENV = None
     CLOUD_MIXIN_CLASS = None
 
-    def __init__(self, provider_name, env):
+    def __init__(self, provider_name, env, *args, **kwargs):
         self.ENV = env
         if self.is_cloud():
             self.cloud_mixin_instance = self.CLOUD_MIXIN_CLASS(
-                provider_name=provider_name, context=self.CONTEXT, env=env
+                provider_name=provider_name,
+                context=self.CONTEXT,
+                env=env,
+                *args,
+                **kwargs,
             )
 
     def is_cloud(self) -> bool:
