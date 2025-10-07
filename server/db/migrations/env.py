@@ -79,13 +79,18 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-    This connects to the database to run upgrades and check for changes (autogenerate).
-    """
+    """Run migrations in 'online' mode."""
+    # ...
+    # CRITICAL: Add the connect_args dictionary to enforce SSL on Azure/Cloud SQL
+    # Azure PostgreSQL often requires sslmode='require'
+    connect_args = {"sslmode": "require"}
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        # PASS THE SSL ARGUMENTS HERE
+        connect_args=connect_args,
     )
 
     with connectable.connect() as connection:
