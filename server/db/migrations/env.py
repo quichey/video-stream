@@ -83,6 +83,7 @@ def run_migrations_online() -> None:
     # ...
     # CRITICAL: Add the connect_args dictionary to enforce SSL on Azure/Cloud SQL
     # Azure PostgreSQL often requires sslmode='require'
+    # TODO: fix for mysql instead of postgres
     connect_args = {"sslmode": "require"}
 
     connectable = engine_from_config(
