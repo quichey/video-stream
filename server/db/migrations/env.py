@@ -11,14 +11,13 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from .db_connection import DB_Connection
-
 
 # --- CRITICAL PATH FIX ---
 # Add the project's root directory to the system path.
 # Since env.py is at server/db/migrations/, we go up three levels ('..', '..', '..')
 # to ensure we can correctly import 'server.db.Schema'.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from db.migrations.db_connection import DB_Connection
 
 load_dotenv("db/migrations/")
 # --- 1. Import Model Definitions (The Desired State) ---
