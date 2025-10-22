@@ -1,10 +1,9 @@
-from dataclasses import dataclass
-from typing import Optional
-
-
 from .Data_Base_Structure import Data_Base_Structure
 from .Data_Records import Data_Records
 from .export import Export
+
+from db.dataclasses.database_spec import DataBaseSpec
+from db.dataclasses.table_testing_state import TableTestingState
 
 # Sketching out blueprint/concepts of Seed class vs Cache class
 """
@@ -36,26 +35,6 @@ I think what i need to do next is create update_cache_* functions within cache,
 or seems just moving over any function with self.cache into cache seems to make more sense.
 But I feel lazy right now
 """
-
-
-@dataclass
-class DataBaseSpec:
-    """Class for keeping track of sql-alchemy engine creation info."""
-
-    dialect: str
-    db_api: str
-    user: str
-    pw: str
-    hostname: str
-    dbname: Optional[str] = ""
-
-
-@dataclass
-class TableTestingState:
-    """Class for keeping track of an test dataset table generation info."""
-
-    name: str
-    num_records: int
 
 
 # may expand this file to be named snapshot_db

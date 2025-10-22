@@ -2,6 +2,7 @@ import sqlalchemy as sql
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
+from db.util.connections import get_db_conn_str
 
 """
 GUNAM SEED, though i didn't actually watch that one
@@ -164,4 +165,4 @@ class Data_Base_Structure:
         url = f"{dialect}+{db_api}://{user}:{pw}@{hostname}"
         if dbname != "":
             url += f"/{dbname}"
-        return url
+        return get_db_conn_str(database_specs)
