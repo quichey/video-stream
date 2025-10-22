@@ -1,6 +1,7 @@
 # Standard Python imports
 import os
 import sys
+from dotenv import load_dotenv
 
 # Alembic imports
 
@@ -11,6 +12,8 @@ from db.util.connections import construct_conn_str_any
 # --- CRITICAL PATH FIX ---
 # Add the project's root directory to the system path.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
+load_dotenv("db/migrations/")
 
 
 class DB_Connection:
