@@ -11,14 +11,18 @@ from db.util.connections import construct_conn_str_any
 
 # --- CRITICAL PATH FIX ---
 # Add the project's root directory to the system path.
+# load_dotenv()
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-load_dotenv("db/migrations/.env")
+# load_dotenv("db/migrations/.env")
 
 
 class DB_Connection:
     def __init__(self):
-        self.DEPLOYMENT = os.environ.get("DEPLOYMENT")
+        cwd = os.getcwd()
+        print(f"cwd: {cwd}")
+        load_dotenv("db/migrations/.env")
+        self.DEPLOYMENT = os.environ.get("MIGRATIONS_DEPLOYMENT")
         print(f"self.DEPLOYMENT: {self.DEPLOYMENT}")
         if self.DEPLOYMENT == "local":
             self.DB_SPECS = database_specs
