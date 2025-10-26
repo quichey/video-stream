@@ -51,3 +51,6 @@ Use the **`stamp`** command to manually update the database's version tracker **
     # Stamp the DB as being fully up-to-date with the latest revision
     alembic stamp head
     ```
+
+## commands
+video-stream/server/# poetry run alembic ...
