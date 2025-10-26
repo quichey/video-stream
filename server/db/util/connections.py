@@ -28,7 +28,7 @@ def construct_conn_str_any(database_specs, deployment):
         pw = database_specs["pw"]
         hostname = database_specs["hostname"]
         dbname = database_specs["dbname"]
-        url = f"{user}:{pw}@{hostname}/{dbname}"
+        url = f"{dialect}+{db_api}://{user}:{pw}@{hostname}/{dbname}"
         DATABASE_URI = url
     elif database_specs["provider"] == "azure":
         dialect = database_specs["dialect"]
