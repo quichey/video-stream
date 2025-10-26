@@ -53,4 +53,6 @@ Use the **`stamp`** command to manually update the database's version tracker **
     ```
 
 ## commands
-video-stream/server/# poetry run alembic ...
+
+* **Dry run:**
+video-stream/server/# poetry run alembic upgrade head --sql

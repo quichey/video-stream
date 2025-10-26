@@ -13,16 +13,18 @@ from db.util.connections import construct_conn_str_any
 # Add the project's root directory to the system path.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-load_dotenv("db/migrations/")
+load_dotenv("db/migrations/.env")
 
 
 class DB_Connection:
     def __init__(self):
         self.DEPLOYMENT = os.environ.get("DEPLOYMENT")
+        print(f"self.DEPLOYMENT: {self.DEPLOYMENT}")
         if self.DEPLOYMENT == "local":
             self.DB_SPECS = database_specs
         else:
             self.DB_SPECS = database_specs_cloud_sql
+        print(f"self.DB_SPECS: {self.DB_SPECS}")
 
         # New instance attribute for the safe URL
         self.safe_log_url = None
