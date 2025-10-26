@@ -67,4 +67,5 @@ class DB_Connection:
         print("-" * 50)
         # --- LOGGING LOGIC END ---
 
+        print(f"full_url: {full_url}")
         return full_url
