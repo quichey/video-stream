@@ -28,7 +28,7 @@ class DB_Connection:
             self.DB_SPECS = database_specs
         else:
             self.DB_SPECS = database_specs_cloud_sql
-        print(f"self.DB_SPECS: {self.DB_SPECS}")
+        # print(f"self.DB_SPECS: {self.DB_SPECS}")
 
         # New instance attribute for the safe URL
         self.safe_log_url = None
@@ -67,5 +67,5 @@ class DB_Connection:
         print("-" * 50)
         # --- LOGGING LOGIC END ---
 
-        print(f"full_url: {full_url}")
+        # print(f"full_url: {full_url}")
         return full_url
