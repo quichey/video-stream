@@ -96,6 +96,20 @@ class BaseDBDeployer(BaseDeployer, ABC):
             "MIGRATIONS_DEPLOYMENT=",
             f"MIGRATIONS_DEPLOYMENT={migrations_deployment}\n",
         )
+        SERVER_ROOT_PATH = "../../server"
+
+        alembic_cmd = pass
+        # Command uses 'cd' and shell chaining ('&&') to switch directory before running Poetry.
+        cmd = (
+            f"cd {SERVER_ROOT_PATH} && "
+            f"poetry run alembic {alembic_cmd}"
+        )
+
+        print(f"Executing migration command (Context: {SERVER_ROOT_PATH})...")
+
+        # Execute the command using the utility function, ensuring failure if the command fails
+        run_shell_command(cmd, check=True, shell=True)
+        print(f"✅ Local database seeded successfully for {self.ENGINE}.")
 
         # NOTE: my server/db/ specs code is not great
         # it is hard-coded kinda, would prefer if i had it more config-like using
@@ -103,6 +117,7 @@ class BaseDBDeployer(BaseDeployer, ABC):
         # thought of this because as of now, the cloud_mixin_instance.run_migrations
         # is somewhat irrelevant, as migrations/ module has no real way to discern
         # differnt cloud providers without code changes to the db_specs
+        """
         if self.is_cloud():
             print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
             self.cloud_mixin_instance.run_migrations()
@@ -110,6 +125,7 @@ class BaseDBDeployer(BaseDeployer, ABC):
             print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
             self.run_migrations_local()
         return
+        """
 
     def run_migrations_local(self):
         # TODO: integrate the migrations code from last branch
