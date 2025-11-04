@@ -8,6 +8,7 @@ from util.subprocess_helper import (
     run_shell_command,
 )  # Now using the utility
 
+from util.file_handling import update_file
 
 load_dotenv()
 
@@ -88,6 +89,13 @@ class BaseDBDeployer(BaseDeployer, ABC):
         # pointing to correct machine depending on self.is_cloud
         # cd to server/ folder first?
         # poetry run alembic ... should be the same for both cases
+        dot_env_file_path = "../../server/db/migrations/.env"
+        migrations_deployment = "cloud" if self.is_cloud() else "local"
+        update_file(
+            dot_env_file_path,
+            "MIGRATIONS_DEPLOYMENT=",
+            f"MIGRATIONS_DEPLOYMENT={migrations_deployment}\n",
+        )
 
         # NOTE: my server/db/ specs code is not great
         # it is hard-coded kinda, would prefer if i had it more config-like using
