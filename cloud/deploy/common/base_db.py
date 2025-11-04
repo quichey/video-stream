@@ -84,6 +84,10 @@ class BaseDBDeployer(BaseDeployer, ABC):
 
         Use server/Seed module here i think
         """
+        # TODO: update db/migrations/.env file
+        # pointing to correct machine depending on self.is_cloud
+        # cd to server/ folder first?
+        # poetry run alembic ... should be the same for both cases
         if self.is_cloud():
             print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
             self.cloud_mixin_instance.run_migrations()
