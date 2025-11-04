@@ -92,6 +92,9 @@ class BaseDBDeployer(BaseDeployer, ABC):
         # NOTE: my server/db/ specs code is not great
         # it is hard-coded kinda, would prefer if i had it more config-like using
         # .env files
+        # thought of this because as of now, the cloud_mixin_instance.run_migrations
+        # is somewhat irrelevant, as migrations/ module has no real way to discern
+        # differnt cloud providers without code changes to the db_specs
         if self.is_cloud():
             print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
             self.cloud_mixin_instance.run_migrations()
