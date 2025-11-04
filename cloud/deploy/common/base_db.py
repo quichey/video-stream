@@ -93,6 +93,7 @@ class BaseDBDeployer(BaseDeployer, ABC):
         return
 
     def run_migrations_local(self):
+        # TODO: integrate the migrations code from last branch
         pass
 
     def seed_database_local(self):
