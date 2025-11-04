@@ -98,12 +98,9 @@ class BaseDBDeployer(BaseDeployer, ABC):
         )
         SERVER_ROOT_PATH = "../../server"
 
-        alembic_cmd = pass
+        alembic_cmd = "upgrade head"
         # Command uses 'cd' and shell chaining ('&&') to switch directory before running Poetry.
-        cmd = (
-            f"cd {SERVER_ROOT_PATH} && "
-            f"poetry run alembic {alembic_cmd}"
-        )
+        cmd = f"cd {SERVER_ROOT_PATH} && poetry run alembic {alembic_cmd}"
 
         print(f"Executing migration command (Context: {SERVER_ROOT_PATH})...")
 
