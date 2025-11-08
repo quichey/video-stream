@@ -31,7 +31,24 @@ class BaseContainerDeployer(BaseDeployer, ABC):
         # The versioning would not have image yet on first deployment
         # So for fist deployment, need to use different logic for determinging
         # full version tag
-        pass
+        if self.is_cloud():
+            print(
+                f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}"
+            )
+            images_archives = self.cloud_mixin_instance.get_images_archives()
+            error = pass
+            if images_archives is None or error:
+                return True
+            return False
+        else:
+            print(
+                f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}"
+            )
+            repository = f"{self.CONTEXT}-engine"
+            self.image = Image(registry="local", repository=repository, tag="1.0.0")
+            images_archives = self.get_images_archives()
+            self.image.tag = self.generate_timestamped_tag(images_archives)
+        return
 
     @override
     def do_first_deploy(self):
