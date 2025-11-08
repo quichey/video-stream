@@ -35,11 +35,13 @@ class BaseContainerDeployer(BaseDeployer, ABC):
             print(
                 f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}"
             )
-            images_archives = self.cloud_mixin_instance.get_images_archives()
-            error = pass
-            if images_archives is None or error:
+            try:
+                images_archives = self.cloud_mixin_instance.get_images_archives()
+                if images_archives == []:
+                    return True
+                return False
+            except Exception:
                 return True
-            return False
         else:
             print(
                 f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}"
