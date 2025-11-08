@@ -19,6 +19,18 @@ class BaseContainerDeployer(BaseDeployer, ABC):
     def is_first_deploy(self) -> bool:
         # TODO: need to locate the old code i had for doing first deployment
         # vs subsequent
+
+        # why did do these changes before?
+        # was deploying new testing infra
+        # i think testing out the scripts to automatically start/stop containers
+        # then realized Azure Container Apps cannot do that
+        # then tried switching to Azure Container Instances
+        # but not certain exactly what necessitated different deploy procedures
+        # based off of first deployment or not
+        # i believe it is generate image name
+        # The versioning would not have image yet on first deployment
+        # So for fist deployment, need to use different logic for determinging
+        # full version tag
         pass
 
     @override
