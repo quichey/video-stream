@@ -17,6 +17,8 @@ class BaseContainerDeployer(BaseDeployer, ABC):
 
     @override
     def is_first_deploy(self) -> bool:
+        # TODO: need to locate the old code i had for doing first deployment
+        # vs subsequent
         pass
 
     @override
