@@ -100,6 +100,17 @@ class BaseContainerDeployer(BaseDeployer, ABC):
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
     def generate_first_image_name(self):
+        """
+
+
+        def pre_build_image_cloud(self, dockerfile, package_path):
+            print("[AzureProvider] Pre-building Docker image locally...")
+            self.build_docker_image_local(
+                image_name=self.image.full_name,
+                dockerfile=dockerfile,
+                package_path=package_path,
+            )
+        """
         pass
 
     def generate_image_name(self):
