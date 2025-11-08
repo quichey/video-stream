@@ -39,7 +39,7 @@ class BaseContainerDeployer(BaseDeployer, ABC):
         self.verify_os_env()
         self.bundle_packages()
         self.set_up_cloud_env()
-        self.generate_image_name()
+        self.generate_first_image_name()
         self.build_docker_image()
         self.launch_instance()
         self.clean_up()
@@ -79,6 +79,9 @@ class BaseContainerDeployer(BaseDeployer, ABC):
             self.install_poetry_packages(path=self.PACKAGE_PATH)
         else:
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
+
+    def generate_first_image_name(self):
+        pass
 
     def generate_image_name(self):
         if self.is_cloud():
