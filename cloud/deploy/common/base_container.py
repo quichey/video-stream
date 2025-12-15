@@ -100,18 +100,11 @@ class BaseContainerDeployer(BaseDeployer, ABC):
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
     def generate_first_image_name(self):
-        """
-
-
-        def pre_build_image_cloud(self, dockerfile, package_path):
-            print("[AzureProvider] Pre-building Docker image locally...")
-            self.build_docker_image_local(
-                image_name=self.image.full_name,
-                dockerfile=dockerfile,
-                package_path=package_path,
-            )
-        """
-        pass
+        self.cloud_mixin_instance.provider.image.tag = "1.0.0"
+        # NOTE: this func's return value is not used as of now
+        # TODO: check why and if need to change
+        # if need to change uncomment the following:
+        # return self.cloud_mixin_instance.provider.image.full_name
 
     def generate_image_name(self):
         if self.is_cloud():
