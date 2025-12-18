@@ -100,7 +100,14 @@ class BaseContainerDeployer(BaseDeployer, ABC):
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
 
     def generate_first_image_name(self):
-        self.cloud_mixin_instance.provider.image.tag = "1.0.0"
+        if self.is_cloud():
+            print(f"[BaseDeployer] Generating First Image Tag for Cloud {self.CONTEXT}")
+            self.cloud_mixin_instance.provider.image.tag = "1.0.0"
+        else:
+            print(f"[BaseDeployer] Generating First Image Tag for Local {self.CONTEXT}")
+            repository = f"{self.CONTEXT}-engine"
+            self.image = Image(registry="local", repository=repository, tag="1.0.0")
+        return
         # NOTE: this func's return value is not used as of now
         # TODO: check why and if need to change
         # if need to change uncomment the following:
