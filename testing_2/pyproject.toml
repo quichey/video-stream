@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "video-stream-e2e"
+version = "0.1.0"
+description = "E2E tests for Video Stream using Selenium"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+selenium = "^4.12"  # latest stable Selenium version
+pytest = "^7.4"     # test runner
+
+[tool.poetry.dev-dependencies]
+pytest-html = "^4.3"  # optional, for HTML test reports
+
+[build-system]
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "--maxfail=1 --disable-warnings -q"
+testpaths = ["tests"]

@@ -35,6 +35,7 @@ export default function SessionMenu({ handleClose, anchorEl }) {
           vertical: "top",
           horizontal: "left",
         }}
+        data-testid="session-menu-popover"
       >
         {mounted && (
           <>

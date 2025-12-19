@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import { TextField, LinearProgress, Typography, Box } from "@mui/material";
 import zxcvbn from "zxcvbn";
 
-const PasswordInput = ({ value, onChange, error, setError }) => {
+const PasswordInput = ({
+  value,
+  onChange,
+  error,
+  setError,
+  textFieldProps = {},
+}) => {
   const [strength, setStrength] = useState(null);
 
   const validate = (val) => {
@@ -61,6 +67,7 @@ const PasswordInput = ({ value, onChange, error, setError }) => {
         error={Boolean(error)}
         helperText={error}
         fullWidth
+        {...textFieldProps}
       />
       {strength && (
         <Box mt={1}>
