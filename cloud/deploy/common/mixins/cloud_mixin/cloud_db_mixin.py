@@ -43,4 +43,7 @@ class CloudDBMixin(CloudMixin):
         )
 
     def seed_database(eelf):
+        # TODO: take the archived copy of initial db state?
+        # and load it into the cloud database?
+        # and then run alembic stamp?
         pass
