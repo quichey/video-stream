@@ -41,3 +41,6 @@ class CloudDBMixin(CloudMixin):
             cloud_cmd,
             check=True,
         )
+
+    def seed_database(eelf):
+        pass
