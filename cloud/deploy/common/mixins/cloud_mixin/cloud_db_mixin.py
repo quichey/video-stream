@@ -47,5 +47,8 @@ class CloudDBMixin(CloudMixin):
         # and load it into the cloud database?
         # and then run alembic stamp?
 
+        # the sql file is project_root/cloud/deploy/seeded_db.sql
+        # i run the deploy scripts under project_root/cloud/deploy
+
         # testing git config
         pass
