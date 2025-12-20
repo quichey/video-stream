@@ -103,3 +103,15 @@ class AzureMySQLDBProvider(AzureDBProvider):
             "hostname": f"{self.db_server_name}.mysql.database.azure.com",
             "dbname": self.database_name,
         }
+
+    @override
+    def get_load_db_cmd(self) -> str:
+        """Returns MySQL load db command."""
+        # TODO: update the command
+        return {
+            "user": self.admin_user,
+            "pw": self.admin_password,
+            # Note: Azure Flexible Server requires user@serverName format for login
+            "hostname": f"{self.db_server_name}.mysql.database.azure.com",
+            "dbname": self.database_name,
+        }

@@ -43,3 +43,8 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
     def get_connection_string(self) -> str:
         """Return connection string / URI for the database."""
         pass
+
+    @abstractmethod
+    def get_load_db_cmd(self) -> str:
+        """Return command to load data into db"""
+        pass
