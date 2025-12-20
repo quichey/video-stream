@@ -105,13 +105,19 @@ class AzureMySQLDBProvider(AzureDBProvider):
         }
 
     @override
-    def get_load_db_cmd(self) -> str:
-        """Returns MySQL load db command."""
-        # TODO: update the command
-        return {
-            "user": self.admin_user,
-            "pw": self.admin_password,
-            # Note: Azure Flexible Server requires user@serverName format for login
-            "hostname": f"{self.db_server_name}.mysql.database.azure.com",
-            "dbname": self.database_name,
-        }
+    def get_load_db_cmd(self, sql_file) -> str:
+        """
+        Returns a MySQL command to pipe the SQL file into the Azure database.
+        Format: mysql -h <host> -u <user> -p<pass> <dbname> < <filename>
+        """
+        host = f"{self.db_server_name}.mysql.database.azure.com"
+
+        # We return a list or string that the shell can execute.
+        # Note: No space between -p and the password is standard for MySQL CLI.
+        return (
+            f"mysql -h {host} "
+            f"-u {self.admin_user} "
+            f"-p'{self.admin_password}' "
+            f"{self.database_name} "
+            f"< {sql_file}"
+        )

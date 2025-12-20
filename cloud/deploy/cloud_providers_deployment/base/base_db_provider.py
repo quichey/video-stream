@@ -45,6 +45,6 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
         pass
 
     @abstractmethod
-    def get_load_db_cmd(self) -> str:
+    def get_load_db_cmd(self, sql_file) -> str:
         """Return command to load data into db"""
         pass

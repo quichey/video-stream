@@ -43,35 +43,42 @@ class CloudDBMixin(CloudMixin):
         )
 
     def seed_database(self):
-        # TODO: take the archived copy of initial db state?
-        # and load it into the cloud database?
-        # and then run alembic stamp?
+        """
+        Sequence:
+        1. Find the seeded_db.sql file.
+        2. Pipe it into the Cloud DB using the provider's command.
+        3. Use Alembic to 'stamp' the DB so it knows it is at the initial version.
+        """
 
-        # the sql file is project_root/cloud/deploy/seeded_db.sql
-        # i run the deploy scripts under project_root/cloud/deploy
-        def fetch_sql_file():
-            pass
+        # 1. Locate the SQL file relative to the execution path (cloud/deploy)
+        sql_file_path = "seeded_db.sql"
 
-        cloud_cmd = self.provider.get_load_db_cmd()
-        print(f"[CloudDBMixin] Loading data {self.context} to Cloud...")
-        run_cmd_with_retries(
-            cloud_cmd,
-            check=True,
-        )
+        # 2. Get the  command from the provider (Azure/AWS/etc)
+        full_load_cmd = self.provider.get_load_db_cmd(sql_file_path)
 
+        print(f"[CloudDBMixin] Seeding database using {sql_file_path}...")
+
+        # Execute the load. We use shell=True because of the '<' redirection.
+        run_shell_command(full_load_cmd, check=True)
+
+        # 3. Handle the Alembic Stamp
         def run_alembic_stamp():
+            # Based on your structure:
+            # We are in cloud/deploy.
+            # Server is at ../../server relative to this file?
+            # Usually better to use an absolute path or project root.
             SERVER_ROOT_PATH = "../../server"
 
-            # Command uses 'cd' and shell chaining ('&&') to switch directory before running Poetry.
-            # TODO: replace this cmd with the alembic command
-            cmd = (
-                f"cd {SERVER_ROOT_PATH} && "
-                f"poetry run python3 -m db.load_db seed --small --dialect {self.ENGINE}"
-            )
+            # The 'stamp' command tells Alembic:
+            # "The DB is already at this version, don't try to re-run it."
+            # We use the Revision ID from your version file: 6954f76c47c2
+            # TODO: use my predefined alembic sub-module under server i think
+            target_revision = "6954f76c47c2"
 
-            print(f"Executing alembic stamp command (Context: {SERVER_ROOT_PATH})...")
+            cmd = f"cd {SERVER_ROOT_PATH} && poetry run alembic stamp {target_revision}"
 
-            # Execute the command using the utility function, ensuring failure if the command fails
+            print(f"[CloudDBMixin] Stamping database at revision {target_revision}...")
             run_shell_command(cmd, check=True, shell=True)
 
         run_alembic_stamp()
+        print("[CloudDBMixin] Database seeding and stamping complete.")
