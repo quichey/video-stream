@@ -121,3 +121,28 @@ class AzureMySQLDBProvider(AzureDBProvider):
             f"{self.database_name} "
             f"< {sql_file}"
         )
+
+    @override
+    def get_cmd_create_database(self) -> list:
+        """
+        Returns Azure Flexible MySQL CLI command as a string for creating
+        a new database instance on the server.
+        """
+        print(
+            f"[{self.PROVIDER_NAME}] Generating CLI command to create DB: {self.database_name}"
+        )
+
+        # We join the list into a single string so run_cmd_with_retries can execute it
+        return [
+            "az",
+            "mysql",
+            "flexible-server",
+            "db",
+            "create",
+            "--resource-group",
+            self.resource_group,
+            "--server-name",
+            self.db_server_name,
+            "--database-name",
+            self.database_name,
+        ]

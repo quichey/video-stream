@@ -25,7 +25,7 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
         return self._db_name
 
     @abstractmethod
-    def get_cmd_create_database(self) -> str:
+    def get_cmd_create_database(self) -> list:
         """Create a new database instance."""
         pass
 
