@@ -146,3 +146,7 @@ class AzureMySQLDBProvider(AzureDBProvider):
             "--database-name",
             self.database_name,
         ]
+
+    @override
+    def get_cmd_db_exists(self) -> list:
+        pass

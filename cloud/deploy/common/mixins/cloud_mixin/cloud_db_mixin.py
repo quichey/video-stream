@@ -6,6 +6,17 @@ from util.subprocess_helper import run_cmd_with_retries, run_shell_command
 class CloudDBMixin(CloudMixin):
     GET_PROVIDER_CLASS_FUNC = get_provider_class_db
 
+    def is_first_deploy(self) -> bool:
+        """
+        check if database is already deployed
+        """
+        cloud_cmd = self.provider.get_cmd_db_exists()
+        print(f"[CloudDBMixin] Checking if db exists {self.context} on Cloud...")
+        run_cmd_with_retries(
+            cloud_cmd,
+            check=True,
+        )
+
     def provision_database(self):
         """
         Provision the database itself.

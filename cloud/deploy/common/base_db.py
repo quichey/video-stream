@@ -24,6 +24,13 @@ class BaseDBDeployer(BaseDeployer, ABC):
 
     @override
     def is_first_deploy(self) -> bool:
+        if self.is_cloud():
+            return self.cloud_mixin_instance.is_first_deploy()
+        else:
+            return self.is_first_deploy_local()
+
+    @abstractmethod
+    def is_first_deploy_local(self) -> bool:
         pass
 
     @override

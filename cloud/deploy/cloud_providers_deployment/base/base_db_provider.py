@@ -48,3 +48,8 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
     def get_load_db_cmd(self, sql_file) -> str:
         """Return command to load data into db"""
         pass
+
+    @abstractmethod
+    def get_cmd_db_exists(self) -> list:
+        """Return command to check if db exists"""
+        pass

@@ -18,6 +18,10 @@ class MysqlDBDeployer(BaseDBDeployer):
 
     ENGINE = "mysql"
 
+    @override
+    def is_first_deploy_local(self) -> bool:
+        pass
+
     def set_up_cloud_env(self):
         print(f"[DBDeployer] Setting Up Cloud Provider env for {self.CONTEXT}")
         self.cloud_mixin_instance.set_up_provider_env()
