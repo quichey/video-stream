@@ -19,6 +19,7 @@ class AzureMySQLDBProvider(AzureDBProvider):
         self.db_server_name = os.environ.get("MYSQL_DB_NAME", "ChangeMe123!")
         # Use a placeholder for the actual DB name if it differs from the server name
         self.database_name = os.environ.get("MYSQL_DB_NAME", "defaultdb")
+        self.location = "us-west-2"
 
     # --- Implementation of Abstract Inner Helper Functions ---
 
@@ -131,8 +132,6 @@ class AzureMySQLDBProvider(AzureDBProvider):
         print(
             f"[{self.PROVIDER_NAME}] Generating CLI command to provisioning DB engine: {self.db_server_name}"
         )
-
-        # We join the list into a single string so run_cmd_with_retries can execute it
         return [
             "az",
             "mysql",
@@ -140,8 +139,21 @@ class AzureMySQLDBProvider(AzureDBProvider):
             "create",
             "--resource-group",
             self.resource_group,
-            "--server-name",
-            self.db_server_name,
+            "--name",
+            self.db_server_name,  # Flag is --name for the engine creation
+            "--admin-user",
+            self.admin_user,
+            "--admin-password",
+            self.admin_password,
+            "--location",
+            self.location,
+            "--tier",
+            "Burstable",  # Explicitly set to avoid expensive defaults
+            "--sku-name",
+            "Standard_B1ms",
+            "--public-access",
+            "0.0.0.0",  # Required for your local machine/GitHub to talk to it
+            "--yes",  # CRITICAL: Prevents the script from hanging on a prompt
         ]
 
     @override
