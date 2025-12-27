@@ -38,7 +38,7 @@ class BaseDBDeployer(BaseDeployer, ABC):
         print(f"=== Deploying {self.CONTEXT} Database ===")
         # TODO: handle initial deployment vs subsequent deployments
         self.set_up_cloud_env()
-        self.provision_database()
+        self.provision_database_engine()
         self.seed_database()
         self.clean_up()
 
@@ -55,21 +55,21 @@ class BaseDBDeployer(BaseDeployer, ABC):
         self.run_migrations()
         self.clean_up()
 
-    def provision_database(self):
+    def provision_database_engine(self):
         """
         Provision the database itself.
         For example, create SQL server, Postgres instance, or Cosmos DB.
         """
         if self.is_cloud():
             print(f"[BaseDBDeployer] Provisioning for Cloud {self.CONTEXT}")
-            self.cloud_mixin_instance.provision_database()
+            self.cloud_mixin_instance.provision_database_engine()
         else:
             print(f"[BaseDBDeployer] Provisioning for Local {self.CONTEXT}")
-            self.provision_database_local()
+            self.provision_database_engine_local()
         return
 
     @abstractmethod
-    def provision_database_local(self):
+    def provision_database_engine_local(self):
         pass
 
     def seed_database(self):

@@ -17,12 +17,12 @@ class CloudDBMixin(CloudMixin):
             check=True,
         )
 
-    def provision_database(self):
+    def provision_database_engine(self):
         """
         Provision the database itself.
         For example, create SQL server, Postgres instance, or Cosmos DB.
         """
-        cloud_cmd = self.provider.get_cmd_create_database()
+        cloud_cmd = self.provider.get_cmd_provision_database_engine()
         print(f"[CloudDBMixin] Provisioning {self.context} to Cloud...")
         run_cmd_with_retries(
             cloud_cmd,
@@ -60,6 +60,16 @@ class CloudDBMixin(CloudMixin):
         2. Pipe it into the Cloud DB using the provider's command.
         3. Use Alembic to 'stamp' the DB so it knows it is at the initial version.
         """
+        # TODO: improve on this if needed
+        # checking if exists or not or something
+        cloud_cmd = self.provider.get_cmd_create_database()
+        print(
+            f"[CloudDBMixin] Creating database in database engine {self.context} to Cloud..."
+        )
+        run_cmd_with_retries(
+            cloud_cmd,
+            check=True,
+        )
 
         # 1. Locate the SQL file relative to the execution path (cloud/deploy)
         sql_file_path = "seeded_db.sql"

@@ -25,6 +25,11 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
         return self._db_name
 
     @abstractmethod
+    def get_cmd_provision_database_engine(self) -> list:
+        """Provision a new database engine instance."""
+        pass
+
+    @abstractmethod
     def get_cmd_create_database(self) -> list:
         """Create a new database instance."""
         pass

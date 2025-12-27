@@ -123,6 +123,28 @@ class AzureMySQLDBProvider(AzureDBProvider):
         )
 
     @override
+    def get_cmd_provision_database_engine(self) -> list:
+        """
+        Returns Azure Flexible MySQL CLI command as a string for provisioning
+        a new database engine instance on the server.
+        """
+        print(
+            f"[{self.PROVIDER_NAME}] Generating CLI command to provisioning DB engine: {self.db_server_name}"
+        )
+
+        # We join the list into a single string so run_cmd_with_retries can execute it
+        return [
+            "az",
+            "mysql",
+            "flexible-server",
+            "create",
+            "--resource-group",
+            self.resource_group,
+            "--server-name",
+            self.db_server_name,
+        ]
+
+    @override
     def get_cmd_create_database(self) -> list:
         """
         Returns Azure Flexible MySQL CLI command as a string for creating
