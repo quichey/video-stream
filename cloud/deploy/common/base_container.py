@@ -17,7 +17,40 @@ class BaseContainerDeployer(BaseDeployer, ABC):
 
     @override
     def is_first_deploy(self) -> bool:
-        pass
+        # TODO: need to locate the old code i had for doing first deployment
+        # vs subsequent
+
+        # why did do these changes before?
+        # was deploying new testing infra
+        # i think testing out the scripts to automatically start/stop containers
+        # then realized Azure Container Apps cannot do that
+        # then tried switching to Azure Container Instances
+        # but not certain exactly what necessitated different deploy procedures
+        # based off of first deployment or not
+        # i believe it is generate image name
+        # The versioning would not have image yet on first deployment
+        # So for fist deployment, need to use different logic for determinging
+        # full version tag
+        if self.is_cloud():
+            print(
+                f"[BaseDeployer] Generating Latest Image Tag from Cloud {self.CONTEXT}"
+            )
+            try:
+                images_archives = self.cloud_mixin_instance.get_images_archives()
+                if images_archives == []:
+                    return True
+                return False
+            except Exception:
+                return True
+        else:
+            print(
+                f"[BaseDeployer] Generating Latest Image Tag from Local {self.CONTEXT}"
+            )
+            repository = f"{self.CONTEXT}-engine"
+            self.image = Image(registry="local", repository=repository, tag="1.0.0")
+            images_archives = self.get_images_archives()
+            self.image.tag = self.generate_timestamped_tag(images_archives)
+        return
 
     @override
     def do_first_deploy(self):
@@ -25,7 +58,7 @@ class BaseContainerDeployer(BaseDeployer, ABC):
         self.verify_os_env()
         self.bundle_packages()
         self.set_up_cloud_env()
-        self.generate_image_name()
+        self.generate_first_image_name()
         self.build_docker_image()
         self.launch_instance()
         self.clean_up()
@@ -65,6 +98,20 @@ class BaseContainerDeployer(BaseDeployer, ABC):
             self.install_poetry_packages(path=self.PACKAGE_PATH)
         else:
             raise ValueError(f"Unknown package manager: {self.PACKAGE_MANAGER}")
+
+    def generate_first_image_name(self):
+        if self.is_cloud():
+            print(f"[BaseDeployer] Generating First Image Tag for Cloud {self.CONTEXT}")
+            self.cloud_mixin_instance.provider.image.tag = "1.0.0"
+        else:
+            print(f"[BaseDeployer] Generating First Image Tag for Local {self.CONTEXT}")
+            repository = f"{self.CONTEXT}-engine"
+            self.image = Image(registry="local", repository=repository, tag="1.0.0")
+        return
+        # NOTE: this func's return value is not used as of now
+        # TODO: check why and if need to change
+        # if need to change uncomment the following:
+        # return self.cloud_mixin_instance.provider.image.full_name
 
     def generate_image_name(self):
         if self.is_cloud():
