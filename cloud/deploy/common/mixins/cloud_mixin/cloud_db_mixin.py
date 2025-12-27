@@ -12,11 +12,11 @@ class CloudDBMixin(CloudMixin):
         """
         cloud_cmd = self.provider.get_cmd_engine_exists()
         print(f"[CloudDBMixin] Checking if db engine exists {self.context} on Cloud...")
-        run_cmd_with_retries(
+        # TODO: figure out what is returned by stdout from azure CLI
+        return run_shell_command(
             cloud_cmd,
             check=True,
         )
-        # TODO: return bool
 
     def provision_database_engine(self):
         """
@@ -61,16 +61,21 @@ class CloudDBMixin(CloudMixin):
         2. Pipe it into the Cloud DB using the provider's command.
         3. Use Alembic to 'stamp' the DB so it knows it is at the initial version.
         """
-        # TODO: improve on this if needed
-        # checking if exists or not or something
-        cloud_cmd = self.provider.get_cmd_create_database_schema()
-        print(
-            f"[CloudDBMixin] Creating database in database engine {self.context} to Cloud..."
-        )
-        run_cmd_with_retries(
+        # TODO: check if run_shell_command will adequately return bool
+        cloud_cmd = self.provider.get_cmd_db_exists()
+        db_schema_exists = run_shell_command(
             cloud_cmd,
             check=True,
         )
+        if not db_schema_exists:
+            cloud_cmd = self.provider.get_cmd_create_database_schema()
+            print(
+                f"[CloudDBMixin] Creating database in database engine {self.context} to Cloud..."
+            )
+            run_cmd_with_retries(
+                cloud_cmd,
+                check=True,
+            )
 
         # 1. Locate the SQL file relative to the execution path (cloud/deploy)
         sql_file_path = "seeded_db.sql"
