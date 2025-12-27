@@ -145,7 +145,7 @@ class AzureMySQLDBProvider(AzureDBProvider):
         ]
 
     @override
-    def get_cmd_create_database(self) -> list:
+    def get_cmd_create_database_schema(self) -> list:
         """
         Returns Azure Flexible MySQL CLI command as a string for creating
         a new database instance on the server.

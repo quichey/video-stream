@@ -62,7 +62,7 @@ class CloudDBMixin(CloudMixin):
         """
         # TODO: improve on this if needed
         # checking if exists or not or something
-        cloud_cmd = self.provider.get_cmd_create_database()
+        cloud_cmd = self.provider.get_cmd_create_database_schema()
         print(
             f"[CloudDBMixin] Creating database in database engine {self.context} to Cloud..."
         )

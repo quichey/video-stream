@@ -30,8 +30,8 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
         pass
 
     @abstractmethod
-    def get_cmd_create_database(self) -> list:
-        """Create a new database instance."""
+    def get_cmd_create_database_schema(self) -> list:
+        """Create a new database schema instance."""
         pass
 
     @abstractmethod
