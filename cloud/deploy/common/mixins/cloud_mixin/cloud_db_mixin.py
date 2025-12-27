@@ -8,14 +8,15 @@ class CloudDBMixin(CloudMixin):
 
     def is_first_deploy(self) -> bool:
         """
-        check if database is already deployed
+        check if database engine is already deployed
         """
-        cloud_cmd = self.provider.get_cmd_db_exists()
-        print(f"[CloudDBMixin] Checking if db exists {self.context} on Cloud...")
+        cloud_cmd = self.provider.get_cmd_engine_exists()
+        print(f"[CloudDBMixin] Checking if db engine exists {self.context} on Cloud...")
         run_cmd_with_retries(
             cloud_cmd,
             check=True,
         )
+        # TODO: return bool
 
     def provision_database_engine(self):
         """

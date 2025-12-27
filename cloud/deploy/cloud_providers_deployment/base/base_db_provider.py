@@ -58,3 +58,8 @@ class BaseDBCloudProvider(BaseCloudProvider, ABC):
     def get_cmd_db_exists(self) -> list:
         """Return command to check if db exists"""
         pass
+
+    @abstractmethod
+    def get_cmd_engine_exists(self) -> list:
+        """Return command to check if db engine exists"""
+        pass

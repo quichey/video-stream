@@ -204,3 +204,24 @@ class AzureMySQLDBProvider(AzureDBProvider):
             "--database-name",
             self.database_name,
         ]
+
+    @override
+    def get_cmd_engine_exists(self) -> list:
+        """
+        Returns the Azure CLI command to check if the MySQL Flexible Server
+        engine/instance exists.
+        """
+        print(
+            f"[{self.PROVIDER_NAME}] Checking existence of Engine: {self.db_server_name}..."
+        )
+
+        return [
+            "az",
+            "mysql",
+            "flexible-server",
+            "show",  # No 'db' here
+            "--resource-group",
+            self.resource_group,
+            "--name",  # Note: 'show' for the engine uses --name, not --server-name
+            self.db_server_name,
+        ]
