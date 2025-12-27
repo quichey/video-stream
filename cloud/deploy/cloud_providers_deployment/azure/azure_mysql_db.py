@@ -149,4 +149,24 @@ class AzureMySQLDBProvider(AzureDBProvider):
 
     @override
     def get_cmd_db_exists(self) -> list:
-        pass
+        """
+        Returns the Azure CLI command to check if a specific database exists
+         on the MySQL Flexible Server.
+        """
+        print(
+            f"[{self.PROVIDER_NAME}] Checking existence of DB: {self.database_name} on {self.db_server_name}..."
+        )
+
+        return [
+            "az",
+            "mysql",
+            "flexible-server",
+            "db",
+            "show",
+            "--resource-group",
+            self.resource_group,
+            "--server-name",
+            self.db_server_name,
+            "--database-name",
+            self.database_name,
+        ]
