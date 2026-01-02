@@ -75,16 +75,33 @@ def run_shell_command(
         return None
 
 
-def check_command_success(command, shell=False) -> bool:
+def check_resource_exists(command, shell=False) -> bool:
     """
-    Runs a command and returns True if it succeeds (exit code 0),
-    False otherwise.
+    Robust check for Azure resources.
+    Returns True ONLY if exit code is 0 AND stdout has content.
     """
     try:
-        # We don't need the output, just the status
-        subprocess.run(command, check=True, shell=shell, capture_output=True)
+        result = subprocess.run(
+            command,
+            check=False,  # We handle the check manually for better control
+            shell=shell,
+            capture_output=True,
+            text=True,
+        )
+
+        # 1. Check Exit Code
+        if result.returncode != 0:
+            return False
+
+        # 2. Check for "Empty Success" (The Azure CLI bug)
+        # If output is empty or just '[]', the resource isn't actually there.
+        output = result.stdout.strip()
+        if not output or output == "[]" or output == "null":
+            return False
+
         return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except Exception as e:
+        print(f"Critical error during resource check: {e}")
         return False
 
 

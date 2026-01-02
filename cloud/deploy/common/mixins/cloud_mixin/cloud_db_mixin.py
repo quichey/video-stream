@@ -3,7 +3,7 @@ from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
 from util.subprocess_helper import (
     run_cmd_with_retries,
     run_shell_command,
-    check_command_success,
+    check_resource_exists,
 )
 
 
@@ -16,8 +16,7 @@ class CloudDBMixin(CloudMixin):
         """
         cloud_cmd = self.provider.get_cmd_engine_exists()
         print(f"[CloudDBMixin] Checking if db engine exists {self.context} on Cloud...")
-        # TODO: check if get_cmd_engine_exists will work with check_command
-        return check_command_success(cloud_cmd)
+        return check_resource_exists(cloud_cmd)
 
     def provision_database_engine(self):
         """
@@ -66,7 +65,7 @@ class CloudDBMixin(CloudMixin):
         cloud_cmd = self.provider.get_cmd_db_exists()
 
         # This is now a clean boolean check
-        if not check_command_success(cloud_cmd):
+        if not check_resource_exists(cloud_cmd):
             print(f"[CloudDBMixin] Schema {self.context} not found. Creating...")
             create_cmd = self.provider.get_cmd_create_database_schema()
             run_cmd_with_retries(create_cmd, check=True)
