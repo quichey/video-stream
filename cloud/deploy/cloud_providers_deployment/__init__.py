@@ -1,10 +1,10 @@
 from .aws.aws_provider import AWSProvider
 from .azure.azure_container_provider import AzureContainerProvider
-from .azure.azure_db_provider import AzureDBCloudProvider
+from .azure.azure_mysql_db import AzureMySQLDBProvider
 from .gcp.gcp_container_provider import GoogleCloudContainerProvider
 
 
-def get_provider_class_container(provider_name):
+def get_provider_class_container(provider_name, *args, **kwargs):
     providers = {
         "aws": AWSProvider,
         "azure": AzureContainerProvider,
@@ -13,10 +13,13 @@ def get_provider_class_container(provider_name):
     return providers[provider_name.lower()]
 
 
-def get_provider_class_db(provider_name):
+def get_provider_class_db(provider_name, dialect):
     providers = {
         "aws": AWSProvider,
-        "azure": AzureDBCloudProvider,
+        "azure": {
+            "mysql": AzureMySQLDBProvider,
+            # "postgres": AzurePostgre,
+        },
         # "gcp": GoogleCloudDBProvider,
     }
-    return providers[provider_name.lower()]
+    return providers[provider_name.lower()][dialect]

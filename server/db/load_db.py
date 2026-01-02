@@ -1,4 +1,5 @@
 import argparse
+import copy
 import db.Schema as Schema
 import db.Seed.Seed as Seed
 from db.Seed.datasets import (
@@ -8,10 +9,7 @@ from db.Seed.datasets import (
     TESTING_STATE_SERVER_RESTART,
 )
 
-# --- 1. Configuration States ---
-# Define the different data load configurations
-
-
+# --- 1. Configuration States & Dialect Mapping ---
 # Map argument strings to the actual configuration objects
 STATE_MAP = {
     "full": TESTING_STATE_FULL,
@@ -20,13 +18,47 @@ STATE_MAP = {
     "restart": TESTING_STATE_SERVER_RESTART,
 }
 
+# Map simple dialect names to SQLAlchemy dialect/driver pairs
+DIALECT_MAP = {
+    # Default MySQL configuration
+    "mysql": {"dialect": "mysql", "db_api": "pymysql"},
+    # Default PostgreSQL configuration
+    "postgres": {"dialect": "postgresql", "db_api": "psycopg2"},
+    # Add other mappings as needed
+}
+
 
 # --- 2. Main Orchestration Logic ---
-def get_seeder_instance():
-    """Initializes and returns the DatabaseSeeder instance."""
-    # Assuming the class has been renamed/refactored to handle the complexity
-    # We maintain the structure defined in the original script:
-    return Seed.Seed(Schema.admin_specs, Schema.database_specs, Schema)
+def get_seeder_instance(dialect_override: str = None):
+    """
+    Initializes and returns the DatabaseSeeder instance, applying
+    dynamic dialect overrides if specified by the command line.
+    """
+    # 1. Copy the default specs from Schema to avoid mutating the imported module's state
+    admin_specs = copy.deepcopy(Schema.admin_specs)
+    database_specs = copy.deepcopy(Schema.database_specs)
+
+    # 2. Apply dialect override if provided
+    if dialect_override:
+        if dialect_override not in DIALECT_MAP:
+            print(f"ERROR: Unknown dialect '{dialect_override}'. Using default specs.")
+        else:
+            dialect_config = DIALECT_MAP[dialect_override]
+
+            # Update both the main database specs and the admin specs
+            database_specs["dialect"] = dialect_config["dialect"]
+            database_specs["db_api"] = dialect_config["db_api"]
+
+            admin_specs["dialect"] = dialect_config["dialect"]
+            admin_specs["db_api"] = dialect_config["db_api"]
+
+            print(
+                f"Using dialect override: {dialect_config['dialect']}+{dialect_config['db_api']}"
+            )
+
+    # 3. Instantiate the Seed class with the potentially updated specs
+    # The Seed.__init__ will use these dictionaries to create DataBaseSpec dataclass instances.
+    return Seed.Seed(admin_specs, database_specs, Schema)
 
 
 def execute_seeding(seeder: Seed.Seed, state_key: str):
@@ -49,7 +81,6 @@ def execute_export(seeder: Seed.Seed, file_name_base: str):
     """Exports the current database state (assumed to be seeded) to a SQL file."""
     print("Attempting to export current database state to SQL file...")
 
-    # Assumes seeder.export_data_to_file is the new method returning (filename, load_cmd)
     try:
         file_name = seeder.export_data_to_file(file_name_base)
         print("--- EXPORT SUCCESSFUL ---")
@@ -57,7 +88,6 @@ def execute_export(seeder: Seed.Seed, file_name_base: str):
         print("-------------------------")
     except Exception as e:
         print(f"❌ Export failed: {e}")
-        # Add cleanup logic here if needed
 
 
 def main():
@@ -71,7 +101,7 @@ def main():
     parser.add_argument(
         "action",
         choices=["seed", "export"],
-        help="The action to perform: \n  'seed' - Generates and inserts data into the local database. \n  'export' - Dumps the data from the database into a versioned SQL file.",
+        help="The action to perform: \n 'seed' - Generates and inserts data into the local database. \n 'export' - Dumps the data from the database into a versioned SQL file.",
     )
 
     # State argument (only relevant for 'seed' action)
@@ -81,6 +111,15 @@ def main():
         choices=list(STATE_MAP.keys()),
         default="small",
         help=f"The configuration to use for seeding. Default is 'small'. Choices: {list(STATE_MAP.keys())}",
+    )
+
+    # NEW DIALECT ARGUMENT: Allows user to specify the database type at runtime
+    parser.add_argument(
+        "-d",
+        "--dialect",
+        choices=list(DIALECT_MAP.keys()),
+        default=None,
+        help=f"Optional: Override the default database dialect. Choices: {list(DIALECT_MAP.keys())}. If omitted, the default dialect from db.Schema is used.",
     )
 
     # File name argument (only relevant for 'export' action)
@@ -93,7 +132,8 @@ def main():
 
     args = parser.parse_args()
 
-    seeder = get_seeder_instance()
+    # Pass the dialect override from the arguments to the seeder instance factory
+    seeder = get_seeder_instance(args.dialect)
 
     if args.action == "seed":
         execute_seeding(seeder, args.state)
