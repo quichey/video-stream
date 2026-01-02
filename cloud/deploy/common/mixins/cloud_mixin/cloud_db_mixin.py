@@ -1,6 +1,10 @@
 from cloud_providers_deployment import get_provider_class_db
 from common.mixins.cloud_mixin.cloud_mixin import CloudMixin
-from util.subprocess_helper import run_cmd_with_retries, run_shell_command
+from util.subprocess_helper import (
+    run_cmd_with_retries,
+    run_shell_command,
+    check_command_success,
+)
 
 
 class CloudDBMixin(CloudMixin):
@@ -12,11 +16,8 @@ class CloudDBMixin(CloudMixin):
         """
         cloud_cmd = self.provider.get_cmd_engine_exists()
         print(f"[CloudDBMixin] Checking if db engine exists {self.context} on Cloud...")
-        # TODO: figure out what is returned by stdout from azure CLI
-        return run_shell_command(
-            cloud_cmd,
-            check=True,
-        )
+        # TODO: check if get_cmd_engine_exists will work with check_command
+        return check_command_success(cloud_cmd)
 
     def provision_database_engine(self):
         """
@@ -61,21 +62,16 @@ class CloudDBMixin(CloudMixin):
         2. Pipe it into the Cloud DB using the provider's command.
         3. Use Alembic to 'stamp' the DB so it knows it is at the initial version.
         """
-        # TODO: check if run_shell_command will adequately return bool
+        # Using the new bool helper
         cloud_cmd = self.provider.get_cmd_db_exists()
-        db_schema_exists = run_shell_command(
-            cloud_cmd,
-            check=True,
-        )
-        if not db_schema_exists:
-            cloud_cmd = self.provider.get_cmd_create_database_schema()
-            print(
-                f"[CloudDBMixin] Creating database in database engine {self.context} to Cloud..."
-            )
-            run_cmd_with_retries(
-                cloud_cmd,
-                check=True,
-            )
+
+        # This is now a clean boolean check
+        if not check_command_success(cloud_cmd):
+            print(f"[CloudDBMixin] Schema {self.context} not found. Creating...")
+            create_cmd = self.provider.get_cmd_create_database_schema()
+            run_cmd_with_retries(create_cmd, check=True)
+        else:
+            print(f"[CloudDBMixin] Schema {self.context} already exists.")
 
         # 1. Locate the SQL file relative to the execution path (cloud/deploy)
         sql_file_path = "seeded_db.sql"

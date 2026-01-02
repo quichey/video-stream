@@ -75,6 +75,19 @@ def run_shell_command(
         return None
 
 
+def check_command_success(command, shell=False) -> bool:
+    """
+    Runs a command and returns True if it succeeds (exit code 0),
+    False otherwise.
+    """
+    try:
+        # We don't need the output, just the status
+        subprocess.run(command, check=True, shell=shell, capture_output=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+
+
 def get_os_type() -> str:
     """Returns the main OS type (e.g., 'Darwin' for macOS, 'Linux', 'Windows')."""
     return platform.system()
