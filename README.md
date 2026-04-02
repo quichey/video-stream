@@ -46,6 +46,7 @@ For deeper design notes and brainstorming, see [DEV_NOTES.md](./DEV_NOTES.md).
 
 ---
 
+
 ## 🚦 Next Steps
 
 - Add **user registration + channels**  
@@ -54,3 +55,6 @@ For deeper design notes and brainstorming, see [DEV_NOTES.md](./DEV_NOTES.md).
 - Optimize **video storage & retrieval**  
 
 ---
+
+
+https://github.com/user-attachments/assets/e3d97e09-b5ad-4864-b0e3-babe0284748b
