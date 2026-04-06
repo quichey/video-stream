@@ -25,7 +25,9 @@ export default function Logout() {
 
   return (
     <div>
-      <MenuItem onClick={handleClick}>Logout</MenuItem>
+      <MenuItem onClick={handleClick} data-testid="logout-menu-item">
+        Logout
+      </MenuItem>
     </div>
   );
 }
