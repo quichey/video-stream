@@ -1,60 +1,49 @@
-# 🎥 Video-Stream
+# 🎥 Video-Stream: Full-Stack System Architecture
 
-A full-stack web application inspired by YouTube, built to showcase **scalable architecture**, **React front-end**, and **Python (Flask) back-end**.  
+A high-performance web application inspired by YouTube, engineered to demonstrate **scalable cloud architecture**, **asynchronous data flows**, and **complex session management**.
 
-🚀 Currently features infinite scrolling of comments, session management for non-logged-in users, and video upload/playback. Designed for cloud deployment via Docker + Cloud Services.
-
----
-
-## Live Demo
-Try the project live here: [Video Stream Demo](https://client-engine-app.blacksand-ab0d98b9.westus2.azurecontainerapps.io/)
-
-> *Note: The site URL may change occasionally.*
+> **Note on Live Demo:** To optimize infrastructure costs, the live Azure deployment is currently offline. A **video walkthrough** of the system's functionality and architectural deep-dive is available below.
 
 ---
 
-## ✨ Features
+## 🏗️ Technical Highlights
 
-- **Home page** with panels for available videos that when clicked take users to the Watch page 
-- **Watch Page** View Video with comments section
-- **Infinite scroll** for comments (efficient pagination & API design)  
-- **Profile Pictures** Upload profile pictures  
-- **Anonymous & session-based users** (cookie/session token system)  
-- **Google Auth sessions** Register and Login using Google Auth 
-- **Cloud-ready**: deployable client and server with Cloud services  
+This project serves as a technical showcase for replicating large-scale web technologies. Key engineering challenges addressed include:
+
+* **Optimized Data Retrieval:** Implemented **infinite scrolling** for comments using efficient pagination logic and API design to minimize payload size and database strain.
+* **Hybrid Session Management:** Developed a robust system to handle **anonymous, session-based, and authenticated (Google Auth) users** using secure cookies and temporary session tokens.
+* **Scalable Storage Schema:** Engineered the backend to handle **video metadata and storage** (integrating with Azure Blob Storage) while maintaining schema flexibility for future scalability.
+* **Cloud-Native Deployment:** Containerized the entire stack using **Docker** for consistent environments across development and production.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React + Context API + Hooks  
-- **Backend**: Python (Flask)  
-- **Database**: SQLAlchemy + MySQL (schema exploration for scalability)  
-- **Deployment**: Docker + Azure
-- **Session Handling**: Secure cookies + temporary session tokens  
+* **Frontend:** React (Context API + Hooks)
+* **Backend:** Python (Flask)
+* **Database:** SQLAlchemy + MySQL (Relational modeling for high-concurrency)
+* **Infrastructure:** Docker + Azure (Container Apps & Blob Storage)
+* **Authentication:** Google OAuth 2.0 + Secure Session Handling
 
 ---
 
-## 🧑‍💻 Development Notes
+## 📺 System Walkthrough & Demo
 
-This project is an ongoing **learning + demo app**, where I replicate and analyze existing large-scale web technologies like YouTube.  
-- Started with **comment infinite scroll** as the first large feature.  
-- Working on **video storage schemas** for scalability.  
-- Exploring session management for both **logged-in** and **anonymous users**.  
-
-For deeper design notes and brainstorming, see [DEV_NOTES.md](./DEV_NOTES.md).  
-
----
-
-
-## 🚦 Next Steps
-
-- Add **user registration + channels**  
-- Implement **recommendations**  
-- Support **playlists & search**  
-- Optimize **video storage & retrieval**  
-
----
-
+Since the live environment is archived, you can view the full functionality and architectural overview here:
 
 https://github.com/user-attachments/assets/e3d97e09-b5ad-4864-b0e3-babe0284748b
+
+*Features demonstrated in the video:*
+* Video upload and playback streaming.
+* Infinite scroll performance.
+* User profile and session persistence.
+
+---
+
+## 🧑‍💻 Engineering Design Notes
+
+This application was built as an iterative exploration of large-scale system design.
+- **Comment Systems:** Focused on sub-second response times for deeply nested or high-volume comment threads.
+- **Relational Mapping:** Designed dynamic row-mapping concepts (drawing from experience at **CliniComp**) to model hierarchical data structures efficiently.
+
+For a deeper look into the design decisions, see **[DEV_NOTES.md](./DEV_NOTES.md)**.
