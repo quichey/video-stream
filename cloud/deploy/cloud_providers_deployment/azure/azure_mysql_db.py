@@ -225,3 +225,9 @@ class AzureMySQLDBProvider(AzureDBProvider):
             "--name",  # Note: 'show' for the engine uses --name, not --server-name
             self.db_server_name,
         ]
+
+    @override
+    def get_cmd_run_migrations(self) -> str:
+        """Hook for running migrations, delegated to the Deployer class."""
+        # TODO: fill this in
+        return "Migration run delegated to Deployer class."
