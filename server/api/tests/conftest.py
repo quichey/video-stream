@@ -4,6 +4,7 @@ from unittest.mock import patch
 from sqlalchemy.orm import sessionmaker
 from db.Schema import Base
 from api.util.db_engine import DataBaseEngine
+from api.orchestrator.storage import Storage
 
 
 # ---------------------------------------------------------
@@ -77,6 +78,32 @@ def session():
 
     db_session.close()
     Base.metadata.drop_all(engine)
+
+
+@pytest.fixture
+def test_blob_storage():
+    storage = Storage()
+    test_blobs = []
+
+    def _upload_and_track_video(file_dir, file_name, stream):
+        # We track the path so we can delete it later
+        test_blobs.append(f"{storage.DIR_VIDEOS}/{file_dir}/{file_name}")
+        return storage.store_video(file_dir, file_name, stream)
+
+    def _upload_and_track_image(file_dir, file_name, stream):
+        # We track the path so we can delete it later
+        test_blobs.append(f"{storage.DIR_IMAGES}/{file_dir}/{file_name}")
+        return storage.store_video(file_dir, file_name, stream)
+
+    yield _upload_and_track_video, _upload_and_track_image
+
+    # Cleanup: Delete only the blobs created during this test
+    container_client = storage.containter_client
+    for blob_path in test_blobs:
+        try:
+            container_client.delete_blob(blob_path)
+        except Exception:
+            pass
 
 
 # ---------------------------------------------------------
