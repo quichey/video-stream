@@ -1,5 +1,6 @@
 import os
 import pytest
+from unittest.mock import patch
 from sqlalchemy.orm import sessionmaker
 from db.Schema import Base
 from api.util.db_engine import DataBaseEngine
@@ -11,24 +12,32 @@ from api.util.db_engine import DataBaseEngine
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_env():
     """
-    Force the environment to 'testing' before any other logic runs.
-    This ensures the 'init_engine' logic picks up the simulated specs.
+    Surgically patches the Deployment class attribute at the source.
+    This ensures db_engine.py sees 'test' regardless of import order.
     """
-    # Store original state for teardown
-    old_env = os.environ.get("APP_ENV")
+    # 1. Start the patcher
+    # We point to the specific attribute on the class
+    patcher = patch("util.deployment.Deployment._deployment", "test")
 
-    # Force the switch
-    os.environ["APP_ENV"] = "testing"
-    print("\n[INFO] Global Environment set to: TESTING")
+    # 2. Start the patch
+    mock_deployment = patcher.start()
 
-    yield  # --- All tests run during this yield ---
+    # Also set the OS variable just in case other logic relies on it
+    old_os_env = os.getenv("DEPLOYMENT")
+    os.environ["DEPLOYMENT"] = "test"
 
-    # Restore the environment to avoid side effects on the dev machine
-    if old_env:
-        os.environ["APP_ENV"] = old_env
+    print(f"\n[INFO] Patch Active: Deployment._deployment is now {mock_deployment}")
+
+    yield  # --- Tests run here ---
+
+    # 3. Stop the patcher (Teardown)
+    patcher.stop()
+
+    if old_os_env:
+        os.environ["DEPLOYMENT"] = old_os_env
     else:
-        del os.environ["APP_ENV"]
-    print("\n[INFO] Global Environment restored to original state")
+        del os.environ["DEPLOYMENT"]
+    print("\n[INFO] Patch Stopped: Environment restored.")
 
 
 # ---------------------------------------------------------
@@ -37,23 +46,22 @@ def setup_test_env():
 @pytest.fixture(scope="function")
 def session():
     """
-    Creates an in-memory SQLite database, builds the schema,
-    and yields a session. Rolls back/Drops after every test.
+    Now DataBaseEngine will absolutely see 'test' when it
+    accesses self.deployment.
     """
-    # DataBaseEngine will now use the 'testing' specs due to setup_test_env
-    db_manager = DataBaseEngine(deployment="local")
+    db_manager = DataBaseEngine()
     engine = db_manager.engine
 
-    # Build the tables in RAM
-    Base.metadata.create_all(engine)
+    # Verify the engine is SQLite before proceeding
+    if "sqlite" not in str(engine.url):
+        raise RuntimeError(f"Safety Trigger: Test tried to run on {engine.url}!")
 
-    # Create the session factory
+    Base.metadata.create_all(engine)
     SessionLocal = sessionmaker(bind=engine)
     db_session = SessionLocal()
 
     yield db_session
 
-    # Cleanup to ensure test isolation
     db_session.close()
     Base.metadata.drop_all(engine)
 
@@ -63,14 +71,23 @@ def session():
 # ---------------------------------------------------------
 @pytest.fixture
 def session_with_user(session):
-    """Pre-condition: Database starts with one premium user."""
-    # Assuming User model is imported or available
+    """Pre-condition: Database starts with one test user."""
     from db.Schema import User
 
-    user = User(username="kyle_dev", is_premium=True)
-    session.add(user)
+    # Create a user matching your specific schema
+    # Using .encode() because your password column is VARBINARY
+    test_user = User(
+        name="kyle_dev",
+        email="kyle@example.com",
+        profile_icon="default.png",
+        password=b"hashed_password_blob",
+    )
+
+    session.add(test_user)
     session.commit()
-    return session
+
+    # We return the user object so your test can use test_user.id immediately
+    return test_user
 
 
 @pytest.fixture

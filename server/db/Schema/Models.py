@@ -85,11 +85,6 @@ test_database_specs = {
     "provider": "local",
 }
 
-# Logic to pick specs
-if os.getenv("APP_ENV") == "testing":
-    active_specs = test_database_specs
-else:
-    active_specs = database_specs
 
 """
 create _specs but for g-cloud sql

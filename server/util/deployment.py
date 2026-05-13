@@ -21,7 +21,7 @@ class Deployment:
         return self._deployment_env
 
     def log(self, print_text: str):
-        if self.deployment == "local":
+        if self.deployment in ["local", "test"]:
             return print(print_text)
         elif self.deployment == "cloud":
             return print(print_text, file=sys.stderr, flush=True)
