@@ -16,6 +16,9 @@ def setup_test_env():
     Surgically patches the Deployment class attribute at the source.
     This ensures db_engine.py sees 'test' regardless of import order.
     """
+    from util.env import load_providers_env
+
+    load_providers_env()
     # 1. Start the patcher
     # We point to the specific attribute on the class
     deployment_patcher = patch("util.deployment.Deployment._deployment", "test")
@@ -98,7 +101,7 @@ def test_blob_storage():
     def _upload_and_track_image(file_dir, file_name, stream):
         # We track the path so we can delete it later
         test_blobs.append(f"{storage.DIR_IMAGES}/{file_dir}/{file_name}")
-        return storage.store_video(file_dir, file_name, stream)
+        return storage.store_image(file_dir, file_name, stream)
 
     yield _upload_and_track_video, _upload_and_track_image
 
