@@ -5,7 +5,7 @@ from api.util.error_handling import SecurityError
 
 
 # 1. Create a concrete subclass for testing
-class TestTab(TabSession):
+class MockTab(TabSession):
     def key(self):
         return "test_key"
 
@@ -19,7 +19,7 @@ def session():
         "api.orchestrator.session.tab_session.TabSession.extract_session_token",
         return_value=None,
     ):
-        return TestTab(req, res)
+        return MockTab(req, res)
 
 
 def test_determine_event_mapping(session):
