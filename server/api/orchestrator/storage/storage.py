@@ -27,7 +27,7 @@ class Storage(BaseStorage):
     STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME")  # env var in practice
     DIR_VIDEOS = "videos"  # e.g. "videos"
     DIR_IMAGES = "images"
-    BLOB_CONTAINER = os.environ.get("BLOB_CONTAINER")
+    BLOB_CONTAINER = os.environ.get("DEPLOYMENT_ENV")
 
     @property
     def blob_service_client(self):

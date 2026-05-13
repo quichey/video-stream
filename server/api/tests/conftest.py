@@ -17,26 +17,39 @@ def setup_test_env():
     """
     # 1. Start the patcher
     # We point to the specific attribute on the class
-    patcher = patch("util.deployment.Deployment._deployment", "test")
+    deployment_patcher = patch("util.deployment.Deployment._deployment", "test")
+    deployment_env_patcher = patch("util.deployment.Deployment._deployment_env", "test")
 
     # 2. Start the patch
-    mock_deployment = patcher.start()
+    mock_deployment = deployment_patcher.start()
+    mock_deployment_env = deployment_env_patcher.start()
 
     # Also set the OS variable just in case other logic relies on it
-    old_os_env = os.getenv("DEPLOYMENT")
+    old_os_deployment = os.getenv("DEPLOYMENT")
     os.environ["DEPLOYMENT"] = "test"
+    old_os_deployment_env = os.getenv("DEPLOYMENT_ENV")
+    os.environ["DEPLOYMENT_ENV"] = "test"
 
     print(f"\n[INFO] Patch Active: Deployment._deployment is now {mock_deployment}")
+    print(
+        f"\n[INFO] Patch Active: Deployment._deployment_env is now {mock_deployment_env}"
+    )
 
     yield  # --- Tests run here ---
 
     # 3. Stop the patcher (Teardown)
-    patcher.stop()
+    deployment_patcher.stop()
+    deployment_env_patcher.stop()
 
-    if old_os_env:
-        os.environ["DEPLOYMENT"] = old_os_env
+    if old_os_deployment:
+        os.environ["DEPLOYMENT"] = old_os_deployment
     else:
         del os.environ["DEPLOYMENT"]
+
+    if old_os_deployment_env:
+        os.environ["DEPLOYMENT_ENV"] = old_os_deployment_env
+    else:
+        del os.environ["DEPLOYMENT_ENV"]
     print("\n[INFO] Patch Stopped: Environment restored.")
 
 
