@@ -20,10 +20,14 @@ def setup_test_env():
     # We point to the specific attribute on the class
     deployment_patcher = patch("util.deployment.Deployment._deployment", "test")
     deployment_env_patcher = patch("util.deployment.Deployment._deployment_env", "test")
+    blob_container_patcher = patch(
+        "api.orchestrator.storage.Storage.BLOB_CONTAINER", "test"
+    )
 
     # 2. Start the patch
     mock_deployment = deployment_patcher.start()
     mock_deployment_env = deployment_env_patcher.start()
+    blob_container_patcher.start()
 
     # Also set the OS variable just in case other logic relies on it
     old_os_deployment = os.getenv("DEPLOYMENT")
@@ -41,6 +45,7 @@ def setup_test_env():
     # 3. Stop the patcher (Teardown)
     deployment_patcher.stop()
     deployment_env_patcher.stop()
+    blob_container_patcher.stop()
 
     if old_os_deployment:
         os.environ["DEPLOYMENT"] = old_os_deployment
