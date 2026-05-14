@@ -1,6 +1,12 @@
 from sqlalchemy import create_engine
+import os
 
-from db.Schema import database_specs, database_specs_cloud_sql, Base
+from db.Schema import (
+    database_specs,
+    database_specs_cloud_sql,
+    test_database_specs,
+    Base,
+)
 from util.deployment import Deployment
 
 
@@ -10,6 +16,8 @@ def init_engine(deployment="local"):
     elif deployment == "cloud":
         db_specs = database_specs_cloud_sql
     # temporary hotfix based off reading cloud run error logs
+    elif deployment == "test":
+        db_specs = test_database_specs
     else:
         db_specs = database_specs_cloud_sql
     deployment = deployment
@@ -28,7 +36,17 @@ def construct_engine(database_specs, deployment):
         dbname = database_specs["dbname"]
         url = f"{user}:{pw}@{hostname}/{dbname}"
 
-        engine = create_engine(f"{dialect}+{db_api}://{url}", echo=True)
+        engine = create_engine(
+            f"{dialect}+{db_api}://{url}", echo=True
+        )  # Add a quick check for sqlite/test dialect
+    elif deployment == "test" or database_specs.get("dialect") == "sqlite":
+        dbname = database_specs["dbname"]
+        # Ensure we use 4 slashes for absolute paths, 3 for relative
+        if os.path.isabs(dbname):
+            url = f"sqlite:////{dbname}"
+        else:
+            url = f"sqlite:///{dbname}"
+        return create_engine(url, echo=True)
     elif database_specs["provider"] == "azure":
         dialect = database_specs["dialect"]
         db_api = database_specs["db_api"]

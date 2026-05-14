@@ -74,6 +74,20 @@ database_specs_cloud_sql = {
     # "CLOUD_SQL_CONNECTION_NAME": "copy-youtube-461223:us-central1:mysql-db"
 }
 
+# New Test Specs
+test_database_specs = {
+    "dialect": "sqlite",
+    "db_api": "pysqlite",
+    "user": "",
+    "pw": "",
+    "hostname": "",
+    "dbname": os.path.abspath(
+        "test_gateway.sqlite"
+    ),  # This creates the in-memory simulation
+    "provider": "local",
+}
+
+
 """
 create _specs but for g-cloud sql
 """

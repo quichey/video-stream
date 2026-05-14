@@ -14,14 +14,14 @@ class Deployment:
 
     @property
     def deployment(self):
-        return self._deployment
+        return os.getenv("DEPLOYMENT")
 
     @property
     def deployment_env(self):
-        return self._deployment_env
+        return os.getenv("DEPLOYMENT_ENV")
 
     def log(self, print_text: str):
-        if self.deployment == "local":
+        if self.deployment in ["local", "test"]:
             return print(print_text)
         elif self.deployment == "cloud":
             return print(print_text, file=sys.stderr, flush=True)
