@@ -1,0 +1,21 @@
+{
+    "users": [
+        {
+            "id": 10,
+            "name": "content_creator",
+            "email": "creator@example.com",
+            "profile_icon": "icon.png",
+            "password": "hashed_password"
+        }
+    ],
+    "videos": [
+        {
+            "id": 500,
+            "file_name": "test_video.mp4",
+            "file_dir": "test_folder",
+            "user_id": 10,
+            "date_updated": "2023-01-01 12:00:00",
+            "date_created": "2023-01-01 12:00:00"
+        }
+    ]
+}
