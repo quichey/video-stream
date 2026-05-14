@@ -81,7 +81,9 @@ test_database_specs = {
     "user": "",
     "pw": "",
     "hostname": "",
-    "dbname": ":memory:",  # This creates the in-memory simulation
+    "dbname": os.path.abspath(
+        "test_gateway.sqlite"
+    ),  # This creates the in-memory simulation
     "provider": "local",
 }
 

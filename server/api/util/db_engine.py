@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+import os
 
 from db.Schema import (
     database_specs,
@@ -39,7 +40,13 @@ def construct_engine(database_specs, deployment):
             f"{dialect}+{db_api}://{url}", echo=True
         )  # Add a quick check for sqlite/test dialect
     elif deployment == "test" or database_specs.get("dialect") == "sqlite":
-        return create_engine("sqlite:///:memory:", echo=True)
+        dbname = database_specs["dbname"]
+        # Ensure we use 4 slashes for absolute paths, 3 for relative
+        if os.path.isabs(dbname):
+            url = f"sqlite:////{dbname}"
+        else:
+            url = f"sqlite:///{dbname}"
+        return create_engine(url, echo=True)
     elif database_specs["provider"] == "azure":
         dialect = database_specs["dialect"]
         db_api = database_specs["db_api"]

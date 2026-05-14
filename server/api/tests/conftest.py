@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest.mock import patch
 from sqlalchemy.orm import sessionmaker
-from db.Schema import Base
+from db.Schema import Base, test_database_specs
 from api.util.db_engine import DataBaseEngine
 from api.orchestrator.storage import Storage
 
@@ -43,6 +43,11 @@ def setup_test_env():
         f"\n[INFO] Patch Active: Deployment._deployment_env is now {mock_deployment_env}"
     )
 
+    # If the file exists from a crashed previous run, delete it for a clean start
+    test_db_path = test_database_specs["dbname"]
+    if os.path.exists(test_db_path):
+        os.remove(test_db_path)
+
     yield  # --- Tests run here ---
 
     # 3. Stop the patcher (Teardown)
@@ -66,7 +71,7 @@ def setup_test_env():
 # 2. THE SIMULATED ENGINE & SESSION
 # ---------------------------------------------------------
 @pytest.fixture(scope="function")
-def session():
+def session_old():
     """
     Now DataBaseEngine will absolutely see 'test' when it
     accesses self.deployment.
@@ -89,13 +94,17 @@ def session():
 
 
 @pytest.fixture(scope="function")
-def db_session():
+def session():
     """
     Seeding/Cleanup session. Points to the SAME engine as the app
     because DataBaseEngine is governed by the same session patches.
     """
     db_manager = DataBaseEngine()
     engine = db_manager.engine
+    # MANDATORY: Re-run create_all.
+    # SQLAlchemy's create_all is idempotent; it won't break anything if
+    # the tables exist, but it ENSURES they exist for this specific connection.
+    Base.metadata.create_all(engine)
 
     SessionLocal = sessionmaker(bind=engine)
     db_session = SessionLocal()
