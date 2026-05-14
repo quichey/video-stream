@@ -167,7 +167,7 @@ def app(setup_test_env):
     Base.metadata.create_all(engine)
 
     # 3. Create the Flask App
-    from gateway import create_app
+    from api.gateway import create_app
 
     flask_app = create_app({"TESTING": True})
 
@@ -175,6 +175,12 @@ def app(setup_test_env):
 
     # Optional: Clean up the file/memory after all tests finish
     # Base.metadata.drop_all(engine)
+
+
+@pytest.fixture
+def client(app):
+    """A test client for the app."""
+    return app.test_client()
 
 
 # ---------------------------------------------------------
