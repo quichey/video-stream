@@ -12,7 +12,7 @@
         {
             "id": 500,
             "file_name": "test_video.mp4",
-            "file_dir": "test_folder",
+            "file_dir": "10",
             "user_id": 10,
             "date_updated": "2023-01-01 12:00:00",
             "date_created": "2023-01-01 12:00:00"

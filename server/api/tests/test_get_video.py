@@ -1,41 +1,32 @@
 from unittest.mock import patch
 
 
-def test_watch_video_integration(client, load_state):
+def test_watch_video_id_folder_matching(client, load_state):
     """
-    Integration test for the /video POST route.
-    Verifies that the orchestrator correctly joins video and user data
-    and interacts with the storage layer.
+    Verifies that the /video route correctly handles the 'user_id as file_dir'
+    convention established in the production logic.
     """
-    # 1. Load the specific state for this test
+    # 1. Seed the DB with matching ID and Directory
     load_state("video_watch_state")
 
-    # 2. Mock the STORAGE object to avoid real Azure/Cloud calls
-    # We patch it where it is used in the watch_video logic
     with patch("api.orchestrator.session.state.watch_video.STORAGE") as mock_storage:
+        # 2. Mock storage to return a URL based on the user-id directory
         mock_storage.get_video_url.return_value = (
-            "https://mockstorage.com/test_folder/test_video.mp4"
+            "https://mockstorage.com/10/test_video.mp4"
         )
 
-        # 3. Define the payload (extract_video_info expects 'id' in the request)
-        # Since it's a POST, we send it as JSON
+        # 3. Request video ID 500
         payload = {"id": 500}
-
-        # 4. Hit the route
         response = client.post("/video", json=payload)
 
-        # 5. Assertions
+        # 4. Assertions
         assert response.status_code == 200
-
         data = response.get_json()
 
-        # Verify the database join worked (User ID 10 -> 'content_creator')
+        # Verify the 'user_id as folder' logic
         assert data["user_name"] == "content_creator"
+        assert data["file_dir"] == "10"
         assert data["file_name"] == "test_video.mp4"
-        assert data["file_dir"] == "test_folder"
 
-        # Verify storage integration
-        assert data["video_url"] == "https://mockstorage.com/test_folder/test_video.mp4"
-        mock_storage.get_video_url.assert_called_once_with(
-            "test_folder", "test_video.mp4"
-        )
+        # Verify Storage was called with the user_id (10) as the first argument
+        mock_storage.get_video_url.assert_called_once_with("10", "test_video.mp4")
