@@ -6,7 +6,7 @@ def test_app_fixture_connects_to_test_db(client, app):
     # 1. Use the 'with' context to keep the session state alive
     with client:
         # Trigger the Orchestrator logic
-        client.get("/")
+        client.post("/video-list")
 
         # 2. Access the registry via the app object
         # Since the Orchestrator is a singleton-like object on the app,
