@@ -16,7 +16,7 @@ def test_watch_video_id_folder_matching(client, load_state):
         )
 
         # 3. Request video ID 500
-        payload = {"id": 500}
+        payload = {"video_id": 500}
         response = client.post("/video", json=payload)
 
         # 4. Assertions
