@@ -22,11 +22,12 @@ def test_watch_video_id_folder_matching(client, load_state):
         # 4. Assertions
         assert response.status_code == 200
         data = response.get_json()
+        video_data = data["video_data"]
 
         # Verify the 'user_id as folder' logic
-        assert data["user_name"] == "content_creator"
-        assert data["file_dir"] == "10"
-        assert data["file_name"] == "test_video.mp4"
+        assert video_data["user_name"] == "content_creator"
+        assert video_data["file_dir"] == "10"
+        assert video_data["file_name"] == "test_video.mp4"
 
         # Verify Storage was called with the user_id (10) as the first argument
         mock_storage.get_video_url.assert_called_once_with("10", "test_video.mp4")
