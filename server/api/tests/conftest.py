@@ -233,7 +233,7 @@ def load_state(app):
         }
 
         # 2. Load the JSON state file
-        file_path = f"api/tests/states/{state_name}.json"
+        file_path = f"api/tests/states/db/{state_name}.json"
         with open(file_path, "r") as f:
             data = json.load(f)
 
