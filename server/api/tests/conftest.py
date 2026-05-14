@@ -88,6 +88,31 @@ def session():
     Base.metadata.drop_all(engine)
 
 
+@pytest.fixture(scope="function")
+def db_session():
+    """
+    Seeding/Cleanup session. Points to the SAME engine as the app
+    because DataBaseEngine is governed by the same session patches.
+    """
+    db_manager = DataBaseEngine()
+    engine = db_manager.engine
+
+    SessionLocal = sessionmaker(bind=engine)
+    db_session = SessionLocal()
+
+    yield db_session
+
+    db_session.close()
+
+    # Clean up data after every test to keep isolation,
+    # but leave the tables (metadata) intact for the session-scoped app.
+    with engine.connect() as connection:
+        transaction = connection.begin()
+        for table in reversed(Base.metadata.sorted_tables):
+            connection.execute(table.delete())
+        transaction.commit()
+
+
 @pytest.fixture
 def test_blob_storage():
     storage = Storage()
@@ -112,6 +137,35 @@ def test_blob_storage():
             container_client.delete_blob(blob_path)
         except Exception:
             pass
+
+
+@pytest.fixture(scope="session")
+def app(setup_test_env):
+    """
+    Initializes the schema once and creates the Flask app.
+    The 'setup_test_env' dependency ensures patches are active.
+    """
+    # 1. Initialize the shared Test Database
+    db_manager = DataBaseEngine()
+    engine = db_manager.engine
+
+    if "sqlite" not in str(engine.url):
+        raise RuntimeError(
+            f"CRITICAL: App tried to connect to production! {engine.url}"
+        )
+
+    # 2. Build the schema once for the entire session
+    Base.metadata.create_all(engine)
+
+    # 3. Create the Flask App
+    from gateway import create_app
+
+    flask_app = create_app({"TESTING": True})
+
+    yield flask_app
+
+    # Optional: Clean up the file/memory after all tests finish
+    # Base.metadata.drop_all(engine)
 
 
 # ---------------------------------------------------------
