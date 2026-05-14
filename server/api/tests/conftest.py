@@ -1,5 +1,6 @@
 import os
 import pytest
+import json
 from unittest.mock import patch
 from sqlalchemy.orm import sessionmaker
 from db.Schema import Base, test_database_specs
@@ -216,3 +217,41 @@ def session_with_video_library(session):
     session.add_all(videos)
     session.commit()
     return session
+
+
+@pytest.fixture
+def load_state(app):
+    def _loader(state_name):
+        from api.util.db_engine import DataBaseEngine
+        from sqlalchemy.orm import sessionmaker
+
+        # 1. Map table names to model classes dynamically
+        # Base.registry.mappers gives us access to all mapped classes
+        table_to_model = {
+            mapper.class_.__tablename__: mapper.class_
+            for mapper in Base.registry.mappers
+        }
+
+        # 2. Load the JSON state file
+        file_path = f"api/tests/states/{state_name}.json"
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        # 3. Connect and Seed
+        engine = DataBaseEngine().engine
+        Session = sessionmaker(bind=engine)
+
+        with Session() as session:
+            for table_name, rows in data.items():
+                model_class = table_to_model.get(table_name)
+
+                if not model_class:
+                    print(f"[WARNING] No model found for table: {table_name}")
+                    continue
+
+                for row_data in rows:
+                    session.add(model_class(**row_data))
+
+            session.commit()
+
+    return _loader
