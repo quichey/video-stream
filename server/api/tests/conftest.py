@@ -1,7 +1,9 @@
 import os
 import pytest
 import json
+from datetime import datetime, date
 from unittest.mock import patch
+from sqlalchemy import VARBINARY, DateTime, Date
 from sqlalchemy.orm import sessionmaker
 from db.Schema import Base, test_database_specs
 from api.util.db_engine import DataBaseEngine
@@ -248,8 +250,29 @@ def load_state(app):
                 if not model_class:
                     print(f"[WARNING] No model found for table: {table_name}")
                     continue
+                # Get a mapping of column names to their SQLAlchemy types
+                column_types = {
+                    col.name: col.type for col in model_class.__table__.columns
+                }
 
                 for row_data in rows:
+                    for field, value in row_data.items():
+                        if value is None:
+                            continue
+
+                        col_type = column_types.get(field)
+
+                        # Handle Binary (Passwords)
+                        if isinstance(col_type, VARBINARY) and isinstance(value, str):
+                            row_data[field] = value.encode("utf-8")
+
+                        # Handle Datetime
+                        elif isinstance(col_type, DateTime) and isinstance(value, str):
+                            row_data[field] = datetime.fromisoformat(value)
+
+                        # Handle Date
+                        elif isinstance(col_type, Date) and isinstance(value, str):
+                            row_data[field] = date.fromisoformat(value)
                     session.add(model_class(**row_data))
 
             session.commit()
