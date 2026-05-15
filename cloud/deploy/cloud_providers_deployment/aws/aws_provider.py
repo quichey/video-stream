@@ -1,9 +1,10 @@
 from dotenv import load_dotenv
 import os
 
-from .base_provider import BaseCloudProvider
+from ..base_provider import BaseCloudProvider
 
 load_dotenv()
+
 
 class AWSProvider(BaseCloudProvider):
     def __init__(self, context):
@@ -14,4 +15,3 @@ class AWSProvider(BaseCloudProvider):
 
     def get_run_cmd(self):
         pass
-
