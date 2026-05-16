@@ -77,8 +77,3 @@ class AzureDBProvider(AzureBaseProvider, BaseDBCloudProvider):
         cmd_delete = self._get_server_deletion_command()
         self._run_az_cmd(cmd_delete, "Server Deletion")
         return "Database server deletion command executed."
-
-    @override
-    def get_cmd_run_migrations(self) -> str:
-        """Hook for running migrations, delegated to the Deployer class."""
-        return "Migration run delegated to Deployer class."
