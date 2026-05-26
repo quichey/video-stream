@@ -7,7 +7,13 @@ import { useServerCall } from "../customHooks/useServerCall";
 
 leoProfanity.loadDictionary(); // load default dictionary
 
-const UserNameInput = ({ value, onChange, error, setError }) => {
+const UserNameInput = ({
+  value,
+  onChange,
+  error,
+  setError,
+  textFieldProps = {},
+}) => {
   const fetchData = useServerCall();
 
   const validate = (val) => {
@@ -53,6 +59,7 @@ const UserNameInput = ({ value, onChange, error, setError }) => {
         error={Boolean(error)}
         helperText={error}
         fullWidth
+        {...textFieldProps}
       />
     </Box>
   );

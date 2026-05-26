@@ -47,7 +47,7 @@ export default function Video() {
 
   //const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   return (
-    <video controls width="100%" height="100%">
+    <video controls width="100%" height="100%" data-testid="video-player">
       <source src={videoUrl} type="video/mp4" />
     </video>
   );

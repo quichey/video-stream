@@ -21,7 +21,10 @@ function SessionButton() {
 
   return (
     <div>
-      <IconButtonVS handleClick={handleClick}>
+      <IconButtonVS
+        handleClick={handleClick}
+        buttonProps={{ "dataT-testid": "session-menu-btn" }}
+      >
         <UserIconImg
           id={id}
           userIcon={iconFileName}

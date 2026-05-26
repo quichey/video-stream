@@ -6,10 +6,13 @@ import VideoTile from "./VideoTile/VideoTile";
 
 export default function RecommendedVideos({ videoList }) {
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List
+      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+      data-testid="home-videos-list"
+    >
       {videoList.map((videoInfo) => {
         return (
-          <ListItem>
+          <ListItem data-testid="home-video-list-item">
             <VideoTile
               id={videoInfo.id}
               fileName={videoInfo.file_name}
